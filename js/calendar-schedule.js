@@ -161,6 +161,11 @@ async function handleFormSubmit(event) {
   };
 
   if (currentMode === 'CREATE') {
+    // 1. 新規追加の確認ステップ
+    if (!confirm('この内容で予定を追加しますか？')) {
+      return; // キャンセルされたら処理を中断
+    }
+
     const { error } = await supabaseClient.from('schedules').insert([scheduleData]);
     if (error) {
       alert('保存に失敗しました: ' + error.message);
@@ -170,6 +175,11 @@ async function handleFormSubmit(event) {
       calendar.refetchEvents();
     }
   } else if (currentMode === 'EDIT') {
+    // 2. 編集更新の確認ステップ
+    if (!confirm('変更内容を保存（更新）しますか？')) {
+      return; // キャンセルされたら処理を中断
+    }
+
     const { error } = await supabaseClient.from('schedules').update(scheduleData).eq('id', id);
     if (error) {
       alert('更新に失敗しました: ' + error.message);
