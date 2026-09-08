@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>市民オケ ポータル（Supabase連携版）</title>
+  <title>松戸シティフィル ポータル（Supabase連携版）</title>
+
+  <!-- 1. ブラウザのタブ用アイコン（ファビコン） -->
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <!-- 2. iPhone用のホーム画面アイコン指定 -->
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <!-- 3. Webアプリ設定（PWA）の読み込み -->
+  <link rel="manifest" href="manifest.json">
   
   <!-- 1. SupabaseのJavaScriptライブラリをCDNから読み込み -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -21,7 +28,7 @@
 <body>
 
   <header>
-    <h1 style="margin:0; font-size: 1.2rem;">市民管弦楽団 練習日程</h1>
+    <h1 style="margin:0; font-size: 1.2rem;">松戸シティフィル 練習日程</h1>
   </header>
 
   <main>
