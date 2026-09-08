@@ -3,50 +3,127 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>市民管弦楽団 スケジュール</title>
+  <title>スケジュール管理</title>
   
-  <!-- 1. Supabase & FullCalendar のライブラリ読み込み -->
+  <!-- Supabase & FullCalendar ライブラリ -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
 
   <style>
     body { font-family: sans-serif; margin: 0; padding: 1rem; background-color: #f8fafc; color: #1e293b; }
-    header { text-align: center; margin-bottom: 1.5rem; }
+    header { max-width: 900px; margin: 0 auto 1rem; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 1.3rem; margin: 0; }
+    
+    .btn-primary { background-color: #2563eb; color: white; border: none; padding: 0.6rem 1rem; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .btn-primary:hover { background-color: #1d4ed8; }
+    .btn-secondary { background-color: #94a3b8; color: white; border: none; padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer; }
+
     #calendar { max-width: 900px; margin: 0 auto; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    /* カレンダー内のスタイル微調整 */
     .fc-event { cursor: pointer; }
+
+    /* モーダル（ダイアログ）用スタイル */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+    .modal-overlay.active { display: flex; }
+    .modal-box { background: white; padding: 1.5rem; border-radius: 8px; width: 90%; max-width: 450px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.3rem; }
+    .form-group input, .form-group textarea { width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1 style="font-size: 1.4rem; margin: 0;">🎻 練習スケジュール</h1>
+    <h1>🎻 スケジュール</h1>
+    <button class="btn-primary" onclick="openModal()">＋ 練習日程を追加</button>
   </header>
 
-  <!-- カレンダーが描画されるエリア -->
   <div id="calendar"></div>
 
+  <!-- 新規追加用モーダルフォーム -->
+  <div id="addModal" class="modal-overlay">
+    <div class="modal-box">
+      <h2 style="margin-top:0; font-size:1.1rem;">予定の追加</h2>
+      <form id="scheduleForm" onsubmit="saveSchedule(event)">
+        <div class="form-group">
+          <label>日付 *</label>
+          <input type="date" id="date" required>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <div class="form-group" style="flex:1;">
+            <label>開始時間 *</label>
+            <input type="time" id="start_time" value="13:00" required>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label>終了時間 *</label>
+            <input type="time" id="end_time" value="17:00" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>練習場所 *</label>
+          <input type="text" id="location" placeholder="例: 市民会館 練習室1" required>
+        </div>
+        <div class="form-group">
+          <label>練習内容・曲目</label>
+          <textarea id="program_notes" rows="3" placeholder="例: 13:00~ 曲目A / 15:00~ 曲目B"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Google Drive 共有URL</label>
+          <input type="url" id="drive_url" placeholder="https://drive.google.com/...">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeModal()">キャンセル</button>
+          <button type="submit" class="btn-primary">保存する</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
-    // 2. Supabase接続設定（ご自身のものに書き換えてください）
+    // Supabase接続設定（ご自身のものに書き換えてください）
     const SUPABASE_URL = 'https://dylrgcsrlqvyjjggbrdb.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_nK0_BPPRQ6q22EJZi_JMSA_WTc85mFr';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    document.addEventListener('DOMContentLoaded', async async => {
+    let calendar; // カレンダーインスタンス保持用
+
+    document.addEventListener('DOMContentLoaded', async () => {
       const calendarEl = document.getElementById('calendar');
 
-      // 3. Supabaseから練習日程を取得
+      // FullCalendarの初期化
+      calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth',
+        locale: 'ja',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,listMonth'
+        },
+        buttonText: { today: '今日', month: '月', list: 'リスト' },
+        events: fetchSchedules, // イベント取得関数を指定
+        eventClick: function(info) {
+          const props = info.event.extendedProps;
+          let details = `【練習詳細】\n場所: ${props.location}\n内容: ${props.notes || 'なし'}`;
+          if (props.driveUrl) details += `\n\nGoogle Drive:\n${props.driveUrl}`;
+          alert(details);
+        }
+      });
+
+      calendar.render();
+    });
+
+    // Supabaseからスケジュールを取得してFullCalendar用に整形
+    async function fetchSchedules(fetchInfo, successCallback, failureCallback) {
       const { data: schedules, error } = await supabaseClient
         .from('schedules')
         .select('*');
 
       if (error) {
         console.error('データ取得失敗:', error);
-        alert('スケジュールの読み込みに失敗しました');
+        failureCallback(error);
         return;
       }
 
-      // 4. Supabaseのデータを FullCalendar 用のデータ形式に変換
       const events = schedules.map(item => ({
         id: item.id,
         title: `${item.location} (${item.program_notes || '練習'})`,
@@ -59,34 +136,42 @@
         }
       }));
 
-      // 5. カレンダーの初期化と描画
-      const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth', // スマホはリスト、PCは月表示
-        locale: 'ja', // 日本語化
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,listMonth'
-        },
-        buttonText: {
-          today: '今日',
-          month: '月',
-          list: 'リスト'
-        },
-        events: events,
-        // 予定をタップした時の動作
-        eventClick: function(info) {
-          const props = info.event.extendedProps;
-          let details = `【練習詳細】\n日時: ${info.event.start.toLocaleString()}\n場所: ${props.location}\n内容: ${props.notes || 'なし'}`;
-          if (props.driveUrl) {
-            details += `\n\nGoogle Drive:\n${props.driveUrl}`;
-          }
-          alert(details);
-        }
-      });
+      successCallback(events);
+    }
 
-      calendar.render();
-    });
+    // モーダルの開閉
+    function openModal() { document.getElementById('addModal').classList.add('active'); }
+    function closeModal() { 
+      document.getElementById('addModal').classList.remove('active'); 
+      document.getElementById('scheduleForm').reset();
+    }
+
+    // 新規スケジュールの保存（SupabaseへINSERT）
+    async function saveSchedule(event) {
+      event.preventDefault();
+
+      const newSchedule = {
+        date: document.getElementById('date').value,
+        start_time: document.getElementById('start_time').value,
+        end_time: document.getElementById('end_time').value,
+        location: document.getElementById('location').value,
+        program_notes: document.getElementById('program_notes').value,
+        drive_url: document.getElementById('drive_url').value
+      };
+
+      const { data, error } = await supabaseClient
+        .from('schedules')
+        .insert([newSchedule]);
+
+      if (error) {
+        console.error('追加エラー:', error);
+        alert('保存に失敗しました: ' + error.message);
+      } else {
+        alert('練習日程を追加しました！');
+        closeModal();
+        calendar.refetchEvents(); // カレンダーの表示を再取得・更新
+      }
+    }
   </script>
 
 </body>
