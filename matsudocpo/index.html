@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スケジュール管理</title>
+
+  <!-- PWA & ファビコン設定 -->
+  <link rel="shortcut icon" href="icon-192.png" type="image/png">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- 外部ライブラリ (Supabase / FullCalendar) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
+  <!-- 機能別CSSの読み込み -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/calendar.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <h1>🎻 スケジュール</h1>
+    <button class="btn-primary" onclick="openModalForCreate()">＋ 予定を追加</button>
+  </header>
+
+  <main class="app-main">
+    <div id="calendar"></div>
+  </main>
+
+  <!-- 共通スケジュールフォームモーダル（新規・閲覧・編集で使い回し） -->
+  <div id="scheduleModal" class="modal-overlay">
+    <div class="modal-box">
+      <h2 id="modalTitle" class="modal-title">予定</h2>
+      
+      <form id="scheduleForm" onsubmit="handleFormSubmit(event)">
+        <!-- 編集・削除対象のIDを保持する非表示フィールド -->
+        <input type="hidden" id="event_id">
+
+        <div class="form-group">
+          <label for="date">日付 *</label>
+          <input type="date" id="date" class="form-control" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="start_time">開始時間 *</label>
+            <input type="time" id="start_time" class="form-control" value="13:00" required>
+          </div>
+          <div class="form-group flex-1">
+            <label for="end_time">終了時間 *</label>
+            <input type="time" id="end_time" class="form-control" value="17:00" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location">練習場所 *</label>
+          <input type="text" id="location" class="form-control" list="location-list" placeholder="会場名を選択または入力" required>
+          <datalist id="location-list">
+            <option value="市民会館 練習室1">
+            <option value="市民会館 大ホール">
+            <option value="総合福祉センター 音楽室">
+            <option value="勤労会館 ホール">
+          </datalist>
+        </div>
+
+        <!-- Googleマップリンク表示用コンテナ -->
+        <div id="mapContainer"></div>
+
+        <div class="form-group">
+          <label for="instructor">指導</label>
+          <input type="text" id="instructor" class="form-control" placeholder="例: マエストロ〇〇">
+        </div>
+
+        <div class="form-group">
+          <label for="program_notes">内容・曲目</label>
+          <textarea id="program_notes" class="form-control" rows="3" placeholder="例: 13:00~ ベートーヴェン4番"></textarea>
+        </div>
+
+        <!-- アクションボタン（モードによってJSで動的切替） -->
+        <div id="modalActions" class="modal-actions"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- スクリプトの読み込み順序に注意（依存関係順） -->
+  <script src="js/config.js"></script>
+  <script src="js/calendar-schedule.js"></script>
+</body>
+</html>
