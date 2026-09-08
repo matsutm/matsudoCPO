@@ -15,8 +15,8 @@
     h1 { font-size: 1.3rem; margin: 0; }
     
     .btn-primary { background-color: #2563eb; color: white; border: none; padding: 0.6rem 1rem; border-radius: 6px; font-weight: bold; cursor: pointer; }
-    .btn-primary:hover { background-color: #1d4ed8; }
-    .btn-secondary { background-color: #94a3b8; color: white; border: none; padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer; }
+    .btn-secondary { background-color: #64748b; color: white; border: none; padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer; }
+    .btn-map { background-color: #059669; color: white; border: none; padding: 0.5rem 0.8rem; border-radius: 4px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 0.5rem; }
 
     #calendar { max-width: 900px; margin: 0 auto; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     .fc-event { cursor: pointer; }
@@ -25,30 +25,37 @@
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
     .modal-overlay.active { display: flex; }
     .modal-box { background: white; padding: 1.5rem; border-radius: 8px; width: 90%; max-width: 450px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .form-group { margin-bottom: 1rem; }
+    .form-group { margin-bottom: 0.8rem; }
     .form-group label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.3rem; }
-    .form-group input, .form-group textarea { width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.2rem; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>🎻 スケジュール</h1>
-    <button class="btn-primary" onclick="openModal()">＋ 練習日程を追加</button>
+    <h1>🎻 練習スケジュール</h1>
+    <button class="btn-primary" onclick="openModal()">＋ 予定を追加</button>
   </header>
 
   <div id="calendar"></div>
 
-  <!-- 新規追加用モーダルフォーム -->
+  <!-- 1. 新規追加用モーダルフォーム -->
   <div id="addModal" class="modal-overlay">
     <div class="modal-box">
       <h2 style="margin-top:0; font-size:1.1rem;">予定の追加</h2>
       <form id="scheduleForm" onsubmit="saveSchedule(event)">
+        
+        <div class="form-group">
+          <label>対象コンサート</label>
+          <input type="text" id="concert_name" placeholder="例: 定期演奏会2026 / ファミリーコンサート">
+        </div>
+
         <div class="form-group">
           <label>日付 *</label>
           <input type="date" id="date" required>
         </div>
+
         <div style="display: flex; gap: 0.5rem;">
           <div class="form-group" style="flex:1;">
             <label>開始時間 *</label>
@@ -59,18 +66,29 @@
             <input type="time" id="end_time" value="17:00" required>
           </div>
         </div>
+
         <div class="form-group">
-          <label>練習場所 *</label>
-          <input type="text" id="location" placeholder="例: 市民会館 練習室1" required>
+          <label>練習場所（選択または直接入力） *</label>
+          <!-- datalistで候補から選択＆自由入力を両立 -->
+          <input type="text" id="location" list="location-list" placeholder="会場名を選択または入力" required>
+          <datalist id="location-list">
+            <option value="市民会館 練習室1">
+            <option value="市民会館 大ホール">
+            <option value="総合福祉センター 音楽室">
+            <option value="勤労会館 ホール">
+          </datalist>
         </div>
+
+        <div class="form-group">
+          <label>指導</label>
+          <input type="text" id="instructor" placeholder="例: マエストロ〇〇 / 弦トレーナー△△先生">
+        </div>
+
         <div class="form-group">
           <label>練習内容・曲目</label>
-          <textarea id="program_notes" rows="3" placeholder="例: 13:00~ 曲目A / 15:00~ 曲目B"></textarea>
+          <textarea id="program_notes" rows="3" placeholder="例: 13:00~ ベートーヴェン4番 / 15:00~ 睡れる森の美女"></textarea>
         </div>
-        <div class="form-group">
-          <label>Google Drive 共有URL</label>
-          <input type="url" id="drive_url" placeholder="https://drive.google.com/...">
-        </div>
+
         <div class="modal-actions">
           <button type="button" class="btn-secondary" onclick="closeModal()">キャンセル</button>
           <button type="submit" class="btn-primary">保存する</button>
@@ -79,18 +97,36 @@
     </div>
   </div>
 
+  <!-- 2. 予定詳細確認用モーダル -->
+  <div id="detailModal" class="modal-overlay">
+    <div class="modal-box">
+      <h2 id="detail-title" style="margin-top:0; color:#1e3a8a; font-size:1.2rem;"></h2>
+      <p id="detail-time" style="margin: 0.3rem 0; font-weight:bold;"></p>
+      <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 0.8rem 0;">
+      
+      <p style="margin:0.4rem 0;"><strong>📍 場所:</strong> <span id="detail-location"></span></p>
+      <div id="detail-map-container"></div>
+      
+      <p style="margin:0.8rem 0 0.4rem;"><strong>👨‍🏫 指導:</strong> <span id="detail-instructor"></span></p>
+      <p style="margin:0.4rem 0;"><strong>🎵 内容:</strong></p>
+      <div id="detail-notes" style="background:#f1f5f9; padding:0.6rem; border-radius:4px; font-size:0.9rem; whitespace:pre-wrap;"></div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeDetailModal()">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Supabase接続設定（ご自身のものに書き換えてください）
     const SUPABASE_URL = 'https://dylrgcsrlqvyjjggbrdb.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_nK0_BPPRQ6q22EJZi_JMSA_WTc85mFr';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let calendar; // カレンダーインスタンス保持用
+    let calendar;
 
     document.addEventListener('DOMContentLoaded', async () => {
       const calendarEl = document.getElementById('calendar');
 
-      // FullCalendarの初期化
       calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth',
         locale: 'ja',
@@ -100,76 +136,97 @@
           right: 'dayGridMonth,listMonth'
         },
         buttonText: { today: '今日', month: '月', list: 'リスト' },
-        events: fetchSchedules, // イベント取得関数を指定
+        events: fetchSchedules,
+        // 予定をタップした際の挙動（詳細ポップアップを表示）
         eventClick: function(info) {
-          const props = info.event.extendedProps;
-          let details = `【練習詳細】\n場所: ${props.location}\n内容: ${props.notes || 'なし'}`;
-          if (props.driveUrl) details += `\n\nGoogle Drive:\n${props.driveUrl}`;
-          alert(details);
+          showDetails(info.event);
         }
       });
 
       calendar.render();
     });
 
-    // Supabaseからスケジュールを取得してFullCalendar用に整形
+    // Supabaseからデータ取得
     async function fetchSchedules(fetchInfo, successCallback, failureCallback) {
       const { data: schedules, error } = await supabaseClient
         .from('schedules')
         .select('*');
 
       if (error) {
-        console.error('データ取得失敗:', error);
         failureCallback(error);
         return;
       }
 
       const events = schedules.map(item => ({
         id: item.id,
-        title: `${item.location} (${item.program_notes || '練習'})`,
+        title: `[${item.location}] ${item.program_notes || '練習'}`,
         start: `${item.date}T${item.start_time}`,
         end: `${item.date}T${item.end_time}`,
         extendedProps: {
+          concert_name: item.concert_name,
           location: item.location,
-          notes: item.program_notes,
-          driveUrl: item.drive_url
+          instructor: item.instructor,
+          notes: item.program_notes
         }
       }));
 
       successCallback(events);
     }
 
-    // モーダルの開閉
+    // 予定詳細モーダルの表示
+    function showDetails(event) {
+      const props = event.extendedProps;
+      const concertText = props.concert_name ? `【${props.concert_name}】` : '';
+      
+      document.getElementById('detail-title').innerText = `${concertText} 練習詳細`;
+      document.getElementById('detail-time').innerText = `🕒 ${event.start.toLocaleString('ja-JP', { month:'numeric', day:'numeric', weekday:'short', hour:'2-digit', minute:'2-digit' })} 〜 ${event.end.toLocaleTimeString('ja-JP', { hour:'2-digit', minute:'2-digit' })}`;
+      document.getElementById('detail-location').innerText = props.location || '未定';
+      document.getElementById('detail-instructor').innerText = props.instructor || 'なし';
+      document.getElementById('detail-notes').innerText = props.notes || '特別な連絡事項はありません。';
+
+      // Google Maps 検索リンクの自動生成
+      if (props.location) {
+        const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(props.location)}`;
+        document.getElementById('detail-map-container').innerHTML = `<a href="${mapUrl}" target="_blank" class="btn-map">🗺️ Googleマップで場所を開く</a>`;
+      } else {
+        document.getElementById('detail-map-container').innerHTML = '';
+      }
+
+      document.getElementById('detailModal').classList.add('active');
+    }
+
+    // モーダル開閉制御
     function openModal() { document.getElementById('addModal').classList.add('active'); }
     function closeModal() { 
       document.getElementById('addModal').classList.remove('active'); 
       document.getElementById('scheduleForm').reset();
     }
+    function closeDetailModal() { document.getElementById('detailModal').classList.remove('active'); }
 
-    // 新規スケジュールの保存（SupabaseへINSERT）
+    // 新規登録処理（INSERT）
     async function saveSchedule(event) {
       event.preventDefault();
 
       const newSchedule = {
+        concert_name: document.getElementById('concert_name').value,
         date: document.getElementById('date').value,
         start_time: document.getElementById('start_time').value,
         end_time: document.getElementById('end_time').value,
         location: document.getElementById('location').value,
-        program_notes: document.getElementById('program_notes').value,
-        drive_url: document.getElementById('drive_url').value
+        instructor: document.getElementById('instructor').value,
+        program_notes: document.getElementById('program_notes').value
       };
 
-      const { data, error } = await supabaseClient
+      const { error } = await supabaseClient
         .from('schedules')
         .insert([newSchedule]);
 
       if (error) {
-        console.error('追加エラー:', error);
         alert('保存に失敗しました: ' + error.message);
       } else {
         alert('練習日程を追加しました！');
         closeModal();
-        calendar.refetchEvents(); // カレンダーの表示を再取得・更新
+        calendar.refetchEvents();
       }
     }
   </script>
