@@ -27,3 +27,24 @@
 .btn-map:hover {
   background-color: #047857;
 }
+
+/* 日曜日のヘッダー（「日」の文字）を赤色に */
+.fc-day-sun .fc-col-header-cell-cushion {
+  color: #dc2626 !important; /* 赤色 */
+}
+
+/* 日曜日の日付数字（1日, 2日...）を赤色に */
+.fc-day-sun .fc-daygrid-day-number {
+  color: #dc2626 !important; /* 赤色 */
+}
+
+/* （おまけ）日曜日の背景色をほんのり赤くしたい場合 */
+.fc-day-sun {
+  background-color: #fef2f2 !important; /* 薄い赤色背景 */
+}
+
+/* （おまけ）土曜日のヘッダーと日付を青色にしたい場合 */
+.fc-day-sat .fc-col-header-cell-cushion,
+.fc-day-sat .fc-daygrid-day-number {
+  color: #2563eb !important; /* 青色 */
+}
