@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>市民オケ ポータル（Supabase連携版）</title>
+  
+  <!-- 1. SupabaseのJavaScriptライブラリをCDNから読み込み -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body { font-family: sans-serif; margin: 0; background-color: #f4f6f8; color: #333; }
+    header { background-color: #1e3a8a; color: white; padding: 1rem; text-align: center; }
+    main { padding: 1rem; max-width: 600px; margin: 0 auto; }
+    .card { background: white; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .badge { background: #e0e7ff; color: #3730a3; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+    .drive-link { display: inline-block; margin-top: 0.5rem; color: #2563eb; text-decoration: none; font-weight: bold; }
+    .loading { text-align: center; color: #6b7280; padding: 2rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 style="margin:0; font-size: 1.2rem;">市民管弦楽団 練習日程</h1>
+  </header>
+
+  <main>
+    <h2>次回練習スケジュール</h2>
+    <!-- データを流し込むコンテナ（初期状態は読み込み中） -->
+    <div id="schedule-list">
+      <div class="loading">データを読み込み中...</div>
+    </div>
+  </main>
+
+  <script>
+    // 1. Supabaseの接続情報（ご自身の値に書き換えてください）
+    const SUPABASE_URL = 'https://dylrgcsrlqvyjjggbrdb.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_nK0_BPPRQ6q22EJZi_JMSA_WTc85mFr';
+
+    // 2. クライアントの初期化（変数を 'supabaseClient' に変更して重複を回避）
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 3. データベースから練習日程を取得して表示する関数
+    async function fetchSchedules() {
+      const container = document.getElementById('schedule-list');
+
+      // 'supabaseClient' を使ってデータ取得
+      const { data: schedules, error } = await supabaseClient
+        .from('schedules')
+        .select('*')
+        .order('date', { ascending: true });
+
+      if (error) {
+        console.error('データ取得エラー:', error);
+        container.innerHTML = `<div class="card" style="color:red;">データの読み込みに失敗しました。<br><small>${error.message}</small></div>`;
+        return;
+      }
+
+      if (!schedules || schedules.length === 0) {
+        container.innerHTML = '<div class="card">登録されている練習日程はありません。</div>';
+        return;
+      }
+
+      // 取得したデータを画面に描画
+      container.innerHTML = schedules.map(item => `
+        <div class="card">
+          <span class="badge">練習日</span>
+          <h3 style="margin: 0.5rem 0 0.2rem;">${item.date} ${item.start_time ? item.start_time.slice(0,5) : ''}〜${item.end_time ? item.end_time.slice(0,5) : ''}</h3>
+          <p style="margin: 0; color: #6b7280;">📍 ${item.location || '場所未定'}</p>
+          <p style="margin: 0.5rem 0 0;"><strong>練習内容:</strong> ${item.program_notes || '未定'}</p>
+          ${item.drive_url ? `<a href="${item.drive_url}" target="_blank" class="drive-link">📁 Google Drive（楽譜・参考音源）</a>` : ''}
+        </div>
+      `).join('');
+    }
+
+    // 画面読み込み時に実行
+    fetchSchedules();
+  </script>
+
+</body>
+</html>
