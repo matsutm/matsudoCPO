@@ -23,7 +23,7 @@
 
   <header class="app-header">
     <h1>🎻 スケジュール</h1>
-    <button class="btn-primary" onclick="openModalForCreate()">＋ 予定を追加</button>
+    <button id="btnOpenCreateModal" class="btn-primary">＋ 予定を追加</button>
   </header>
 
   <main class="app-main">
@@ -47,11 +47,11 @@
         <div class="form-row">
           <div class="form-group flex-1">
             <label for="start_time">開始時間 *</label>
-            <input type="time" id="start_time" class="form-control" value="13:00" required>
+            <input type="time" id="start_time" class="form-control" value="18:00" required>
           </div>
           <div class="form-group flex-1">
             <label for="end_time">終了時間 *</label>
-            <input type="time" id="end_time" class="form-control" value="17:00" required>
+            <input type="time" id="end_time" class="form-control" value="21:00" required>
           </div>
         </div>
 
@@ -76,7 +76,7 @@
 
         <div class="form-group">
           <label for="program_notes">内容・曲目</label>
-          <textarea id="program_notes" class="form-control" rows="3" placeholder="例: 13:00~ ベートーヴェン4番"></textarea>
+          <textarea id="program_notes" class="form-control" rows="3" placeholder="例: 前半：ベートーヴェン"></textarea>
         </div>
 
         <!-- アクションボタン（モードによってJSで動的切替） -->
@@ -87,6 +87,6 @@
 
   <!-- スクリプトの読み込み順序に注意（依存関係順） -->
   <script src="js/config.js"></script>
-  <script src="js/calendar-schedule.js"></script>
-</body>
+  <!-- モジュールとしてエントリーポイントを読み込み -->
+  <script type="module" src="js/views/calendar-view.js"></script></body>
 </html>
