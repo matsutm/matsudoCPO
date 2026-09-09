@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>松戸シティフィル ポータル</title>
+  <title>松戸シティフィル 団員専用ポータル</title>
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="css/calendar.css">
-  
-  <!-- ライブラリ CDN -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -16,17 +14,71 @@
 
   <!-- 共通ヘッダー -->
   <header class="app-header">
-    <div class="header-logo" id="navHome" style="cursor: pointer;">🎻 松戸CPO ポータル</div>
+    <div class="header-logo" id="navHomeLogo" style="cursor: pointer;">🎻 松戸シティフィル ポータル</div>
     <div class="user-profile">
-      <span class="user-name" id="userName">ゲスト団員</span>
+      <span class="user-name">成田 知是</span>
     </div>
   </header>
 
-  <!-- 💡 ここに画面（Home / Calendar / 掲示板）が動的に差し込まれます -->
-  <main class="app-container" id="app-content"></main>
+  <main class="app-container">
 
-  <!-- エントリーポイント -->
+    <!-- 1. ホーム画面 VIEW -->
+    <section id="view-home" class="view-section">
+      <div class="card card-schedule">
+        <div class="card-header-title">
+          <span>🗓 直近の練習スケジュール</span>
+          <button class="btn-text" id="btnGoCalendar">カレンダー全体を見る ➔</button>
+        </div>
+        <div id="nextEventsContainer" class="events-list">
+          <p class="loading-text">予定を読み込み中...</p>
+        </div>
+      </div>
+
+      <div class="quick-menu-grid">
+        <button class="menu-card" id="menuCalendar">
+          <span class="menu-icon">📅</span>
+          <span class="menu-label">カレンダー</span>
+        </button>
+        <button class="menu-card" id="menuBulletin">
+          <span class="menu-icon">💬</span>
+          <span class="menu-label">団内掲示板</span>
+        </button>
+        <button class="menu-card" id="menuMembers">
+          <span class="menu-icon">👥</span>
+          <span class="menu-label">団員名簿</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. カレンダー画面 VIEW (最初は隠しておく) -->
+    <section id="view-calendar" class="view-section" style="display: none;">
+      <div class="calendar-header-actions">
+        <button id="btnOpenCreateModal" class="btn-primary">＋ 予定を追加</button>
+      </div>
+      <div id="calendar"></div>
+
+      <!-- カレンダー用モーダル -->
+      <div id="scheduleModal" class="modal-overlay">
+        <!-- モーダルのHTML中身 -->
+      </div>
+    </section>
+
+    <!-- 3. 掲示板 VIEW (準備中) -->
+    <section id="view-bulletin" class="view-section" style="display: none;">
+      <div class="card"><h2>💬 団内掲示板</h2><p>準備中</p></div>
+    </section>
+
+    <!-- 4. 団員名簿 VIEW (準備中) -->
+    <section id="view-members" class="view-section" style="display: none;">
+      <div class="card"><h2>👥 団員名簿</h2><p>準備中</p></div>
+    </section>
+
+  </main>
+
+  <!-- スクリプト読み込み -->
   <script src="js/config.js"></script>
+  <!-- calendar-view.js 自身が DOMContentLoaded で動くようにする -->
+  <script type="module" src="js/views/calendar-view.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>
