@@ -1,7 +1,7 @@
 // js/main.js
 import { renderHomeView, initHomeView } from './views/home-view.js';
 // ※ カレンダーや掲示板も同様にインポート
-// import { renderCalendarView, initCalendarView } from './views/calendar-view.js';
+import { renderCalendarView, initCalendarView } from './views/calendar-view.js';
 
 const appContent = document.getElementById('app-content');
 
