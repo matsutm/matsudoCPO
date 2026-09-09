@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     ],
 
-    events: fetchSchedules,
     // 予定タップ時 ➔ 閲覧モード（インアクティブ）でフォーム表示
     eventClick: function(info) {
       // 祝日以外の練習予定クリック時のみモーダルを開く
