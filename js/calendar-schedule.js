@@ -13,10 +13,43 @@ document.addEventListener('DOMContentLoaded', () => {
       right: 'dayGridMonth,listMonth'
     },
     buttonText: { today: '今日', month: '月', list: 'リスト' },
+
+    displayEventTime: false, // 練習予定の「18時」自動表示をオフにしてtitleで綺麗に表示
+
+    // 💡 複数のデータソース（Supabase練習予定 ＋ 日本の祝日）を指定
+    eventSources: [
+      // 1. Supabaseから取得する練習スケジュール
+      {
+        events: fetchSchedules
+      },
+      // 2. 日本の祝日データ (Google公式の祝日カレンダー等のAPI)
+      {
+        url: 'https://holidays-jp.github.io/api/v1/date.json', // 無料の日本祝日JSON API
+        dataType: 'json',
+        success: function(data) {
+          // 取得した祝日データを FullCalendar 用のイベント形式に変換
+          const holidays = [];
+          for (const date in data) {
+            holidays.push({
+              title: data[date], // 例: "元日", "成人の日"
+              start: date,
+              allDay: true,
+              display: 'background', // 背景色として強調
+              className: 'holiday-event'
+            });
+          }
+          return holidays;
+        }
+      }
+    ],
+
     events: fetchSchedules,
     // 予定タップ時 ➔ 閲覧モード（インアクティブ）でフォーム表示
     eventClick: function(info) {
-      openModalForView(info.event);
+      // 祝日以外の練習予定クリック時のみモーダルを開く
+      if (info.event.id) {
+        openModalForView(info.event);
+      }
     }
   });
 
