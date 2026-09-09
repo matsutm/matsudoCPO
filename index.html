@@ -3,90 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>スケジュール管理</title>
-
-  <!-- PWA & ファビコン設定 -->
-  <link rel="shortcut icon" href="icon-192.png" type="image/png">
-  <link rel="icon" href="icon-192.png" type="image/png">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="manifest" href="manifest.json">
-
-  <!-- 外部ライブラリ (Supabase / FullCalendar) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-
-  <!-- 機能別CSSの読み込み -->
+  <title>松戸シティフィル ポータル</title>
   <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="css/calendar.css">
+  
+  <!-- ライブラリ CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
+  <!-- 共通ヘッダー -->
   <header class="app-header">
-    <h1>🎻 スケジュール</h1>
-    <button id="btnOpenCreateModal" class="btn-primary">＋ 予定を追加</button>
+    <div class="header-logo" id="navHome" style="cursor: pointer;">🎻 松戸CPO ポータル</div>
+    <div class="user-profile">
+      <span class="user-name" id="userName">ゲスト団員</span>
+    </div>
   </header>
 
-  <main class="app-main">
-    <div id="calendar"></div>
-  </main>
+  <!-- 💡 ここに画面（Home / Calendar / 掲示板）が動的に差し込まれます -->
+  <main class="app-container" id="app-content"></main>
 
-  <!-- 共通スケジュールフォームモーダル（新規・閲覧・編集で使い回し） -->
-  <div id="scheduleModal" class="modal-overlay">
-    <div class="modal-box">
-      <h2 id="modalTitle" class="modal-title">予定</h2>
-      
-      <form id="scheduleForm" onsubmit="handleFormSubmit(event)">
-        <!-- 編集・削除対象のIDを保持する非表示フィールド -->
-        <input type="hidden" id="event_id">
-
-        <div class="form-group">
-          <label for="date">日付 *</label>
-          <input type="date" id="date" class="form-control" required>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label for="start_time">開始時間 *</label>
-            <input type="time" id="start_time" class="form-control" value="18:00" required>
-          </div>
-          <div class="form-group flex-1">
-            <label for="end_time">終了時間 *</label>
-            <input type="time" id="end_time" class="form-control" value="21:00" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="location">練習場所 *</label>
-          <input type="text" id="location" class="form-control" list="location-list" placeholder="会場名を選択または入力" required>
-          <datalist id="location-list">
-            <option value="森のホール21 リハ室">
-            <option value="流山エルズ（生涯学習センター）">
-            <option value="きらりホール">
-            <option value="けやきプラザ">
-          </datalist>
-        </div>
-
-        <!-- Googleマップリンク表示用コンテナ -->
-        <div id="mapContainer"></div>
-
-        <div class="form-group">
-          <label for="instructor">指導</label>
-          <input type="text" id="instructor" class="form-control" placeholder="例: マエストロ〇〇">
-        </div>
-
-        <div class="form-group">
-          <label for="program_notes">内容・曲目</label>
-          <textarea id="program_notes" class="form-control" rows="3" placeholder="例: 前半：ベートーヴェン"></textarea>
-        </div>
-
-        <!-- アクションボタン（モードによってJSで動的切替） -->
-        <div id="modalActions" class="modal-actions"></div>
-      </form>
-    </div>
-  </div>
-
-  <!-- スクリプトの読み込み順序に注意（依存関係順） -->
+  <!-- エントリーポイント -->
   <script src="js/config.js"></script>
-  <!-- モジュールとしてエントリーポイントを読み込み -->
-  <script type="module" src="js/views/calendar-view.js"></script></body>
+  <script type="module" src="js/main.js"></script>
+</body>
 </html>
