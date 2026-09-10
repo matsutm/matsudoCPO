@@ -1,5 +1,5 @@
 // js/main.js
-import { renderCalendarView, initCalendar } from './views/calendar-view.js';
+import { renderCalendarView, initCalendarView } from './views/calendar-view.js';
 
 const appContent = document.getElementById('app-content');
 
