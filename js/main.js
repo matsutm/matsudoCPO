@@ -5,7 +5,7 @@ import { renderCalendarView, initCalendarView } from './views/calendar-view.js';
 const appContent = document.getElementById('app-content');
 
 // 画面切り替えの司令塔
-function navigateTo(viewName, isBrowserBack = false) {
+async function navigateTo(viewName, isBrowserBack = false) {
   if (viewName === 'home') {
     showHomeScreen();
   } else if (viewName === 'calendar') {
