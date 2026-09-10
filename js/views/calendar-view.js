@@ -62,7 +62,7 @@ export function renderCalendarView() {
 }
 
 // 💡 外部（main.jsなど）から呼び出してカレンダーを初期化・起動する関数
-export async function initCalendar() {
+export async function initCalendarView() {
   const calendarEl = document.getElementById('calendar');
   if (!calendarEl) return;
 
