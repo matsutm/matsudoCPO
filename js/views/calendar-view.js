@@ -28,11 +28,11 @@ export function renderCalendarView() {
           <div class="form-row">
             <div class="form-group flex-1">
               <label for="start_time">開始時間 *</label>
-              <input type="time" id="start_time" class="form-control" value="13:00" required>
+              <input type="time" id="start_time" class="form-control" value="18:00" required>
             </div>
             <div class="form-group flex-1">
               <label for="end_time">終了時間 *</label>
-              <input type="time" id="end_time" class="form-control" value="17:00" required>
+              <input type="time" id="end_time" class="form-control" value="21:00" required>
             </div>
           </div>
           <div class="form-group">
