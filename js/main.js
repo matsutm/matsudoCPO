@@ -7,10 +7,11 @@ const appContent = document.getElementById('app-content');
 // 画面切り替えの司令塔
 async function navigateTo(viewName, isBrowserBack = false) {
   if (viewName === 'home') {
-    showHomeScreen();
+    appContent.innerHTML = renderHomeView();
+    await initHomeView(navigateTo);
   } else if (viewName === 'calendar') {
-    showCalendarScreen();
-  }
+    appContent.innerHTML = renderCalendarView();
+    await initCalendarView();  }
 
   if (!isBrowserBack) {
     history.pushState({ view: viewName }, '', `#${viewName}`);
