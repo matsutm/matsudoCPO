@@ -55,6 +55,7 @@ export async function initHomeView(navigateTo) {
 // Supabaseから直近2件を取得
 async function loadNextTwoSchedules() {
   const container = document.getElementById('nextEventsContainer');
+  if (!container) return;
   const today = new Date().toISOString().split('T')[0];
 
   try {
@@ -68,7 +69,7 @@ async function loadNextTwoSchedules() {
 
     if (error) throw error;
     if (!schedules || schedules.length === 0) {
-      container.innerHTML = '<p class="empty-text">今後の予定はまだありません。</p>';
+      container.innerHTML = '<p class="empty-text">今後の予定はありません。</p>';
       return;
     }
 
