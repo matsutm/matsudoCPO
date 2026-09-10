@@ -1,14 +1,18 @@
 // js/main.js
-import { initCalendar } from './views/calendar-view.js';
+import { renderCalendarView, initCalendar } from './views/calendar-view.js';
 
 const appContent = document.getElementById('app-content');
 
 // 画面切り替えの司令塔
-function navigateTo(viewName) {
+function navigateTo(viewName, isBrowserBack = false) {
   if (viewName === 'home') {
     showHomeScreen();
   } else if (viewName === 'calendar') {
     showCalendarScreen();
+  }
+
+  if (!isBrowserBack) {
+    history.pushState({ view: viewName }, '', `#${viewName}`);
   }
 }
 
@@ -36,76 +40,19 @@ function showHomeScreen() {
   loadNextTwoSchedules();
 }
 
-// 2. もともと作っていたカレンダー画面を描画（モーダルHTMLも一緒に含める）
+// 2. カレンダー画面（完全に calendar-view.js に一任）
 function showCalendarScreen() {
-  appContent.innerHTML = `
-    <div style="margin-bottom: 12px; text-align: right;">
-      <button id="btnOpenCreateModal" class="btn-primary">＋ 予定を追加</button>
-    </div>
-    
-    <!-- カレンダー本体 -->
-    <div id="calendar"></div>
+  // ① calendar-view.js からHTML（モーダル含）を受け取って画面にセット
+  appContent.innerHTML = renderCalendarView();
 
-    <!-- 💡 クリック時に表示される詳細・編集モーダル -->
-    <div id="scheduleModal" class="modal-overlay">
-      <div class="modal-box">
-        <h2 id="modalTitle" class="modal-title">予定</h2>
-        
-        <form id="scheduleForm">
-          <input type="hidden" id="event_id">
-
-          <div class="form-group">
-            <label for="date">日付 *</label>
-            <input type="date" id="date" class="form-control" required>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group flex-1">
-              <label for="start_time">開始時間 *</label>
-              <input type="time" id="start_time" class="form-control" value="13:00" required>
-            </div>
-            <div class="form-group flex-1">
-              <label for="end_time">終了時間 *</label>
-              <input type="time" id="end_time" class="form-control" value="17:00" required>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="location">練習場所 *</label>
-            <input type="text" id="location" class="form-control" list="location-list" placeholder="会場名を選択または入力" required>
-            <datalist id="location-list">
-              <option value="森のホール21 リハ室">
-              <option value="流山エルズ（生涯学習センター）">
-              <option value="きらりホール">
-              <option value="けやきプラザ">
-            </datalist>
-          </div>
-
-          <div id="mapContainer"></div>
-
-          <div class="form-group">
-            <label for="instructor">指導</label>
-            <input type="text" id="instructor" class="form-control" placeholder="例: マエストロ〇〇">
-          </div>
-
-          <div class="form-group">
-            <label for="program_notes">内容・曲目</label>
-            <textarea id="program_notes" class="form-control" rows="3" placeholder="例: 前半：ベートーヴェン"></textarea>
-          </div>
-
-          <div id="modalActions" class="modal-actions"></div>
-        </form>
-      </div>
-    </div>
-  `;
-
-  // モーダルHTMLが用意された後にカレンダーを起動
-  initCalendar();
+  // ② calendar-view.js のカレンダー起動処理を実行
+  initCalendarView();
 }
 
 // 直近2件取得
 async function loadNextTwoSchedules() {
   const container = document.getElementById('nextEventsContainer');
+  if (!container) return;
   const today = new Date().toISOString().split('T')[0];
 
   const { data: schedules } = await supabaseClient
@@ -131,5 +78,13 @@ async function loadNextTwoSchedules() {
 // アプリ起動時はホーム画面を表示
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navHome')?.addEventListener('click', () => navigateTo('home'));
-  navigateTo('home');
+
+  window.addEventListener('popstate', (event) => {
+    const viewName = event.state?.view || 'home';
+    navigateTo(viewName, true);
+  });
+
+  const initialView = location.hash.replace('#', '') || 'home';
+  history.replaceState({ view: initialView }, '', `#${initialView}`);
+  navigateTo(initialView, true);
 });
