@@ -1,51 +1,69 @@
-import { supabase } from '../config.js';
-
-const STORAGE_KEY = 'matsudo_portal_user';
+// js/services/auth-service.js
 
 /**
- * 1. ワンタイムパスコード（6桁）をメール送信
+ * 現在ログイン中のユーザー情報を取得
+ */
+export function getCurrentUser() {
+  const userStr = localStorage.getItem('currentUser');
+  return userStr ? JSON.parse(userStr) : null;
+}
+
+/**
+ * ログアウト処理
+ */
+export async function logout() {
+  localStorage.removeItem('currentUser');
+  await window.supabaseClient.auth.signOut();
+}
+
+/**
+ * 1. 認証コード（OTP）をメール送信する
  */
 export async function sendOtpEmail(email) {
-  // まず members テーブルに登録されているメアドか確認
-  const { data: member, error: memberError } = await supabase
+  // ① 団員名簿（membersテーブル）に存在するメールアドレスか事前確認
+  const { data: member, error: memberError } = await window.supabaseClient
     .from('members')
-    .select('id')
+    .select('*')
     .eq('email', email)
-    .single();
+    .maybeSingle();
 
   if (memberError || !member) {
-    throw new Error('名簿に登録されていないメールアドレスです。管理者にお問合せください。');
+    throw new Error('名簿に登録されていないメールアドレスです。');
   }
 
-  // Supabase Auth の OTP 送信（パスコード形式）
-  const { error } = await supabase.auth.signInWithOtp({
+  // ② Supabase Auth で OTP メール送信
+  const { error } = await window.supabaseClient.auth.signInWithOtp({
     email: email,
-    options: {
-      shouldCreateUser: true // 初回認証時にAuthユーザーを作成
-    }
   });
 
-  if (error) throw error;
+  if (error) {
+    console.error('OTP送信エラー:', error);
+    throw new Error('認証コードの送信に失敗しました: ' + error.message);
+  }
+
   return true;
 }
 
 /**
- * 2. 入力された6桁パスコードを検証＆団員情報の紐付け
+ * 2. 入力された6桁コードを検証してログインを完了する
  */
-export async function verifyOtpCode(email, token) {
-  // パスコード照合
-  const { data: authData, error: authError } = await supabase.auth.verifyOtp({
-    email,
-    token,
+export async function verifyOtpCode(email, code) {
+  // ① コード照合
+  const { data, error } = await window.supabaseClient.auth.verifyOtp({
+    email: email,
+    token: code,
     type: 'email'
   });
 
-  if (authError) throw new Error('コードが正しくないか、期限切れです。');
+  if (error) {
+    console.error('OTP検証エラー:', error);
+    throw new Error('認証コードが正しくないか、期限切れです。');
+  }
 
-  // members テーブルから詳細属性（名前・パート・役職等）を取得
-  const { data: member, error: memberError } = await supabase
+  // ② 照合成功後、members テーブルから詳細な団員情報（名前や役職）を取得
+  const { data: member, error: memberError } = await window.supabaseClient
     .from('members')
-    .select('id, name, email, section, instrument, role')
+    .select('*')
     .eq('email', email)
     .single();
 
@@ -53,24 +71,17 @@ export async function verifyOtpCode(email, token) {
     throw new Error('団員情報の取得に失敗しました。');
   }
 
-  // ローカルストレージに団員情報を永続化（2回目以降の自動ログイン用）
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(member));
+  // ③ ログインユーザー情報を LocalStorage に保存
+  const currentUserData = {
+    id: member.id,
+    name: member.name,
+    email: member.email,
+    role: member.role || 'member',
+    section: member.section,
+    instrument: member.instrument
+  };
 
-  return member;
-}
+  localStorage.setItem('currentUser', JSON.stringify(currentUserData));
 
-/**
- * 3. 現在端末に保存されているログインユーザー情報を取得
- */
-export function getCurrentUser() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  return data ? JSON.parse(data) : null;
-}
-
-/**
- * 4. ログアウト処理
- */
-export async function logout() {
-  localStorage.removeItem(STORAGE_KEY);
-  await supabase.auth.signOut();
+  return currentUserData;
 }
