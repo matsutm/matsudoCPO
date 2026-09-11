@@ -1,8 +1,48 @@
 // js/main.js
+import { getCurrentUser } from './services/auth-service.js';
+import { renderAuthView, initAuthView } from './views/auth-view.js';
 import { renderHomeView, initHomeView } from './views/home-view.js';
 import { renderCalendarView, initCalendarView } from './views/calendar-view.js';
 
 const appContent = document.getElementById('app-content');
+
+async function router() {
+  const appContent = document.getElementById('app-content');
+  const user = getCurrentUser(); // ローカルの認証情報を確認
+
+  const hash = location.hash || '#home';
+
+  // ★未認証の場合はどのハッシュが開かれても強制的にログイン画面にする
+  if (!user) {
+    appContent.innerHTML = renderAuthView();
+    initAuthView(() => {
+      location.hash = '#home'; // 認証成功したらホームへ
+      router();
+    });
+    return;
+  }
+
+  // ログイン済みの通常ルーティング
+  switch (hash) {
+    case '#home':
+      appContent.innerHTML = renderHomeView();
+      await initHomeView();
+      break;
+
+    case '#announcement':
+      // ... お知らせ描画
+      break;
+
+    default:
+      appContent.innerHTML = renderHomeView();
+      await initHomeView();
+      break;
+  }
+}
+
+window.addEventListener('hashchange', router);
+window.addEventListener('DOMContentLoaded', router);
+
 
 // 画面切り替えの司令塔
 async function navigateTo(viewName, isBrowserBack = false) {
