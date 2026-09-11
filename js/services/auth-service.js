@@ -20,22 +20,34 @@ export async function logout() {
  * 1. 認証コード（OTP）をメール送信する
  */
 export async function sendOtpEmail(email) {
-  // ① 団員名簿（membersテーブル）に存在するメールアドレスか事前確認
+  if (!email) {
+    throw new Error('メールアドレスを入力してください。');
+  }
+
+  // 変数宣言: cleanEmail
+  const cleanEmail = email.trim().toLowerCase();
+
+  // ① 団員名簿（membersテーブル）に存在するか検索
   const { data: member, error: memberError } = await window.supabaseClient
     .from('members')
     .select('*')
-    .ilike('email', cleanEmail) // ilike で大文字小文字を区別せず検索
+    .ilike('email', cleanEmail)
     .maybeSingle();
 
-  if (memberError || !member) {
+  if (memberError) {
+    console.error('DB検索エラー:', memberError);
+    throw new Error('データベース接続エラーが発生しました。');
+  }
+
+  if (!member) {
     throw new Error('名簿に登録されていないメールアドレスです。');
   }
 
-// ② Supabase Auth で OTP メール送信（cleanEmail を渡す）
+  // ② Supabase Auth で OTP メール送信
   const { error } = await window.supabaseClient.auth.signInWithOtp({
     email: cleanEmail,
   });
-  
+
   if (error) {
     console.error('OTP送信エラー:', error);
     throw new Error('認証コードの送信に失敗しました: ' + error.message);
@@ -48,9 +60,15 @@ export async function sendOtpEmail(email) {
  * 2. 入力された6桁コードを検証してログインを完了する
  */
 export async function verifyOtpCode(email, code) {
+  if (!email || !code) {
+    throw new Error('メールアドレスと認証コードを入力してください。');
+  }
+
+  const cleanEmail = email.trim().toLowerCase();
+
   // ① コード照合
   const { data, error } = await window.supabaseClient.auth.verifyOtp({
-    email: email,
+    email: cleanEmail,
     token: code,
     type: 'email'
   });
@@ -60,7 +78,7 @@ export async function verifyOtpCode(email, code) {
     throw new Error('認証コードが正しくないか、期限切れです。');
   }
 
-  // ② 照合成功後、members テーブルから詳細な団員情報（名前や役職）を取得
+  // ② 照合成功後、members テーブルから詳細な団員情報を取得
   const { data: member, error: memberError } = await window.supabaseClient
     .from('members')
     .select('*')
