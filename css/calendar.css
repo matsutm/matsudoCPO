@@ -80,7 +80,6 @@
     padding: 4px 6px !important;
   }
 
-  /*
   /* --- 2. カレンダー内の予定文字調整 --- */
   .fc-daygrid-event {
     font-size: 0.75rem !important;
@@ -101,5 +100,4 @@
   .fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events {
     min-height: 1.5em !important;
   }
-  */
 }
