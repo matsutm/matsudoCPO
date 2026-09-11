@@ -41,15 +41,22 @@ export function renderHomeView() {
   `;
 }
 
-// 2. 初期化ロジック（exportを明記）
+// 2. 初期化ロジック
 export async function initHomeView(navigateTo) {
-  await loadNextTwoSchedules();
+  const currentUser = getCurrentUser();
+
+  // スケジュールとお知らせ未読の両方を読み込む
+  await Promise.all([
+    loadNextTwoSchedules(),
+    loadUnreadAnnouncements(currentUser, navigateTo)
+  ]);
 
   // イベントリスナーのセット
   document.getElementById('btnGoCalendar')?.addEventListener('click', () => navigateTo('calendar'));
   document.getElementById('menuCalendar')?.addEventListener('click', () => navigateTo('calendar'));
   document.getElementById('menuBulletin')?.addEventListener('click', () => navigateTo('announcement'));
   document.getElementById('menuMembers')?.addEventListener('click', () => navigateTo('members'));
+  document.getElementById('menuLibrary')?.addEventListener('click', () => navigateTo('library'));
 }
 
 // Supabaseから未読お知らせを取得（最大4件）
