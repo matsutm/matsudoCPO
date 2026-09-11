@@ -64,7 +64,7 @@ export async function verifyOtpCode(email, code) {
   const { data: member, error: memberError } = await window.supabaseClient
     .from('members')
     .select('*')
-    .eq('email', email)
+    .ilike('email', cleanEmail)
     .single();
 
   if (memberError || !member) {
