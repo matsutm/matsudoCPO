@@ -1,19 +1,13 @@
-import { supabase } from '../config.js';
 import { sendBulletinEmail } from '../services/email-service.js';
 
-// ※仮のログインユーザー取得処理（実際の認証ロジックに合わせて差し替えてください）
 function getCurrentUser() {
-  // 例: LocalStorageやグローバル状態から取得
   return JSON.parse(localStorage.getItem('currentUser')) || {
     id: '00000000-0000-0000-0000-000000000000',
     name: 'ゲスト団員',
-    role: 'member' // 'admin' または 'member'
+    role: 'member'
   };
 }
 
-/**
- * 画面HTMLテンプレートの生成
- */
 export function renderAnnouncementView() {
   const currentUser = getCurrentUser();
   const isAdmin = currentUser.role === 'admin';
@@ -22,7 +16,6 @@ export function renderAnnouncementView() {
     <div class="announcement-container">
       <h2>お知らせ・掲示板</h2>
 
-      <!-- 新規投稿フォーム -->
       <section class="announcement-form-section">
         <h3>新規お知らせ投稿</h3>
         <form id="announcement-form">
@@ -34,7 +27,6 @@ export function renderAnnouncementView() {
             <textarea id="announcement-content" placeholder="お知らせ内容を入力してください" rows="5" required></textarea>
           </div>
 
-          <!-- 管理者専用：メール送信オプション -->
           ${isAdmin ? `
             <div class="email-option-box">
               <label class="checkbox-label">
@@ -50,9 +42,7 @@ export function renderAnnouncementView() {
                   <option value="instrument">特定のパート（楽器）</option>
                 </select>
 
-                <select id="email-target-value" style="display: none;">
-                  <!-- 動的に選択肢を挿入 -->
-                </select>
+                <select id="email-target-value" style="display: none;"></select>
               </div>
             </div>
           ` : ''}
@@ -63,7 +53,6 @@ export function renderAnnouncementView() {
         </form>
       </section>
 
-      <!-- 投稿一覧表示エリア -->
       <section class="announcement-list-section">
         <h3>投稿一覧</h3>
         <div id="announcement-list" class="announcement-list">
@@ -74,9 +63,6 @@ export function renderAnnouncementView() {
   `;
 }
 
-/**
- * 画面ロジックの初期化・イベントリスナー設定
- */
 export async function initAnnouncementView() {
   const currentUser = getCurrentUser();
   const form = document.getElementById('announcement-form');
@@ -85,7 +71,6 @@ export async function initAnnouncementView() {
   const targetValueSelect = document.getElementById('email-target-value');
   const emailTargetContainer = document.getElementById('email-target-container');
 
-  // 1. 管理者向け：メールオプションの表示切り替え制御
   if (sendEmailCheck) {
     sendEmailCheck.addEventListener('change', (e) => {
       emailTargetContainer.style.display = e.target.checked ? 'block' : 'none';
@@ -103,11 +88,9 @@ export async function initAnnouncementView() {
     });
   }
 
-  // 2. 初回投稿一覧の取得と描画
   await fetchAndRenderAnnouncements(currentUser);
 
-  // 3. フォーム送信イベント処理
-  form.addEventListener('submit', async (e) => {
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const title = document.getElementById('announcement-title').value.trim();
@@ -121,8 +104,7 @@ export async function initAnnouncementView() {
     submitBtn.textContent = '送信中...';
 
     try {
-      // announcements テーブルへ登録
-      const { data: newPost, error } = await supabase
+      const { data: newPost, error } = await supabaseClient
         .from('announcements')
         .insert([{
           author_id: currentUser.id,
@@ -137,7 +119,6 @@ export async function initAnnouncementView() {
 
       if (error) throw error;
 
-      // メール送信オプションがONの場合はメール配信を実行
       if (isEmailSent) {
         await sendBulletinEmail({
           title: title,
@@ -151,7 +132,6 @@ export async function initAnnouncementView() {
       form.reset();
       if (emailTargetContainer) emailTargetContainer.style.display = 'none';
 
-      // 一覧を再取得
       await fetchAndRenderAnnouncements(currentUser);
 
     } catch (err) {
@@ -164,15 +144,12 @@ export async function initAnnouncementView() {
   });
 }
 
-/**
- * DBからセクションまたは楽器の一覧を重複なく取得してドロップダウンに埋める
- */
 async function loadTargetOptions(scope) {
   const targetValueSelect = document.getElementById('email-target-value');
   targetValueSelect.innerHTML = '<option value="">読み込み中...</option>';
 
   const columnName = scope === 'section' ? 'section' : 'instrument';
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('members')
     .select(columnName);
 
@@ -181,7 +158,6 @@ async function loadTargetOptions(scope) {
     return;
   }
 
-  // 重複を除外してリスト化
   const uniqueItems = [...new Set(data.map(item => item[columnName]))].filter(Boolean);
 
   targetValueSelect.innerHTML = uniqueItems.map(item => `
@@ -189,15 +165,11 @@ async function loadTargetOptions(scope) {
   `).join('');
 }
 
-/**
- * お知らせ一覧の取得・既読チェック・描画
- */
 async function fetchAndRenderAnnouncements(currentUser) {
   const listContainer = document.getElementById('announcement-list');
 
   try {
-    // お知らせ一覧と投稿者情報を結合取得
-    const { data: posts, error } = await supabase
+    const { data: posts, error } = await supabaseClient
       .from('announcements')
       .select(`
         *,
@@ -212,15 +184,13 @@ async function fetchAndRenderAnnouncements(currentUser) {
       return;
     }
 
-    // ログインユーザーの既読一覧を取得
-    const { data: readData } = await supabase
+    const { data: readData } = await supabaseClient
       .from('announcement_reads')
       .select('announcement_id')
       .eq('member_id', currentUser.id);
 
     const readPostIds = new Set((readData || []).map(r => r.announcement_id));
 
-    // HTML描画
     listContainer.innerHTML = posts.map(post => {
       const isRead = readPostIds.has(post.id);
       const authorName = post.members ? post.members.name : '不明な投稿者';
@@ -258,23 +228,19 @@ async function fetchAndRenderAnnouncements(currentUser) {
   }
 }
 
-/**
- * 既読ボタン押下時の処理（グローバル関数化してHTMLイベントから呼び出し）
- */
 window.markAsRead = async function(announcementId, memberId) {
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('announcement_reads')
       .insert([{
         announcement_id: announcementId,
         member_id: memberId
       }]);
 
-    if (error && error.code !== '23505') { // 23505はユニーク制約エラー（すでに既読済み）
+    if (error && error.code !== '23505') {
       throw error;
     }
 
-    // 画面上のカード表示を「既読」へ即時更新
     const card = document.querySelector(`.announcement-card[data-id="${announcementId}"]`);
     if (card) {
       card.classList.remove('unread');
@@ -289,12 +255,9 @@ window.markAsRead = async function(announcementId, memberId) {
   }
 };
 
-/**
- * XSS対策エスケープユーティリティ
- */
 function escapeHtml(str) {
   if (!str) return '';
-  return str.replace(/[&< me'"]/g, (match) => {
+  return str.replace(/[&<>"']/g, (match) => {
     const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
     return map[match] || match;
   });
