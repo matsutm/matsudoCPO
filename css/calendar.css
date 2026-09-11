@@ -51,9 +51,39 @@
 
 /* スマホ表示時（768px未満）のイベント文字・レイアウト調整 */
 @media (max-width: 767px) {
-  /* 予定の文字サイズを少し小さくし、1行で収める */
+  /* カレンダーの余白を減らして描画領域を広げる */
+  #calendar {
+    padding: 8px;
+  }
+
+  /* --- 1. ヘッダーとボタンの崩れ防止 --- */
+  .fc .fc-toolbar {
+    gap: 4px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* タイトル（年月）の文字サイズ調整 */
+  .fc .fc-toolbar-title {
+    font-size: 1.1rem !important;
+  }
+
+  /* ボタン共通のコンパクト化（文字の縦並びを禁止） */
+  .fc .fc-button {
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important;
+    white-space: nowrap !important; /* 「リスト」等の文字折り返しを禁止 */
+    height: auto !important;
+  }
+
+  /* ボタングループのすき間を詰める */
+  .fc-button-group > .fc-button {
+    padding: 4px 6px !important;
+  }
+
+  /*
+  /* --- 2. カレンダー内の予定文字調整 --- */
   .fc-daygrid-event {
-    font-size: 0.75rem !important; /* 文字サイズを少し小さく */
+    font-size: 0.75rem !important;
     line-height: 1.2 !important;
     padding: 1px 2px !important;
   }
@@ -64,10 +94,12 @@
     white-space: nowrap !important;     /* 自動折り返しを禁止 */
     overflow: hidden !important;        /* 枠からはみ出た部分を隠す */
     text-overflow: ellipsis !important; /* はみ出た部分を「…」表示にする */
+    display: block !important;          /* ellipsisを効かせるための指定 */
   }
 
   /* 日付セルの縦幅が伸びすぎて月末が画面外に切れるのを防ぐ */
   .fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events {
     min-height: 1.5em !important;
   }
+  */
 }
