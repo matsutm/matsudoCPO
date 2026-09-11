@@ -52,6 +52,75 @@ export async function initHomeView(navigateTo) {
   document.getElementById('menuMembers')?.addEventListener('click', () => navigateTo('members'));
 }
 
+// Supabaseから未読お知らせを取得（最大4件）
+async function loadUnreadAnnouncements(currentUser, navigateTo) {
+  const alertCard = document.getElementById('unreadAlertCard');
+  const countEl = document.getElementById('unreadCount');
+  const listContainer = document.getElementById('unreadAnnouncementsContainer');
+
+  if (!alertCard || !countEl || !listContainer) return;
+
+  try {
+    // 1. 最新の投稿を取得（直近20件分）
+    const { data: posts, error: postsError } = await window.supabaseClient
+      .from('announcements')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    if (postsError) throw postsError;
+    if (!posts || posts.length === 0) return;
+
+    // 2. ユーザーの既読履歴を取得
+    const { data: readData, error: readError } = await window.supabaseClient
+      .from('announcement_reads')
+      .select('announcement_id')
+      .eq('member_id', currentUser.id);
+
+    if (readError) throw readError;
+
+    const readPostIds = new Set((readData || []).map(r => r.announcement_id));
+
+    // 3. 未読投稿のみフィルタリング
+    const unreadPosts = posts.filter(p => !readPostIds.has(p.id));
+
+    // 未読がなければ表示なしで終了
+    if (unreadPosts.length === 0) {
+      alertCard.style.display = 'none';
+      return;
+    }
+
+    // 未読がある場合はカードを表示
+    countEl.textContent = unreadPosts.length;
+    alertCard.style.display = 'block';
+
+    // 最大4件に絞り込んで描画
+    const displayPosts = unreadPosts.slice(0, 4);
+
+    listContainer.innerHTML = displayPosts.map(post => {
+      const dateStr = new Date(post.created_at).toLocaleDateString('ja-JP');
+
+      return `
+        <div class="unread-item" style="padding: 0.5rem 0; border-top: 1px dashed #fcd34d; display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-size: 0.9rem; font-weight: bold;">
+            <span style="color: #d97706; margin-right: 0.4rem;">[NEW]</span> ${escapeHtml(post.title)}
+          </div>
+          <span style="font-size: 0.8rem; color: #78350f;">${dateStr}</span>
+        </div>
+      `;
+    }).join('') + `
+      <div style="text-align: right; margin-top: 0.5rem;">
+        <button id="btnGoAnnouncement" style="background: none; border: none; color: #b45309; font-size: 0.85rem; font-weight: bold; cursor: pointer;">掲示板を開く ➔</button>
+      </div>
+    `;
+
+    document.getElementById('btnGoAnnouncement')?.addEventListener('click', () => navigateTo('announcement'));
+
+  } catch (err) {
+    console.error('未読掲示取得エラー:', err);
+  }
+}
+
 // Supabaseから直近2件を取得
 async function loadNextTwoSchedules() {
   const container = document.getElementById('nextEventsContainer');
