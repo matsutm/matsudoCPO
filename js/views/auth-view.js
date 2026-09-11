@@ -71,7 +71,7 @@ export function initAuthView(onSuccess) {
     }
   });
 
-  // ステップ2: コード検証
+// ステップ2: コード検証
   otpForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     hideError();
@@ -86,7 +86,7 @@ export function initAuthView(onSuccess) {
       const user = await verifyOtpCode(targetEmail, code);
       alert(`認証されました。おかえりなさい、${user.name} さん！`);
       
-      // 認証成功時コールバック（main.js 側でホーム画面へ切り替え）
+      // 認証成功時コールバックを実行してメイン画面へ切り替え
       if (onSuccess) onSuccess(user);
 
     } catch (err) {
@@ -96,7 +96,7 @@ export function initAuthView(onSuccess) {
       btn.textContent = '確定してログイン';
     }
   });
-
+  
   // やり直しボタン
   backBtn.addEventListener('click', () => {
     hideError();
