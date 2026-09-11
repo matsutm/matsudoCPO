@@ -31,11 +31,11 @@ export async function sendOtpEmail(email) {
     throw new Error('名簿に登録されていないメールアドレスです。');
   }
 
-  // ② Supabase Auth で OTP メール送信
+// ② Supabase Auth で OTP メール送信（cleanEmail を渡す）
   const { error } = await window.supabaseClient.auth.signInWithOtp({
-    email: email,
+    email: cleanEmail,
   });
-
+  
   if (error) {
     console.error('OTP送信エラー:', error);
     throw new Error('認証コードの送信に失敗しました: ' + error.message);
