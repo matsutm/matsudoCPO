@@ -1,5 +1,12 @@
 // js/views/home-view.js
 
+function getCurrentUser() {
+  return JSON.parse(localStorage.getItem('currentUser')) || {
+    id: '00000000-0000-0000-0000-000000000000',
+    name: 'ゲスト団員'
+  };
+}
+
 // 1. ホーム画面のHTMLを出力（exportを明記）
 export function renderHomeView() {
   return `
