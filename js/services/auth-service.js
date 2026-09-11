@@ -83,10 +83,11 @@ export async function verifyOtpCode(email, code) {
     .from('members')
     .select('*')
     .ilike('email', cleanEmail)
-    .single();
+    .maybeSingle();
 
   if (memberError || !member) {
-    throw new Error('団員情報の取得に失敗しました。');
+    console.error('団員データ取得失敗:', memberError);
+    throw new Error('認証は成功しましたが、団員名簿データの取得に失敗しました。');
   }
 
   // ③ ログインユーザー情報を LocalStorage に保存
