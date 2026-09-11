@@ -96,7 +96,7 @@ export async function initAnnouncementView() {
     const title = document.getElementById('announcement-title').value.trim();
     const content = document.getElementById('announcement-content').value.trim();
     const isEmailSent = sendEmailCheck ? sendEmailCheck.checked : false;
-    const targetScope = isEmailSent ? targetScopeSelect.value : null;
+    const targetScope = isEmailSent ? targetScopeSelect.value : '全体';
     const targetValue = (isEmailSent && targetScope !== 'all') ? targetValueSelect.value : null;
 
     const submitBtn = document.getElementById('submit-btn');
