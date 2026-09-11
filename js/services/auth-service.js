@@ -24,7 +24,7 @@ export async function sendOtpEmail(email) {
   const { data: member, error: memberError } = await window.supabaseClient
     .from('members')
     .select('*')
-    .eq('email', email)
+    .ilike('email', cleanEmail) // ilike で大文字小文字を区別せず検索
     .maybeSingle();
 
   if (memberError || !member) {
