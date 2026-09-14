@@ -60,3 +60,33 @@ export async function markAsRead(postId, memberId) {
     .insert([{ announcement_id: postId, member_id: memberId }]);
   if (error && error.code !== '23505') throw error;
 }
+
+
+/**
+ * 新規お知らせの投稿
+ * @param {Object} postData { author_id, title, content, is_email_sent, target_scope, target_value }
+ */
+export async function createAnnouncement(postData) {
+  const { data, error } = await window.supabaseClient
+    .from('announcements')
+    .insert([postData])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * 送信対象（セクション・パート）の選択肢一覧を取得
+ */
+export async function fetchTargetScopeOptions(scope) {
+  const columnName = scope === 'section' ? 'section' : 'instrument';
+  const { data, error } = await window.supabaseClient
+    .from('members')
+    .select(columnName);
+
+  if (error || !data) return [];
+  // 重複を除外して配列で返す
+  return [...new Set(data.map(item => item[columnName]))].filter(Boolean);
+}
