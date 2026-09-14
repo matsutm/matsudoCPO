@@ -34,7 +34,7 @@ export async function navigateTo(viewName, isBrowserBack = false) {
 
     case 'announcement':
       appContent.innerHTML = renderAnnouncementView();
-      await initAnnouncementView();
+      await initAnnouncementView(navigateTo);
       break;
 
     default:
