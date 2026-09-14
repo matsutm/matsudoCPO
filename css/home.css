@@ -1,59 +1,56 @@
 /* css/home.css */
 
-.card {
+/* 1. 3つのカードを囲むグリッド（レスポンシブ） */
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* スマホ：1列 */
+  gap: 16px;
+  padding: 16px;
+}
+
+@media (min-width: 768px) {
+  .home-grid {
+    grid-template-columns: repeat(3, 1fr); /* PC・タブレット：3列 */
+    gap: 20px;
+  }
+}
+
+/* 2. カード共通スタイル */
+.home-card {
   background: #ffffff;
   border-radius: 12px;
   padding: 16px;
-  margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   border: 1px solid #eef2f5;
-}
-
-/* 未読アラートカード */
-.card-alert {
-  background: #fff8f8;
-  border: 1px solid #ffcdd2;
-}
-
-.card-header {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #d32f2f;
-  margin-bottom: 8px;
+  flex-direction: column;
 }
 
-.unread-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.unread-list li {
-  padding: 6px 0;
-  border-bottom: 1px dashed #ffe0b2;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-/* スケジュールカード */
+/* 3. 各カードのヘッダータイトルボタン */
 .card-header-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: bold;
   margin-bottom: 12px;
-  font-size: 1.05rem;
 }
 
-.btn-text {
+.btn-card-title {
   background: none;
   border: none;
-  color: #0066cc;
-  font-size: 0.85rem;
+  font-size: 1.05rem;
+  font-weight: bold;
+  color: #1e293b;
   cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: color 0.2s;
 }
 
+.btn-card-title:hover {
+  color: #0066cc;
+}
+
+/* 4. スケジュール表示エリア */
 .event-item {
   padding: 12px;
   background: #f8fafc;
@@ -78,7 +75,7 @@
 
 .event-date {
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #1e293b;
 }
 
@@ -97,47 +94,43 @@
   font-weight: bold;
 }
 
-/* クイックメニュー */
-.quick-menu-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+/* 5. 資料庫クイックリンク表示エリア */
+.library-quick-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.menu-card {
-  position: relative;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px 12px;
+.library-quick-links li {
+  margin-bottom: 8px;
+}
+
+.library-quick-links li:last-child {
+  margin-bottom: 0;
+}
+
+.library-link-item,
+.library-link-button {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.1s;
-}
-
-.menu-card:active {
-  transform: scale(0.98);
-}
-
-.menu-icon {
-  font-size: 1.8rem;
-}
-
-.menu-label {
-  font-size: 0.9rem;
-  font-weight: bold;
+  padding: 10px 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   color: #334155;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: bold;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
-.badge-dot {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 10px;
-  height: 10px;
-  background-color: #ef4444;
-  border-radius: 50%;
+.library-link-item:hover,
+.library-link-button:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0066cc;
 }
