@@ -89,6 +89,19 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
       return;
     }
 
+    // ★未読が0件の場合の表示
+    if (unreadPosts.length === 0) {
+      countEl.textContent = '0';
+      alertCard.style.display = 'block';
+      // カード全体の警戒色感を薄め、完了メッセージを表示
+      listContainer.innerHTML = `
+        <div class="all-read-msg" style="padding: 0.5rem 0; font-size: 0.85rem; color: #4b5563;">
+          ✨ 未確認のお知らせはありません
+        </div>
+      `;
+      return;
+    }
+
     countEl.textContent = unreadPosts.length;
     alertCard.style.display = 'block';
 
