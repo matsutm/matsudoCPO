@@ -23,7 +23,9 @@ export function renderAnnouncementView() {
 
 export async function initAnnouncementView(navigateTo) {
   const currentUser = getCurrentUser();
-  const renderlist(currentUser);
+
+  // 関数の実行
+  await renderList(currentUser);
 
   document.getElementById('btnNewPost')?.addEventListener('click', () => {
     navigateTo('announcement-new');
