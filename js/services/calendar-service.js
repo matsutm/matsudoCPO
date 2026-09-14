@@ -1,0 +1,42 @@
+// js/services/calendar-service.js
+
+//fetch
+export async function fetchSchedulesData() {
+  const { data, error } = await window.supabaseClient
+    .from('schedules')
+    .select('*');
+
+  if (error) throw error;
+  return data || [];
+}
+
+//create
+export async function createSchedule(scheduleData) {
+  const { data, error } = await window.supabaseClient
+    .from('schedules')
+    .insert([scheduleData]);
+
+  if (error) throw error;
+  return data;
+}
+
+//update
+export async function updateSchedule(id, scheduleData) {
+  const { data, error } = await window.supabaseClient
+    .from('schedules')
+    .update(scheduleData)
+    .eq('id', id);
+
+  if (error) throw error;
+  return data;
+}
+
+//delete
+export async function deleteSchedule(id) {
+  const { error } = await window.supabaseClient
+    .from('schedules')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
+}
