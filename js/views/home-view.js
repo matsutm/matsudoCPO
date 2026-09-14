@@ -1,17 +1,12 @@
 // js/views/home-view.js
 
+// js/views/home-view.js
+
 import { getCurrentUser, fetchAnnouncements, fetchUserReadIds } from '../services/announcement-service.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
 import { formatDateShort, escapeHtml } from '../utils.js';
 
-function getCurrentUser() {
-  return JSON.parse(localStorage.getItem('currentUser')) || {
-    id: '00000000-0000-0000-0000-000000000000',
-    name: 'ゲスト団員'
-  };
-}
-
-// 1. ホーム画面のHTMLを出力（exportを明記）
+// 1. ホーム画面のHTMLを出力
 export function renderHomeView() {
   return `
     <section id="view-home" class="view-section">
@@ -20,6 +15,8 @@ export function renderHomeView() {
         <div class="card-header">
           <span>🔔</span> <strong>未確認の連絡が <span id="unreadCount">0</span> 件あります</strong>
         </div>
+        <!-- ★ 不足していたコンテナ要素を追加 -->
+        <div id="unreadAnnouncementsContainer" class="unread-list"></div>
       </div>
 
       <!-- 直近2回の予定 -->
@@ -54,7 +51,7 @@ export function renderHomeView() {
 
 // 2. 初期化ロジック
 export async function initHomeView(navigateTo) {
-  const currentUser = getCurrentUser();
+  const currentUser = getCurrentUser(); // import した関数を使用
 
   // スケジュールとお知らせ未読の両方を読み込む
   await Promise.all([
@@ -63,7 +60,6 @@ export async function initHomeView(navigateTo) {
   ]);
 
   // イベントリスナーのセット
-  document.getElementById('btnGoAnnouncementTop')?.addEventListener('click', () => navigateTo('announcement'));
   document.getElementById('btnGoCalendar')?.addEventListener('click', () => navigateTo('calendar'));
   document.getElementById('menuCalendar')?.addEventListener('click', () => navigateTo('calendar'));
   document.getElementById('menuBulletin')?.addEventListener('click', () => navigateTo('announcement'));
@@ -80,7 +76,6 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
   if (!alertCard || !countEl || !listContainer) return;
 
   try {
-    // 1. 最新の投稿を取得
     const [posts, readIds] = await Promise.all([
       fetchAnnouncements(),
       fetchUserReadIds(currentUser.id)
@@ -97,24 +92,23 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
     countEl.textContent = unreadPosts.length;
     alertCard.style.display = 'block';
 
-
     // 最大4件・1件1行で描画
     const displayPosts = unreadPosts.slice(0, 4);
 
     listContainer.innerHTML = displayPosts.map(post => `
-      <div class="unread-row" data-id="${post.id}">
+      <div class="unread-row" data-id="${post.id}" style="cursor: pointer; padding: 8px 0; border-bottom: 1px solid #fef3c7;">
         <div class="unread-row-title">
-          <span class="badge-new-text">[NEW]</span> ${escapeHtml(post.title)}
+          <span class="badge-new-text" style="color: #d97706; font-weight: bold;">[NEW]</span> ${escapeHtml(post.title)}
         </div>
-        <span class="unread-row-date">${formatDateShort(post.created_at)}</span>
+        <span class="unread-row-date" style="font-size: 0.8em; color: #78350f;">${formatDateShort(post.created_at)}</span>
       </div>
     `).join('') + `
-      <div class="unread-card-footer">
+      <div class="unread-card-footer" style="margin-top: 8px; text-align: right;">
         <button id="btnGoAnnouncementBottom" class="btn-text" style="color: #b45309;">掲示全体 ➔</button>
       </div>
     `;
 
-    // 1行クリックで共通モーダル起動（閉じた後に未読件数を自動再読み込み）
+    // 1行クリックでモーダル起動
     listContainer.querySelectorAll('.unread-row').forEach(row => {
       row.addEventListener('click', () => {
         const postId = Number(row.dataset.id);
