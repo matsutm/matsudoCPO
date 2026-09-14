@@ -2,6 +2,7 @@
 
 import { getCurrentUser, fetchAnnouncements, fetchUserReadIds } from '../services/announcement-service.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
+import { attachAnnouncementClickEvents } from '../components/announcement-card.js';
 import { formatDateShort, escapeHtml } from '../utils.js';
 
 // 1. ホーム画面のHTMLを出力
@@ -122,14 +123,9 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
       </div>
     `).join('');
 
-    // 1行クリックでモーダル起動
-    listContainer.querySelectorAll('.unread-row').forEach(row => {
-      row.addEventListener('click', () => {
-        const postId = Number(row.dataset.id);
-        openAnnouncementModal(postId, currentUser.id, () => {
-          loadUnreadAnnouncements(currentUser, navigateTo);
-        });
-      });
+    // ★共通関数を呼び出すだけ！
+    attachAnnouncementClickEvents(listContainer, currentUser.id, () => {
+      loadUnreadAnnouncements(currentUser, navigateTo);
     });
 
   } catch (err) {

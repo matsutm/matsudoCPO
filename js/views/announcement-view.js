@@ -1,7 +1,7 @@
 // js/views/announcement-view.js
 
 import { getCurrentUser, fetchAnnouncements, fetchUserReadIds, markAsRead } from '../services/announcement-service.js';
-import { createAnnouncementRowHTML } from '../components/announcement-card.js';
+import { createAnnouncementRowHTML, attachAnnouncementClickEvents } from '../components/announcement-card.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
 
 export function renderAnnouncementView() {
@@ -45,12 +45,9 @@ async function renderList(currentUser) {
 
     listContainer.innerHTML = posts.map(post => createAnnouncementRowHTML(post, readIds.has(post.id), true)).join('');
 
-    // 行クリック ➔ モーダルを「VIEW」モードで起動！
-    listContainer.querySelectorAll('.announcement-row').forEach(row => {
-      row.querySelector('.row-main')?.addEventListener('click', () => {
-        const postId = Number(row.dataset.id);
-        openAnnouncementModal('VIEW', postId, currentUser.id, () => renderList(currentUser));
-      });
+    // 共通関数を呼び出す
+    attachAnnouncementClickEvents(listContainer, currentUser.id, () => {
+      renderList(currentUser);
     });
 
     // クイック既読
