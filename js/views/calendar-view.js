@@ -1,67 +1,25 @@
+// js/views/calendar-view.js
+
 import { fetchJapaneseHolidays } from '../components/holidays.js';
 import { createTooltipText, attachTooltip } from '../components/tooltip.js';
-import { setFormDisabled, renderMapButton, renderModalActions } from '../components/modal.js';
+import { openCalendarModal } from '../components/calendar-modal.js';
+import { fetchSchedulesData } from '../services/calendar-service.js';
 
 let calendar;
-let currentMode = 'CREATE';
 
-// 💡 カレンダー画面に必要なHTML（本体＋モーダル）をすべてここで組み立てて返す
 export function renderCalendarView() {
   return `
-    <div style="margin-bottom: 12px; text-align: right;">
-      <button id="btnOpenCreateModal" class="btn-primary">＋ 予定を追加</button>
-    </div>
-    
-    <!-- カレンダー本体 -->
-    <div id="calendar"></div>
-
-    <!-- モーダルHTML -->
-    <div id="scheduleModal" class="modal-overlay">
-      <div class="modal-box">
-        <h2 id="modalTitle" class="modal-title">予定</h2>
-        <form id="scheduleForm">
-          <input type="hidden" id="event_id">
-          <div class="form-group">
-            <label for="date">日付 *</label>
-            <input type="date" id="date" class="form-control" required>
-          </div>
-          <div class="form-row">
-            <div class="form-group flex-1">
-              <label for="start_time">開始時間 *</label>
-              <input type="time" id="start_time" class="form-control" value="18:00" required>
-            </div>
-            <div class="form-group flex-1">
-              <label for="end_time">終了時間 *</label>
-              <input type="time" id="end_time" class="form-control" value="21:00" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="location">場所 *</label>
-            <input type="text" id="location" class="form-control" list="location-list" placeholder="会場名を選択または入力" required>
-            <datalist id="location-list">
-              <option value="森のホール21 リハ室">
-              <option value="流山エルズ（生涯学習センター）">
-              <option value="きらりホール">
-              <option value="けやきプラザ（我孫子市）">
-            </datalist>
-          </div>
-          <div id="mapContainer"></div>
-          <div class="form-group">
-            <label for="instructor">指導</label>
-            <input type="text" id="instructor" class="form-control" placeholder="例: マエストロ〇〇">
-          </div>
-          <div class="form-group">
-            <label for="program_notes">内容・曲目</label>
-            <textarea id="program_notes" class="form-control" rows="3" placeholder="例: 前半：ベートーヴェン"></textarea>
-          </div>
-          <div id="modalActions" class="modal-actions"></div>
-        </form>
+    <div class="calendar-container">
+      <div style="margin-bottom: 12px; text-align: right;">
+        <button id="btnOpenCreateModal" class="btn-primary">＋ 予定を追加</button>
       </div>
+      
+      <!-- カレンダー本体 -->
+      <div id="calendar"></div>
     </div>
   `;
 }
 
-// 💡 外部（main.jsなど）から呼び出してカレンダーを初期化・起動する関数
 export async function initCalendarView() {
   const calendarEl = document.getElementById('calendar');
   if (!calendarEl) return;
@@ -79,167 +37,55 @@ export async function initCalendarView() {
     buttonText: { today: '今日', month: '月', list: 'リスト' },
     displayEventTime: false,
     eventSources: [
-      { events: fetchSchedules },
+      { events: fetchSchedulesForCalendar },
       { events: holidayEvents }
     ],
     eventDidMount: attachTooltip,
     eventClick: function(info) {
       if (info.event.id) {
-        openModalForView(info.event);
+        openCalendarModal('VIEW', info.event, () => calendar.refetchEvents());
       }
     }
   });
 
   calendar.render();
 
-  document.getElementById('btnOpenCreateModal')?.addEventListener('click', openModalForCreate);
-  document.getElementById('scheduleForm')?.addEventListener('submit', handleFormSubmit);
-}
-
-// Supabaseからデータ取得
-async function fetchSchedules(fetchInfo, successCallback, failureCallback) {
-  const { data: schedules, error } = await supabaseClient
-    .from('schedules')
-    .select('*');
-
-  if (error) {
-    console.error('スケジュール取得失敗:', error);
-    failureCallback(error);
-    return;
-  }
-
-  const events = schedules.map(item => {
-    const startTime = item.start_time ? item.start_time.slice(0, 5) : '';
-    const endTime = item.end_time ? item.end_time.slice(0, 5) : '';
-    const timeRange = startTime ? `${startTime}〜${endTime}` : '';
-
-    return {
-      id: item.id,
-      title: `${timeRange} ${item.location || ''}`.trim(),
-      start: `${item.date}T${item.start_time}`,
-      end: `${item.date}T${item.end_time}`,
-      extendedProps: {
-        location: item.location,
-        instructor: item.instructor,
-        notes: item.program_notes,
-        raw_date: item.date,
-        start_time: item.start_time,
-        end_time: item.end_time,
-        tooltipText: createTooltipText(item)
-      }
-    };
-  });
-
-  successCallback(events);
-}
-
-// --- モーダル・CRUD処理（前と同じ） ---
-function openModalForCreate() {
-  currentMode = 'CREATE';
-  document.getElementById('scheduleForm').reset();
-  document.getElementById('event_id').value = '';
-  document.getElementById('modalTitle').innerText = '予定の新規追加';
-  setFormDisabled('#scheduleForm', false);
-  renderMapButton('mapContainer', '', false);
-  updateModalActions();
-  document.getElementById('scheduleModal').classList.add('active');
-}
-
-function openModalForView(event) {
-  currentMode = 'VIEW';
-  const props = event.extendedProps;
-  document.getElementById('event_id').value = event.id;
-  document.getElementById('date').value = props.raw_date;
-  document.getElementById('start_time').value = props.start_time ? props.start_time.slice(0, 5) : '13:00';
-  document.getElementById('end_time').value = props.end_time ? props.end_time.slice(0, 5) : '17:00';
-  document.getElementById('location').value = props.location || '';
-  document.getElementById('instructor').value = props.instructor || '';
-  document.getElementById('program_notes').value = props.notes || '';
-  document.getElementById('modalTitle').innerText = '予定の詳細';
-  setFormDisabled('#scheduleForm', true);
-  renderMapButton('mapContainer', props.location, true);
-  updateModalActions();
-  document.getElementById('scheduleModal').classList.add('active');
-}
-
-function switchToEditMode() {
-  currentMode = 'EDIT';
-  document.getElementById('modalTitle').innerText = '予定の編集';
-  setFormDisabled('#scheduleForm', false);
-  renderMapButton('mapContainer', '', false);
-  updateModalActions();
-}
-
-function duplicateSchedule() {
-  currentMode = 'CREATE';
-  document.getElementById('event_id').value = ''; 
-  document.getElementById('modalTitle').innerText = '予定の複製追加';
-  setFormDisabled('#scheduleForm', false);
-  renderMapButton('mapContainer', '', false);
-  updateModalActions();
-  document.getElementById('date').focus();
-}
-
-function updateModalActions() {
-  renderModalActions('modalActions', currentMode, {
-    onClose: closeModal,
-    onEdit: switchToEditMode,
-    onDelete: deleteSchedule,
-    onDuplicate: duplicateSchedule
+  // 新規追加ボタンイベント
+  document.getElementById('btnOpenCreateModal')?.addEventListener('click', () => {
+    openCalendarModal('CREATE', null, () => calendar.refetchEvents());
   });
 }
 
-function closeModal() {
-  document.getElementById('scheduleModal').classList.remove('active');
-  document.getElementById('scheduleForm').reset();
-}
+// FullCalendar用のイベント取得ブリッジ
+async function fetchSchedulesForCalendar(fetchInfo, successCallback, failureCallback) {
+  try {
+    const schedules = await fetchSchedulesData();
 
-async function handleFormSubmit(event) {
-  event.preventDefault();
-  const id = document.getElementById('event_id').value;
-  const scheduleData = {
-    date: document.getElementById('date').value,
-    start_time: document.getElementById('start_time').value,
-    end_time: document.getElementById('end_time').value,
-    location: document.getElementById('location').value,
-    instructor: document.getElementById('instructor').value,
-    program_notes: document.getElementById('program_notes').value
-  };
+    const events = schedules.map(item => {
+      const startTime = item.start_time ? item.start_time.slice(0, 5) : '';
+      const endTime = item.end_time ? item.end_time.slice(0, 5) : '';
+      const timeRange = startTime ? `${startTime}〜${endTime}` : '';
 
-  if (currentMode === 'CREATE') {
-    if (!confirm('この内容で予定を追加しますか？')) return;
-    const { error } = await supabaseClient.from('schedules').insert([scheduleData]);
-    if (error) {
-      alert('保存に失敗しました: ' + error.message);
-    } else {
-      alert('予定を追加しました！');
-      closeModal();
-      calendar.refetchEvents();
-    }
-  } else if (currentMode === 'EDIT') {
-    if (!confirm('変更内容を保存（更新）しますか？')) return;
-    const { error } = await supabaseClient.from('schedules').update(scheduleData).eq('id', id);
-    if (error) {
-      alert('更新に失敗しました: ' + error.message);
-    } else {
-      alert('予定を更新しました！');
-      closeModal();
-      calendar.refetchEvents();
-    }
-  }
-}
+      return {
+        id: item.id,
+        title: `${timeRange} ${item.location || ''}`.trim(),
+        start: `${item.date}T${item.start_time}`,
+        end: `${item.date}T${item.end_time}`,
+        extendedProps: {
+          location: item.location,
+          instructor: item.instructor,
+          notes: item.program_notes,
+          raw_date: item.date,
+          start_time: item.start_time,
+          end_time: item.end_time,
+          tooltipText: createTooltipText(item)
+        }
+      };
+    });
 
-async function deleteSchedule() {
-  const id = document.getElementById('event_id').value;
-  if (!id) return;
-  if (confirm('この予定を削除してもよろしいですか？')) {
-    const { error } = await supabaseClient.from('schedules').delete().eq('id', id);
-    if (error) {
-      alert('削除に失敗しました: ' + error.message);
-    } else {
-      alert('予定を削除しました。');
-      closeModal();
-      calendar.refetchEvents();
-    }
+    successCallback(events);
+  } catch (err) {
+    console.error('スケジュール取得失敗:', err);
+    failureCallback(err);
   }
 }
