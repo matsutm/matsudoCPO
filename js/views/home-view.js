@@ -1,7 +1,5 @@
 // js/views/home-view.js
 
-// js/views/home-view.js
-
 import { getCurrentUser, fetchAnnouncements, fetchUserReadIds } from '../services/announcement-service.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
 import { formatDateShort, escapeHtml } from '../utils.js';
@@ -10,40 +8,59 @@ import { formatDateShort, escapeHtml } from '../utils.js';
 export function renderHomeView() {
   return `
     <section id="view-home" class="view-section">
-      <!-- 未確認メッセージカード -->
-      <div class="card card-alert" id="unreadAlertCard" style="display: none;">
-        <div class="card-header">
-          <span>🔔</span> <strong>未確認の連絡が <span id="unreadCount">0</span> 件あります</strong>
+      <div class="home-grid">
+        
+        <!-- 1. お知らせ・掲示板カード -->
+        <div class="card home-card">
+          <div class="card-header-title">
+            <button class="btn-card-title" id="linkGoAnnouncement">📢 お知らせ・掲示板 ➔</button>
+          </div>
+          <div id="unreadAnnouncementsContainer" class="card-body">
+            <p class="loading-text">お知らせを読み込み中...</p>
+          </div>
         </div>
-        <!-- ★ 不足していたコンテナ要素を追加 -->
-        <div id="unreadAnnouncementsContainer" class="unread-list"></div>
-      </div>
 
-      <!-- 直近2回の予定 -->
-      <div class="card card-schedule">
-        <div class="card-header-title">
-          <span>🗓 直近の練習スケジュール</span>
-          <button class="btn-text" id="btnGoCalendar">月毎表示 ➔</button>
+        <!-- 2. 直近の練習スケジュールカード -->
+        <div class="card home-card">
+          <div class="card-header-title">
+            <button class="btn-card-title" id="linkGoCalendar">📅 練習スケジュール ➔</button>
+          </div>
+          <div id="nextEventsContainer" class="card-body events-list">
+            <p class="loading-text">予定を読み込み中...</p>
+          </div>
         </div>
-        <div id="nextEventsContainer" class="events-list">
-          <p class="loading-text">予定を読み込み中...</p>
-        </div>
-      </div>
 
-      <!-- クイックメニュー -->
-      <div class="quick-menu-grid">
-        <button class="menu-card" id="menuCalendar">
-          <span class="menu-icon">📅</span> <span class="menu-label">今後の予定</span>
-        </button>
-        <button class="menu-card" id="menuBulletin">
-          <span class="menu-icon">💬</span> <span class="menu-label">団内掲示板</span>
-        </button>
-        <button class="menu-card" id="menuLibrary">
-          <span class="menu-icon">🎼</span> <span class="menu-label">資料庫</span>
-        </button>
-        <button class="menu-card" id="menuMembers">
-          <span class="menu-icon">👥</span> <span class="menu-label">団員名簿</span>
-        </button>
+        <!-- 3. 資料庫カード -->
+        <div class="card home-card">
+          <div class="card-header-title">
+            <button class="btn-card-title" id="linkGoLibrary">📁 資料庫 ➔</button>
+          </div>
+          <div class="card-body">
+            <ul class="library-quick-links">
+              <li>
+                <a id="linkDolce" href="#" target="_blank" rel="noopener" class="library-link-item">
+                  <span>📄 Dolce 最新号 (PDF)</span> ➔
+                </a>
+              </li>
+              <li>
+                <a id="linkConcertPlan" href="#" target="_blank" rel="noopener" class="library-link-item">
+                  <span>🎼 今後の演奏会予定</span> ➔
+                </a>
+              </li>
+              <li>
+                <a id="linkPracticeSchedule" href="#" target="_blank" rel="noopener" class="library-link-item">
+                  <span>📋 練習予定表 (全体版)</span> ➔
+                </a>
+              </li>
+              <li>
+                <button id="btnGoMembers" class="library-link-button">
+                  <span>👥 団員名簿</span> ➔
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
       </div>
     </section>
   `;
@@ -51,7 +68,7 @@ export function renderHomeView() {
 
 // 2. 初期化ロジック
 export async function initHomeView(navigateTo) {
-  const currentUser = getCurrentUser(); // import した関数を使用
+  const currentUser = getCurrentUser();
 
   // スケジュールとお知らせ未読の両方を読み込む
   await Promise.all([
@@ -59,21 +76,20 @@ export async function initHomeView(navigateTo) {
     loadNextTwoSchedules()
   ]);
 
-  // イベントリスナーのセット
-  document.getElementById('btnGoCalendar')?.addEventListener('click', () => navigateTo('calendar'));
-  document.getElementById('menuCalendar')?.addEventListener('click', () => navigateTo('calendar'));
-  document.getElementById('menuBulletin')?.addEventListener('click', () => navigateTo('announcement'));
-  document.getElementById('menuMembers')?.addEventListener('click', () => navigateTo('members'));
-  document.getElementById('menuLibrary')?.addEventListener('click', () => navigateTo('library'));
+  // タイトルおよびボタンの遷移イベントを設定
+  document.getElementById('linkGoAnnouncement')?.addEventListener('click', () => navigateTo('announcement'));
+  document.getElementById('linkGoCalendar')?.addEventListener('click', () => navigateTo('calendar'));
+  document.getElementById('linkGoLibrary')?.addEventListener('click', () => navigateTo('library'));
+  document.getElementById('btnGoMembers')?.addEventListener('click', () => navigateTo('members'));
+
+  // ★主要資料のリンク先URL（必要に応じてGoogle Drive等の固定URLを割り当て）
+  // 例: document.getElementById('linkDolce').href = 'https://drive.google.com/...';
 }
 
 // Supabaseから未読お知らせを取得（最大4件）
 async function loadUnreadAnnouncements(currentUser, navigateTo) {
-  const alertCard = document.getElementById('unreadAlertCard');
-  const countEl = document.getElementById('unreadCount');
   const listContainer = document.getElementById('unreadAnnouncementsContainer');
-
-  if (!alertCard || !countEl || !listContainer) return;
+  if (!listContainer) return;
 
   try {
     const [posts, readIds] = await Promise.all([
@@ -84,11 +100,8 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
     // 未読のみ抽出
     const unreadPosts = posts.filter(p => !readIds.has(p.id));
 
-    // ★未読が0件の場合の表示
+    // 未読が0件の場合
     if (unreadPosts.length === 0) {
-      countEl.textContent = '0';
-      alertCard.style.display = 'block';
-      // カード全体の警戒色感を薄め、完了メッセージを表示
       listContainer.innerHTML = `
         <div class="all-read-msg" style="padding: 0.5rem 0; font-size: 0.85rem; color: #4b5563;">
           ✨ 未確認のお知らせはありません
@@ -97,10 +110,7 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
       return;
     }
 
-    countEl.textContent = unreadPosts.length;
-    alertCard.style.display = 'block';
-
-    // 最大4件・1件1行で描画
+    // 最大4件表示
     const displayPosts = unreadPosts.slice(0, 4);
 
     listContainer.innerHTML = displayPosts.map(post => `
@@ -110,11 +120,7 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
         </div>
         <span class="unread-row-date" style="font-size: 0.8em; color: #78350f;">${formatDateShort(post.created_at)}</span>
       </div>
-    `).join('') + `
-      <div class="unread-card-footer" style="margin-top: 8px; text-align: right;">
-        <button id="btnGoAnnouncementBottom" class="btn-text" style="color: #b45309;">掲示全体 ➔</button>
-      </div>
-    `;
+    `).join('');
 
     // 1行クリックでモーダル起動
     listContainer.querySelectorAll('.unread-row').forEach(row => {
@@ -126,11 +132,9 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
       });
     });
 
-    document.getElementById('btnGoAnnouncementBottom')?.addEventListener('click', () => navigateTo('announcement'));
-
   } catch (err) {
     console.error('ホーム未読取得エラー:', err);
-    alertCard.style.display = 'none';
+    listContainer.innerHTML = '<p class="error-text">お知らせの読み込みに失敗しました。</p>';
   }
 }
 
@@ -159,11 +163,11 @@ async function loadNextTwoSchedules() {
       const labelText = index === 0 ? '次回の予定' : '次々回の予定';
       const timeRange = item.start_time ? `${item.start_time.slice(0, 5)}〜${item.end_time ? item.end_time.slice(0, 5) : ''}` : '時間未定';
       const mapLink = item.location 
-        ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}" target="_blank" class="btn-map-inline">🗺 Googleマップを開く</a>`
+        ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}" target="_blank" class="btn-map-inline">🗺 Googleマップ</a>`
         : '';
 
       return `
-        <div class="event-item">
+        <div class="event-item" style="margin-bottom: 12px;">
           <span class="event-badge">${labelText}</span>
           <div class="event-date">📅 ${item.date} (${timeRange})</div>
           <div class="event-detail">📍 【場所】${item.location || '未定'}</div>
