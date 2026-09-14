@@ -35,7 +35,3 @@ export function createAnnouncementRowHTML(post, isRead, showQuickBtn = true) {
   `;
 }
 
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/[&< me'"]/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m] || m));
-}
