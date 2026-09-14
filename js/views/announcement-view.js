@@ -1,4 +1,4 @@
-//announcement-view.js
+// js/views/announcement-view.js
 
 import { getCurrentUser, fetchAnnouncements, fetchUserReadIds, markAsRead } from '../services/announcement-service.js';
 import { createAnnouncementRowHTML } from '../components/announcement-card.js';
@@ -23,16 +23,20 @@ export function renderAnnouncementView() {
 
 export async function initAnnouncementView(navigateTo) {
   const currentUser = getCurrentUser();
-
-  // 関数の実行
+  
+  // 一覧の描画を実行
   await renderList(currentUser);
 
+  // 新規投稿ボタンのイベント設定
   document.getElementById('btnNewPost')?.addEventListener('click', () => {
     navigateTo('announcement-new');
   });
+} // ★ initAnnouncementView の閉じ括弧
 
+// 投稿一覧の取得・描画処理
 async function renderList(currentUser) {
   const listContainer = document.getElementById('announcement-list');
+  if (!listContainer) return;
 
   try {
     const [posts, readIds] = await Promise.all([
@@ -40,7 +44,7 @@ async function renderList(currentUser) {
       fetchUserReadIds(currentUser.id)
     ]);
 
-    if (posts.length === 0) {
+    if (!posts || posts.length === 0) {
       listContainer.innerHTML = '<p class="empty-text">現在お知らせはありません。</p>';
       return;
     }
@@ -52,7 +56,7 @@ async function renderList(currentUser) {
 
     // 行本体クリック ➔ モーダル起動（閉じたら一覧再読み込み）
     listContainer.querySelectorAll('.announcement-row').forEach(row => {
-      row.querySelector('.row-main').addEventListener('click', () => {
+      row.querySelector('.row-main')?.addEventListener('click', () => {
         const postId = Number(row.dataset.id);
         openAnnouncementModal(postId, currentUser.id, () => {
           renderList(currentUser);
