@@ -84,11 +84,6 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
     // 未読のみ抽出
     const unreadPosts = posts.filter(p => !readIds.has(p.id));
 
-    if (unreadPosts.length === 0) {
-      alertCard.style.display = 'none';
-      return;
-    }
-
     // ★未読が0件の場合の表示
     if (unreadPosts.length === 0) {
       countEl.textContent = '0';
