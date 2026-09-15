@@ -9,6 +9,7 @@ const appContent = document.getElementById('app-content');
 
 // 画面切り替えの司令塔
 export async function navigateTo(viewName, isBrowserBack = false) {
+  updateLoginUserDisplay();
   const user = getCurrentUser();
 
   // 未認証の場合は強制的にログイン画面へ
@@ -48,6 +49,19 @@ export async function navigateTo(viewName, isBrowserBack = false) {
   }
 }
 
+//ユーザ名を表示する
+function updateLoginUserDisplay() {
+  const user = getCurrentUser();
+  const el = document.getElementById('loginUserDisplay');
+  if (!el) return;
+
+  if (user) {
+    el.textContent = `${user.name} さん`;
+  } else {
+    el.textContent = '';
+  }
+}
+
 // アプリ起動時の初期化
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navHome')?.addEventListener('click', () => navigateTo('home'));
@@ -59,5 +73,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const initialView = location.hash.replace('#', '') || 'home';
   history.replaceState({ view: initialView }, '', `#${initialView}`);
-  navigateTo(initialView, true);
+  navigateTo('auth', true);
 });
