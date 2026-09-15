@@ -23,9 +23,13 @@ export async function initAnnouncementView(navigateTo) {
   const currentUser = getCurrentUser();
   await renderList(currentUser);
 
-  // ＋ 新規投稿 ➔ モーダルを「CREATE」モードで起動！
+  // ＋ 新規投稿 → CREATE モードでモーダルを開く
   document.getElementById('btnNewPost')?.addEventListener('click', () => {
-    openAnnouncementModal('CREATE', null, currentUser.id, () => renderList(currentUser));
+    openAnnouncementModal({
+      mode: 'CREATE',
+      authorId: currentUser.id,
+      onSaved: () => renderList(currentUser)
+    });
   });
 }
 
@@ -44,11 +48,20 @@ async function renderList(currentUser) {
       return;
     }
 
-    listContainer.innerHTML = posts.map(post => createAnnouncementRowHTML(post, readIds.has(post.id), true)).join('');
+    listContainer.innerHTML = posts
+      .map(post => createAnnouncementRowHTML(post, readIds.has(post.id), true))
+      .join('');
 
-    // 共通関数を呼び出す
-    attachAnnouncementClickEvents(listContainer, currentUser.id, () => {
-      renderList(currentUser);
+    // 一覧クリック → VIEW モードでモーダルを開く
+    attachAnnouncementClickEvents(listContainer, currentUser.id, (post) => {
+      openAnnouncementModal({
+        mode: 'VIEW',
+        title: post.title,
+        body: post.body,
+        createdAt: post.createdAt,
+        authorId: post.authorId,
+        onUpdated: () => renderList(currentUser)
+      });
     });
 
     // クイック既読
