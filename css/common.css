@@ -1,156 +1,84 @@
-/* ベーススタイル */
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  margin: 0;
-  padding: 1rem;
-  background-color: #f8fafc;
-  color: #1e293b;
-}
-
+/* --- ヘッダー領域 --- */
 .app-header {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem 1rem;
   align-items: center;
-}
-
-.app-header h1 {
-  font-size: 1.3rem;
-  margin: 0;
+  padding: 0.5rem 1rem;
+  gap: 0.5rem;
 }
 
 .app-header-left {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  white-space: nowrap; /* タイトルを折り返さない */
+  flex-shrink: 0; /* ロゴ領域は潰さない */
+}
+
+.app-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+}
+
+.app-header-center {
+  flex: 1;
+  text-align: center;
+  min-width: 0; /* Flexbox内でテキスト折り返し・省略を効かせるために必須 */
+}
+
+.app-header h1 {
+  font-size: 1.1rem;
+  margin: 0;
+  line-height: 1.3;
+  /* タイトルが長すぎる場合の自動折り返し設定 */
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .app-header-right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  white-space: nowrap; /* 名前を折り返さない */
-}
-
-.app-header-center {
-  flex: 1; /* 中央を広げる */
-  text-align: center; /* タイトルを中央寄せ */
-  white-space: nowrap; /* 折り返さない */
-}
-
-.app-logo {
-  width: 32px;   /* 控えめで美しいサイズ */
-  height: 32px;
-  border-radius: 4px; /* 角を少し丸めると柔らかい印象に */
+  gap: 0.5rem;
+  flex-shrink: 0; /* 右側のボタン類も潰さない */
 }
 
 .login-user-display {
-  font-size: 0.9rem;
-  color: #475569;
-}
-
-
-.app-main {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-/* ボタン共通 */
-.btn-primary {
-  background-color: #2563eb;
-  color: #ffffff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.btn-primary:hover { background-color: #1d4ed8; }
-
-.btn-secondary {
-  background-color: #64748b;
-  color: #ffffff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.btn-secondary:hover { background-color: #475569; }
-
-.btn-danger {
-  background-color: #dc2626;
-  color: #ffffff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.btn-danger:hover { background-color: #b91c1c; }
-
-/* フォーム共通要素 */
-.form-group { margin-bottom: 0.8rem; }
-.form-row { display: flex; gap: 0.5rem; }
-.flex-1 { flex: 1; }
-
-.form-group label {
-  display: block;
   font-size: 0.85rem;
-  font-weight: bold;
-  margin-bottom: 0.3rem;
+  color: #475569;
+  white-space: nowrap; /* お名前＋パート名だけは1行に維持 */
 }
 
-.form-control {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-size: 0.95rem;
-}
+/* --- スマホ向け（画面幅 600px 以下）のレイアウト調整 --- */
+@media (max-width: 600px) {
+  .app-header {
+    flex-wrap: wrap; /* 要素が溢れたら下に回す */
+    padding: 0.5rem;
+  }
 
-/* インアクティブ（disabled）状態のデザイン */
-.form-control:disabled {
-  background-color: #f1f5f9;
-  color: #334155;
-  border-color: #e2e8f0;
-  cursor: not-allowed;
-}
+  /* 上段：ロゴとタイトルを横並びにする */
+  .app-header-left {
+    order: 1;
+  }
 
-/* モーダルダイアログ共通構造 */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-.modal-overlay.active { display: flex; }
+  .app-header-center {
+    order: 2;
+    text-align: left; /* スマホでは左寄せが見やすい */
+    padding-left: 0.25rem;
+  }
 
-.modal-box {
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 450px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+  .app-header h1 {
+    font-size: 1.0rem; /* スマホ用に少し小さく調整 */
+  }
 
-.modal-title {
-  margin-top: 0;
-  font-size: 1.2rem;
-  color: #1e3a8a;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 1.2rem;
+  /* 下段：ユーザー情報とログアウトボタンを折り返して右寄せ配置 */
+  .app-header-right {
+    order: 3;
+    width: 100%; /* 横幅いっぱいに広げて下段へ落とす */
+    justify-content: flex-end;
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px dashed #e2e8f0; /* 薄い区切り線 */
+  }
 }
