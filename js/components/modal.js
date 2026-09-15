@@ -1,49 +1,52 @@
-/**
- * モーダル表示・状態管理の共通部品
- */
-export function setFormDisabled(formSelector, disabled) {
-  const inputs = document.querySelectorAll(`${formSelector} .form-control`);
-  inputs.forEach(input => input.disabled = disabled);
-}
+// components/modal.js
 
-export function renderMapButton(containerId, location, isViewMode) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
+export function openModal({ title, content, actions }) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay active';
 
-  if (location && isViewMode) {
-    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
-    container.innerHTML = `<a href="${mapUrl}" target="_blank" class="btn-map">🗺️ Googleマップで場所を開く</a>`;
-  } else {
-    container.innerHTML = '';
-  }
-}
+  const box = document.createElement('div');
+  box.className = 'modal-box';
 
-export function renderModalActions(actionsId, mode, handlers) {
-  const actions = document.getElementById(actionsId);
-  if (!actions) return;
+  // タイトル
+  const titleEl = document.createElement('h3');
+  titleEl.className = 'modal-title';
+  titleEl.textContent = title;
+  box.appendChild(titleEl);
 
-  if (mode === 'CREATE') {
-    actions.innerHTML = `
-      <button type="button" class="btn-secondary" id="btnCancel">キャンセル</button>
-      <button type="submit" class="btn-primary">保存する</button>
-    `;
-    document.getElementById('btnCancel').addEventListener('click', handlers.onClose);
-  } else if (mode === 'VIEW') {
-    actions.innerHTML = `
-      <button type="button" class="btn-danger" id="btnDelete">削除</button>
-      <button type="button" class="btn-secondary" id="btnDuplicate">📋 複製</button>
-      <button type="button" class="btn-primary" id="btnEdit">編集する</button>
-      <button type="button" class="btn-secondary" id="btnClose">閉じる</button>
-    `;
-    document.getElementById('btnDelete').addEventListener('click', handlers.onDelete);
-    document.getElementById('btnDuplicate').addEventListener('click', handlers.onDuplicate); // 複製イベント
-    document.getElementById('btnEdit').addEventListener('click', handlers.onEdit);
-    document.getElementById('btnClose').addEventListener('click', handlers.onClose);
-  } else if (mode === 'EDIT') {
-    actions.innerHTML = `
-      <button type="button" class="btn-secondary" id="btnCancel">キャンセル</button>
-      <button type="submit" class="btn-primary">更新する</button>
-    `;
-    document.getElementById('btnCancel').addEventListener('click', handlers.onClose);
-  }
+  // 内容
+  const contentEl = document.createElement('div');
+  contentEl.className = 'modal-content';
+  contentEl.innerHTML = content;
+  box.appendChild(contentEl);
+
+  // ボタン群
+  const actionsEl = document.createElement('div');
+  actionsEl.className = 'modal-actions';
+
+  actions.forEach(action => {
+    const btn = document.createElement('button');
+    btn.textContent = action.label;
+    btn.className = action.type === 'primary'
+      ? 'btn-primary'
+      : action.type === 'danger'
+      ? 'btn-danger'
+      : 'btn-secondary';
+
+    if (action.onClick) {
+      btn.addEventListener('click', () => {
+        action.onClick();
+        document.body.removeChild(overlay);
+      });
+    } else {
+      btn.addEventListener('click', () => {
+        document.body.removeChild(overlay);
+      });
+    }
+
+    actionsEl.appendChild(btn);
+  });
+
+  box.appendChild(actionsEl);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
 }

@@ -1,117 +1,117 @@
-//announcement-modal.js
+// js/components/announcement-modal.js
 
-import { fetchAnnouncementById, markAsRead, createAnnouncement } from '../services/announcement-service.js';
-import { renderEmailOptionUI, initEmailOptionEvents, getEmailOptionData } from './announcement-email-option.js';
-import { formatDateTime } from '../utils.js';
+import { openModal } from './modal.js';
+import { saveAnnouncement, updateAnnouncement } from '../services/announcement-service.js';
 
-/**
- * 掲示板モーダルの起動（CREATE / VIEW）
- */
-export async function openAnnouncementModal(mode = 'CREATE', postId = null, currentUserId, onClosedCallback = null) {
-  document.getElementById('announcement-modal-root')?.remove();
-  const isView = mode === 'VIEW';
+export function openAnnouncementModal({
+  mode,          // 'CREATE' | 'VIEW' | 'EDIT'
+  title,
+  body,
+  authorId,
+  createdAt,
+  onSaved,       // CREATE 完了後
+  onUpdated      // EDIT 完了後
+}) {
 
-  const modalHTML = `
-    <div id="announcement-modal-root" class="modal-overlay">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>${isView ? '📢 お知らせ詳細' : '✏️ 新規お知らせ投稿'}</h3>
-          <button id="btnCloseModal" class="modal-close-btn">&times;</button>
-        </div>
-        <form id="announcementModalForm">
-          <div class="modal-body">
-            <div class="form-group">
-              <label for="modal-title">タイトル *</label>
-              <input type="text" id="modal-title" class="form-control" placeholder="タイトルを入力" ${isView ? 'readonly' : ''} required />
-            </div>
+  // ------------------------------
+  // CREATE モード（新規投稿）
+  // ------------------------------
+  if (mode === 'CREATE') {
+    const formHTML = `
+      <div class="announcement-form">
+        <label>タイトル</label>
+        <input id="ann-title" type="text" class="input-text">
 
-            ${isView ? `
-              <div class="form-group">
-                <label>投稿情報</label>
-                <div id="modal-meta" class="detail-meta-text">読み込み中...</div>
-              </div>
-            ` : ''}
-
-            <div class="form-group">
-              <label for="modal-content">本文 *</label>
-              <textarea id="modal-content" class="form-control" rows="7" placeholder="本文を入力" ${isView ? 'readonly' : ''} required></textarea>
-            </div>
-
-            <!-- ★新規作成時のみメール送信切り出しパーツを挿入 -->
-            ${!isView ? renderEmailOptionUI() : ''}
-          </div>
-
-          <div class="modal-footer" style="text-align: right; margin-top: 1rem;">
-            ${isView ? `
-              <button type="button" id="btnModalClose" class="btn-secondary">閉じる</button>
-            ` : `
-              <button type="button" id="btnModalCancel" class="btn-secondary">キャンセル</button>
-              <button type="submit" id="btnModalSubmit" class="btn-primary">投稿する</button>
-            `}
-          </div>
-        </form>
+        <label>本文</label>
+        <textarea id="ann-body" class="input-textarea"></textarea>
       </div>
-    </div>
-  `;
+    `;
 
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
+    openModal({
+      title: '新規投稿',
+      content: formHTML,
+      actions: [
+        {
+          label: '投稿する',
+          type: 'primary',
+          onClick: async () => {
+            const newTitle = document.getElementById('ann-title').value.trim();
+            const newBody  = document.getElementById('ann-body').value.trim();
 
-  const modalRoot = document.getElementById('announcement-modal-root');
-  const form = document.getElementById('announcementModalForm');
-  const closeModal = () => {
-    modalRoot.remove();
-    if (typeof onClosedCallback === 'function') onClosedCallback();
-  };
+            await saveAnnouncement({
+              title: newTitle,
+              body: newBody,
+              authorId
+            });
 
-  // イベント接続
-  document.getElementById('btnCloseModal')?.addEventListener('click', closeModal);
-  document.getElementById('btnModalClose')?.addEventListener('click', closeModal);
-  document.getElementById('btnModalCancel')?.addEventListener('click', closeModal);
-  modalRoot.addEventListener('click', (e) => { if (e.target === modalRoot) closeModal(); });
-
-  if (isView && postId) {
-    // 【閲覧モード】データロード & 自動既読
-    try {
-      const post = await fetchAnnouncementById(postId);
-      if (post) {
-        document.getElementById('modal-title').value = post.title;
-        document.getElementById('modal-content').value = post.content;
-        document.getElementById('modal-meta').textContent = 
-          `投稿者: ${post.members?.name || '不明'} | 投稿日時: ${formatDateTime(post.created_at)}`;
-        await markAsRead(post.id, currentUserId);
-      }
-    } catch (err) {
-      console.error('詳細取得エラー:', err);
-    }
-  } else if (mode === 'CREATE') {
-    // 【新規作成モード】メールUIイベント初期化 & フォーム送信
-    initEmailOptionEvents();
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const title = document.getElementById('modal-title').value.trim();
-      const content = document.getElementById('modal-content').value.trim();
-      const emailOptions = getEmailOptionData();
-
-      try {
-        await createAnnouncement({
-          author_id: currentUserId,
-          title,
-          content,
-          is_email_sent: emailOptions.isEmailSent,
-          target_scope: emailOptions.targetScope,
-          target_value: emailOptions.targetValue
-        });
-
-        if (window.EMAIL_NOTIFY_ENABLED && emailOptions.isEmailSent) {
-          await sendBulletinEmail({ title, content, targetScope: emailOptions.targetScope, targetValue: emailOptions.targetValue });
-        }
-
-        alert('投稿しました。');
-        closeModal();
-      } catch (err) {
-        alert('投稿に失敗しました: ' + err.message);
-      }
+            onSaved?.(); // 一覧再描画
+          }
+        },
+        { label: '閉じる', type: 'secondary' }
+      ]
     });
+
+    return;
+  }
+
+  // ------------------------------
+  // VIEW モード（閲覧）
+  // ------------------------------
+  if (mode === 'VIEW') {
+    openModal({
+      title,
+      content: `
+        <div class="announcement-body">${body}</div>
+        <div class="announcement-meta">
+          投稿日時：${createdAt}
+        </div>
+      `,
+      actions: [
+        { label: '閉じる', type: 'primary' }
+      ]
+    });
+
+    return;
+  }
+
+  // ------------------------------
+  // EDIT モード（編集）
+  // ------------------------------
+  if (mode === 'EDIT') {
+    const formHTML = `
+      <div class="announcement-form">
+        <label>タイトル</label>
+        <input id="ann-title" type="text" class="input-text" value="${title}">
+
+        <label>本文</label>
+        <textarea id="ann-body" class="input-textarea">${body}</textarea>
+      </div>
+    `;
+
+    openModal({
+      title: '投稿を編集',
+      content: formHTML,
+      actions: [
+        {
+          label: '保存する',
+          type: 'primary',
+          onClick: async () => {
+            const newTitle = document.getElementById('ann-title').value.trim();
+            const newBody  = document.getElementById('ann-body').value.trim();
+
+            await updateAnnouncement({
+              title: newTitle,
+              body: newBody,
+              authorId
+            });
+
+            onUpdated?.(); // 一覧再描画
+          }
+        },
+        { label: '閉じる', type: 'secondary' }
+      ]
+    });
+
+    return;
   }
 }

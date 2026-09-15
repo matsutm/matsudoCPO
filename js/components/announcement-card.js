@@ -1,10 +1,10 @@
-//announcement-card.js
+// js/components/announcement-card.js
 
-import { openAnnouncementModal } from './announcement-modal.js';
 import { escapeHtml, formatDateShort } from '../utils.js';
 
 /**
  * お知らせ行（1件1行）のHTML生成
+ * → UI の型だけを担当（モーダルは呼ばない）
  */
 export function createAnnouncementRowHTML(post, isRead, showQuickReadBtn = true) {
   const readClass = isRead ? 'read' : 'unread';
@@ -33,18 +33,16 @@ export function createAnnouncementRowHTML(post, isRead, showQuickReadBtn = true)
 }
 
 /**
- * ★共通化：行クリック時のViewモーダル起動イベントをバインド
- * @param {HTMLElement} container - 対象リストの親要素
- * @param {string} currentUserId - ログインユーザーID
- * @param {Function} onClosedCallback - モーダル閉鎖後の再描画用関数
+ * 行クリック時のイベントをバインド
+ * → モーダルを呼ぶのは「view 側」
+ * → ここでは post を渡すだけ
  */
-export function attachAnnouncementClickEvents(container, currentUserId, onClosedCallback) {
+export function attachAnnouncementClickEvents(container, currentUserId, onClickPost) {
   if (!container) return;
 
-  const rows = container.querySelectorAll('.unread-row, .announcement-row');
+  const rows = container.querySelectorAll('.announcement-row');
 
   rows.forEach(row => {
-    // .row-main があればそれを優先、無ければ行全体をクリック対象に
     const clickTarget = row.querySelector('.row-main') || row;
 
     clickTarget.addEventListener('click', (e) => {
@@ -52,7 +50,12 @@ export function attachAnnouncementClickEvents(container, currentUserId, onClosed
       if (e.target.closest('.btn-quick-read')) return;
 
       const postId = Number(row.dataset.id);
-      openAnnouncementModal('VIEW', postId, currentUserId, onClosedCallback);
+
+      // post データは view 側が管理するキャッシュから取得
+      const post = window.__ANNOUNCEMENT_CACHE__.get(postId);
+
+      // モーダルを開くのは view 側
+      onClickPost(post);
     });
   });
 }
