@@ -1,7 +1,5 @@
 // js/services/auth-service.js
 
-import { DEV_AUTO_LOGIN, DEV_TEST_USER_ID } from '../config.js';
-
 
 /**
  * 現在ログイン中のユーザー情報を取得
@@ -11,9 +9,9 @@ export function getCurrentUser() {
 
   if (userStr) return JSON.parse(userStr);
 
-  if (DEV_AUTO_LOGIN) {
+  if (window.DEV_AUTO_LOGIN) {
     return {
-      id: DEV_TEST_USER_ID,
+      id: window.DEV_TEST_USER_ID,
       name: 'テストユーザー',
       role: 'author',
       section: '木管',
