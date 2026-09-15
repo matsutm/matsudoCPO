@@ -101,3 +101,14 @@
     min-height: 1.5em !important;
   }
 }
+
+.detail-meta-text {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.map-button-container {
+  margin: 8px 0;
+  display: block;
+}
