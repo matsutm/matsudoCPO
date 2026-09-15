@@ -1,11 +1,14 @@
 import { fetchTargetScopeOptions } from '../services/announcement-service.js';
 import { escapeHtml } from '../utils.js';
+import { EMAIL_NOTIFY_ENABLED } from '../config.js';
 
 /**
  * メール送信設定のHTMLを出力
  */
 export function renderEmailOptionUI() {
-  /*
+
+  if (!EMAIL_NOTIFY_ENABLED) return '';   // ← 明示的に空文字を返す
+
   return `
     <div id="email-option-section" class="email-option-box" style="margin-top: 1rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px;">
       <label class="checkbox-label" style="font-weight: bold; cursor: pointer;">
@@ -23,7 +26,6 @@ export function renderEmailOptionUI() {
       </div>
     </div>
   `;
-  */
 }
 
 /**

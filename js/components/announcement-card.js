@@ -1,6 +1,7 @@
 //announcement-card.js
 
 import { openAnnouncementModal } from './announcement-modal.js';
+import { escapeHtml, formatDateShort } from '../utils.js';
 
 /**
  * お知らせ行（1件1行）のHTML生成

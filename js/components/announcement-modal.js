@@ -1,8 +1,9 @@
-//announcement-modai.js
+//announcement-modal.js
 
 import { fetchAnnouncementById, markAsRead, createAnnouncement } from '../services/announcement-service.js';
 import { renderEmailOptionUI, initEmailOptionEvents, getEmailOptionData } from './announcement-email-option.js';
 import { formatDateTime } from '../utils.js';
+import { EMAIL_NOTIFY_ENABLED } from '../config.js';
 
 /**
  * 掲示板モーダルの起動（CREATE / VIEW）
@@ -103,12 +104,9 @@ export async function openAnnouncementModal(mode = 'CREATE', postId = null, curr
           target_value: emailOptions.targetValue
         });
 
-        // ★メール送信モジュールの呼び出しを一時コメントアウト
-        /*
-        if (emailOptions.isEmailSent) {
+        if (EMAIL_NOTIFY_ENABLED && emailOptions.isEmailSent) {
           await sendBulletinEmail({ title, content, targetScope: emailOptions.targetScope, targetValue: emailOptions.targetValue });
         }
-        */
 
         alert('投稿しました。');
         closeModal();
