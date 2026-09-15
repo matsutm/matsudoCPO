@@ -51,6 +51,23 @@ export function initAuthView(onSuccess) {
     const email = document.getElementById('auth-email').value.trim();
     const btn = document.getElementById('btn-send-otp');
 
+    // ★ 2回目以降の簡易ログイン
+    if (currentUser && currentUser.email.toLowerCase() === email) {
+      // すぐログイン扱いにする
+      alert(`おかえりなさい、${currentUser.name} さん！`);
+      if (onSuccess) onSuccess(currentUser);
+      return;
+    } else {
+      const proceed = confirm(
+        'ユーザ情報が一致しません。\n初回ログイン手続を行いますか？'
+      );
+
+      if (!proceed) {
+        return; // キャンセル → 何もしない
+      }
+    }
+
+    // ★ 初回ログイン（今まで通り）
     btn.disabled = true;
     btn.textContent = '送信中...';
 
@@ -87,7 +104,10 @@ export function initAuthView(onSuccess) {
       alert(`認証されました。おかえりなさい、${user.name} さん！`);
       
       // 認証成功時コールバックを実行してメイン画面へ切り替え
-      if (onSuccess) onSuccess(user);
+      if (onSuccess) {
+        onSuccess(user);
+        updateLoginUserDisplay();
+      }
 
     } catch (err) {
       showError(err.message);
