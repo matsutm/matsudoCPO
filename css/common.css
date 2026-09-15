@@ -8,10 +8,11 @@ body {
 }
 
 .app-header {
-  max-width: 900px;
-  margin: 0 auto 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
+  padding: 0.5rem 1rem;
   align-items: center;
   gap: 0.75rem;
 }
@@ -19,6 +20,20 @@ body {
 .app-header h1 {
   font-size: 1.3rem;
   margin: 0;
+}
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  white-space: nowrap; /* タイトルを折り返さない */
+}
+
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  white-space: nowrap; /* 名前を折り返さない */
 }
 
 .app-logo {
