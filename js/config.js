@@ -1,5 +1,10 @@
 //メール送信機能は本番環境のみで実現する。またはテストで切り替える
-export const EMAIL_NOTIFY_ENABLED = false;
+export const EMAIL_NOTIFY_ENABLED = false; //本番では必ず true
+export const DEV_AUTO_LOGIN = true; // 本番では必ず false
+
+export const DEV_TEST_USER_ID = '320e7ac5-a3e7-4241-94d8-619ad4b1e9f3';
+
+
 
 // Supabase接続設定
 const SUPABASE_URL = 'https://dylrgcsrlqvyjjggbrdb.supabase.co';
