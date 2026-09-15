@@ -3,6 +3,7 @@
 import { openModal } from './modal.js';
 import { renderMapButton } from './map-button.js';
 import { createSchedule, updateSchedule, deleteSchedule } from '../services/calendar-service.js';
+import { confirmAndRun } from '../utils/action-utils.js';
 
 export function openCalendarModal({ mode, event, onSaved }) {
   const p = event?.extendedProps || {};
@@ -17,91 +18,110 @@ export function openCalendarModal({ mode, event, onSaved }) {
   const isEdit = mode === 'EDIT';
   const isView = mode === 'VIEW';
 
-  /* ------------------------------
-   * VIEW（読み取り専用）
-   * ------------------------------ */
-  if (isView) {
-    openModal({
-      title: titles.VIEW,
-      content: `
-        <div class="detail-meta-text">日付：${p.raw_date}</div>
-        <div class="detail-meta-text">時間：${p.start_time}〜${p.end_time}</div>
-        <div class="detail-meta-text">場所：${p.location}</div>
-        ${renderMapButton(p.location)}
-        <div class="detail-meta-text">指導：${p.instructor || ''}</div>
-        <div class="detail-meta-text">内容：${p.notes || ''}</div>
-      `,
-      actions: [
-        { label: '編集', type: 'primary', onClick: () => openCalendarModal({ mode: 'EDIT', event, onSaved }) },
-        { label: '複製', type: 'secondary', onClick: () => openCalendarModal({ mode: 'DUPLICATE', event, onSaved }) },
-        {
-          label: '削除',
-          type: 'danger',
-          onClick: async () => {
-            if (!confirm('削除しますか？')) return;
-            await deleteSchedule(event.id);
-            onSaved?.();
-          }
-        },
-        { label: '閉じる', type: 'secondary' }
-      ]
-    });
-    return;
-  }
+  // 1. 下部アクションボタンの切り替え
+  let actions = [];
 
-  /* ------------------------------
-   * CREATE / EDIT / DUPLICATE（共通フォーム）
-   * ------------------------------ */
-  openModal({
-    title: titles[mode],
-    content: renderForm(p),
-    actions: [
+  if (isView) {
+    // VIEWモード：編集・複製・削除・閉じる
+    actions = [
+      {
+        label: '編集',
+        type: 'primary',
+        onClick: () => openCalendarModal({ mode: 'EDIT', event, onSaved })
+      },
+      {
+        label: '複製',
+        type: 'secondary',
+        onClick: () => openCalendarModal({ mode: 'DUPLICATE', event, onSaved })
+      },
+      {
+        label: '削除',
+        type: 'danger',
+        onClick: async () => {
+          await confirmAndRun(
+            'この予定を削除しますか？',
+            () => deleteSchedule(event.id),
+            '削除しました'
+          );
+          onSaved?.();
+        }
+      },
+      { label: '閉じる', type: 'secondary' }
+    ];
+  } else {
+    // CREATE / EDIT / DUPLICATE モード：追加 or 保存・閉じる
+    actions = [
       {
         label: isEdit ? '保存' : '追加',
         type: 'primary',
         onClick: async () => {
           const data = collectFormData();
-          isEdit ? await updateSchedule(event.id, data) : await createSchedule(data);
+
+          if (isEdit) {
+            await confirmAndRun(
+              '保存しますか？',
+              () => updateSchedule(event.id, data),
+              '保存しました'
+            );
+          } else {
+            await confirmAndRun(
+              '追加しますか？',
+              () => createSchedule(data),
+              '追加しました'
+            );
+          }
+
           onSaved?.();
         }
       },
       { label: '閉じる', type: 'secondary' }
-    ]
+    ];
+  }
+
+  // 2. モーダル表示（フォームを共通利用）
+  openModal({
+    title: titles[mode],
+    content: renderForm(p, isView),
+    actions: actions
   });
 }
 
 /* ------------------------------
- * 共通フォーム
+ * 共通フォーム（isView のときは disabled）
  * ------------------------------ */
-function renderForm(p) {
+function renderForm(p, isView = false) {
+  const disabled = isView ? 'disabled' : '';
+
   return `
-    ${input('date', '日付 *', p.raw_date)}
-    <div class="form-row">
-      ${input('start_time', '開始時間 *', p.start_time || '18:00')}
-      ${input('end_time', '終了時間 *', p.end_time || '21:00')}
+    <div class="form-group">
+      <label>日付 *</label>
+      <input id="date" type="date" class="form-control" value="${p.raw_date || ''}" ${disabled}>
     </div>
 
-    ${locationInput(p.location)}
+    <div class="form-row">
+      <div class="form-group flex-1">
+        <label>開始時間 *</label>
+        <input id="start_time" type="time" class="form-control" value="${p.start_time || '18:00'}" ${disabled}>
+      </div>
+      <div class="form-group flex-1">
+        <label>終了時間 *</label>
+        <input id="end_time" type="time" class="form-control" value="${p.end_time || '21:00'}" ${disabled}>
+      </div>
+    </div>
 
+    ${locationInput(p.location || '', disabled)}
+
+    <!-- VIEWモードでもGoogleマップボタンは押せるようにする -->
     ${renderMapButton(p.location || '')}
 
-    ${input('instructor', '指導', p.instructor)}
+    <div class="form-group">
+      <label>指導</label>
+      <input id="instructor" type="text" class="form-control" value="${p.instructor || ''}" ${disabled}>
+    </div>
+
     <div class="form-group">
       <label>内容・曲目</label>
-      <textarea id="program_notes" class="form-control" rows="3">${p.notes || ''}</textarea>
-    </div>
-  `;
-}
-
-/* ------------------------------
- * 汎用 input
- * ------------------------------ */
-function input(id, label, value = '') {
-  const type = id.includes('time') ? 'time' : id === 'date' ? 'date' : 'text';
-  return `
-    <div class="form-group">
-      <label>${label}</label>
-      <input id="${id}" type="${type}" class="form-control" value="${value}">
+      <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${p.notes || ''}</textarea>
     </div>
   `;
 }
@@ -109,11 +129,11 @@ function input(id, label, value = '') {
 /* ------------------------------
  * 場所専用 input（datalist 付き）
  * ------------------------------ */
-function locationInput(value = '') {
+function locationInput(value = '', disabled = '') {
   return `
     <div class="form-group">
       <label>場所 *</label>
-      <input id="location" type="text" class="form-control" list="location-list" value="${value}">
+      <input id="location" type="text" class="form-control" list="location-list" value="${value}" ${disabled}>
       <datalist id="location-list">
         <option value="森のホール21 リハ室">
         <option value="流山エルズ（生涯学習センター）">
