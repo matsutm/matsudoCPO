@@ -1,6 +1,7 @@
 // js/views/announcement-view.js
 
-import { getCurrentUser, fetchAnnouncements, fetchUserReadIds, markAsRead } from '../services/announcement-service.js';
+import { getCurrentUser } from '../services/auth-service.js';
+import { fetchAnnouncements, fetchUserReadIds, markAsRead } from '../services/announcement-service.js';
 import { createAnnouncementRowHTML, attachAnnouncementClickEvents } from '../components/announcement-card.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
 
