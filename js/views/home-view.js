@@ -1,7 +1,7 @@
 // js/views/home-view.js
 
 import { fetchAnnouncements, fetchUserReadIds } from '../services/announcement-service.js';
-import { getCurrentUser } from '../services/anuth-service.js';
+import { getCurrentUser } from '../services/auth-service.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
 import { attachAnnouncementClickEvents } from '../components/announcement-card.js';
 import { formatDateShort, escapeHtml } from '../utils.js';
