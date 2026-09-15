@@ -13,8 +13,6 @@ export function renderCalendarView() {
       <div style="margin-bottom: 12px; text-align: right;">
         <button id="btnOpenCreateModal" class="btn-primary">＋ 予定を追加</button>
       </div>
-      
-      <!-- カレンダー本体 -->
       <div id="calendar"></div>
     </div>
   `;
@@ -41,29 +39,34 @@ export async function initCalendarView() {
       { events: holidayEvents }
     ],
     eventDidMount: attachTooltip,
+
     eventClick: function(info) {
-      if (info.event.id) {
-        openCalendarModal('VIEW', info.event, () => calendar.refetchEvents());
-      }
+      openCalendarModal({
+        mode: 'VIEW',
+        event: info.event,
+        onSaved: () => calendar.refetchEvents()
+      });
     }
   });
 
   calendar.render();
 
-  // 新規追加ボタンイベント
   document.getElementById('btnOpenCreateModal')?.addEventListener('click', () => {
-    openCalendarModal('CREATE', null, () => calendar.refetchEvents());
+    openCalendarModal({
+      mode: 'CREATE',
+      event: null,
+      onSaved: () => calendar.refetchEvents()
+    });
   });
 }
 
-// FullCalendar用のイベント取得ブリッジ
 async function fetchSchedulesForCalendar(fetchInfo, successCallback, failureCallback) {
   try {
     const schedules = await fetchSchedulesData();
 
     const events = schedules.map(item => {
-      const startTime = item.start_time ? item.start_time.slice(0, 5) : '';
-      const endTime = item.end_time ? item.end_time.slice(0, 5) : '';
+      const startTime = item.start_time?.slice(0, 5) || '';
+      const endTime = item.end_time?.slice(0, 5) || '';
       const timeRange = startTime ? `${startTime}〜${endTime}` : '';
 
       return {
