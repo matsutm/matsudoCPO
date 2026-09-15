@@ -3,7 +3,6 @@
 import { fetchAnnouncementById, markAsRead, createAnnouncement } from '../services/announcement-service.js';
 import { renderEmailOptionUI, initEmailOptionEvents, getEmailOptionData } from './announcement-email-option.js';
 import { formatDateTime } from '../utils.js';
-import { EMAIL_NOTIFY_ENABLED } from '../config.js';
 
 /**
  * 掲示板モーダルの起動（CREATE / VIEW）
@@ -104,7 +103,7 @@ export async function openAnnouncementModal(mode = 'CREATE', postId = null, curr
           target_value: emailOptions.targetValue
         });
 
-        if (EMAIL_NOTIFY_ENABLED && emailOptions.isEmailSent) {
+        if (window.EMAIL_NOTIFY_ENABLED && emailOptions.isEmailSent) {
           await sendBulletinEmail({ title, content, targetScope: emailOptions.targetScope, targetValue: emailOptions.targetValue });
         }
 
