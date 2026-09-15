@@ -1,8 +1,7 @@
 // js/services/announcement-service.js
 
 /**
- * ログインユーザーの取得（localStorage連携）
- */
+ * ＜この箇所は使わない＞ログインユーザーの取得（localStorage連携）
 export function getCurrentUser() {
   return JSON.parse(localStorage.getItem('currentUser')) || {
     id: '00000000-0000-0000-0000-000000000000',
@@ -10,6 +9,7 @@ export function getCurrentUser() {
     role: 'member'
   };
 }
+*/
 
 
 /**
