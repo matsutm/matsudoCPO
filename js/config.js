@@ -22,9 +22,9 @@ window.APP_CONSTANTS = {
   // SNS・チケットロゴリスト（配列化して一括管理）
   SOCIAL_LINKS: [
     { name: 'X', url: 'https://x.com/Matsudocityphil', img: './X-logo.png', class: 'x-img' },
-    { name: 'Instagram', url: 'https://www.instagram.com/matsudo_city_orchestra/', img: './Instagram_logo.jpg', class: 'instagram-img' },
+    { name: 'Instagram', url: 'https://www.instagram.com/matsudo_city_orchestra/', img: './Instagram_logo.png', class: 'instagram-img' },
     { name: 'Facebook', url: 'https://www.facebook.com/profile.php?id=100092686631174', img: './Facebook_logo.png', class: 'facebook-img' },
-    { name: 'teket', url: 'teket.jp/events?word=%E6%9D%BE%E6%88%B8%E3%82%B7%E3%83%86%E3%82%A3%E3%83%95%E3%82%A3%E3%83%AB&category=&region=&event_date_from=&event_date_to=', img: './teket-logo-h.png', class: 'teket-img' }
+    { name: 'teket', url: 'https://teket.jp/events?word=%E6%9D%BE%E6%88%B8%E3%82%B7%E3%83%86%E3%82%A3%E3%83%95%E3%82%A3%E3%83%AB&category=&region=&event_date_from=&event_date_to=', img: './teket-logo-h.png', class: 'teket-img' }
   ]
 };
 
