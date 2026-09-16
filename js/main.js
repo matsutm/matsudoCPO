@@ -4,6 +4,7 @@ import { renderAuthView, initAuthView } from './views/auth-view.js';
 import { renderHomeView, initHomeView } from './views/home-view.js';
 import { renderCalendarView, initCalendarView } from './views/calendar-view.js';
 import { renderAnnouncementView, initAnnouncementView } from './views/announcement-view.js';
+import { renderLibraryView, initLibraryView } from './views/library-view.js';
 
 const appContent = document.getElementById('app-content');
 
@@ -36,6 +37,11 @@ export async function navigateTo(viewName, isBrowserBack = false) {
     case 'announcement':
       appContent.innerHTML = renderAnnouncementView();
       await initAnnouncementView(navigateTo);
+      break;
+
+    case 'library':
+      appContent.innerHTML = renderLibraryView();
+      await initLibraryView(navigateTo);
       break;
 
     default:
