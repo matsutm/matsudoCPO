@@ -15,135 +15,88 @@ body {
 }
 
 /* ==========================================
- * 2. ヘッダー領域 & レスポンシブ
+ * 2. ヘッダー領域
  * ========================================== */
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
+  padding: 10px 16px;
   background-color: #ffffff;
   border-bottom: 1px solid #e0e0e0;
 }
 
+/* 左側：ロゴ＆タイトル */
 .app-header-left {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  flex-shrink: 0; /* ロゴ領域は潰さない */
+  gap: 8px;
+  min-width: 0;
 }
 
 .app-logo {
-  height: 44px;
+  height: 38px;
   width: auto;
-}
-
-.app-header-center {
-  flex: 1;
-  text-align: center;
-  min-width: 0; /* Flexbox内でテキスト折り返し・省略を効かせるために必須 */
+  flex-shrink: 0;
 }
 
 .app-header h1 {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   margin: 0;
-  line-height: 1.3;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
-
-/* 右側：ユーザー情報＆ボタンエリア（完全右寄せ・縦並び） */
-.app-header-right {
-  display: flex;
-  flex-direction: column; /* 縦並びにする */
-  align-items: flex-end;  /* 完全右寄せ */
-  justify-content: center;
-  gap: 4px;               /* ユーザー名とボタンの間の余白 */
-  text-align: right;
-}
-
-.login-user-display {
-  font-size: 0.85rem;
-  color: #475569;
-  white-space: nowrap; /* お名前だけは1行に維持 */
-}
-
-/* 2〜3行目：ログアウトボタン */
-.btn-link {
-  background: none;
-  border: none;
-  color: #666666;
-  font-size: 0.85rem;
-  cursor: pointer;
-  padding: 2px 0;
-  text-decoration: underline;
   line-height: 1.2;
 }
 
-/* スマホ向け（画面幅 600px 以下）のレイアウト調整 */
-@media (max-width: 600px) {
-  .app-header {
-    flex-wrap: wrap; /* 要素が溢れたら下に回す */
-    padding: 0.5rem;
-  }
+/* 右側：ユーザー名（上）＆ログアウトボタン（下） */
+.app-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
 
-  .app-header-left {
-    order: 1;
-  }
+.login-user-display {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #475569;
+}
 
-  .app-header-center {
-    order: 2;
-    text-align: left; /* スマホでは左寄せで見やすく */
-    padding-left: 0.25rem;
-  }
+.btn-link {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+.btn-link:hover { color: #dc2626; }
 
-  .app-header h1 {
-    font-size: 1.0rem;
-  }
-
-  .app-header-right {
-    order: 3;
-    width: 100%; /* 横幅いっぱいに広げて下段へ落とす */
-    justify-content: flex-end;
-    margin-top: 0.4rem;
-    padding-top: 0.4rem;
-    border-top: 1px dashed #e2e8f0;
-  }
+/* スマホ表示の微調整 */
+@media (max-width: 480px) {
+  .app-logo { height: 32px; }
+  .app-header h1 { font-size: 0.95rem; }
 }
 
 /* ==========================================
  * 3. ボタン共通
  * ========================================== */
-.btn-primary {
-  background-color: #2563eb;
-  color: #ffffff;
+.btn-primary, .btn-secondary, .btn-danger {
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
+  color: #ffffff;
 }
+.btn-primary { background-color: #2563eb; }
 .btn-primary:hover { background-color: #1d4ed8; }
 
-.btn-secondary {
-  background-color: #64748b;
-  color: #ffffff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
+.btn-secondary { background-color: #64748b; }
 .btn-secondary:hover { background-color: #475569; }
 
-.btn-danger {
-  background-color: #dc2626;
-  color: #ffffff;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
+.btn-danger { background-color: #dc2626; }
 .btn-danger:hover { background-color: #b91c1c; }
 
 /* ==========================================
@@ -177,7 +130,7 @@ body {
 }
 
 /* ==========================================
- * 5. モーダルダイアログ共通構造 (modal.js用)
+ * 5. モーダルダイアログ共通構造
  * ========================================== */
 .modal-overlay {
   display: none;
