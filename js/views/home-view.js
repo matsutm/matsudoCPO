@@ -57,7 +57,7 @@ export function renderHomeView() {
               </li>
               <li>
                 <button id="btnGoMembers" class="library-link-button">
-                  <span>👥 団員名簿</span> ➔
+                  <span>その他</span> ➔
                 </button>
               </li>
             </ul>
@@ -74,10 +74,11 @@ export async function initHomeView(navigateTo) {
   const currentUser = getCurrentUser();
 
   // スケジュールとお知らせ未読の両方を読み込む
-  await Promise.all([
-    loadUnreadAnnouncements(currentUser, navigateTo),
-    loadNextTwoSchedules()
-  ]);
+  // 1. スケジュール取得とボタンイベント登録を優先して画面をすぐ動かせるようにする
+  await loadNextTwoSchedules();
+
+  // 2. お知らせ取得は await せずにバックグラウンドで走らせ、読み込みエラーを回避
+  loadUnreadAnnouncements(currentUser, navigateTo);
 
   // タイトルおよびボタンの遷移イベントを設定
   document.getElementById('linkGoAnnouncement')?.addEventListener('click', () => navigateTo('announcement'));
