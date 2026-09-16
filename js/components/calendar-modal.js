@@ -38,11 +38,7 @@ export function openCalendarModal({ mode, event, onSaved }) {
         label: '削除',
         type: 'danger',
         onClick: async () => {
-          await confirmAndRun(
-            'この予定を削除しますか？',
-            () => deleteSchedule(event.id),
-            '削除しました'
-          );
+          await confirmAndRun('この予定を削除しますか？', () => deleteSchedule(event.id), '削除しました');
           onSaved?.();
         }
       },
@@ -56,25 +52,15 @@ export function openCalendarModal({ mode, event, onSaved }) {
         type: 'primary',
         onClick: async () => {
           const data = collectFormData();
+          const action = isEdit ? () => updateSchedule(event.id, data) : () => createSchedule(data);
+          const msg = isEdit ? '保存しますか？' : '追加しますか？';
+          const successMsg = isEdit ? '保存しました' : '追加しました';
 
-          if (isEdit) {
-            await confirmAndRun(
-              '保存しますか？',
-              () => updateSchedule(event.id, data),
-              '保存しました'
-            );
-          } else {
-            await confirmAndRun(
-              '追加しますか？',
-              () => createSchedule(data),
-              '追加しました'
-            );
-          }
-
+          await confirmAndRun(msg, action, successMsg);
           onSaved?.();
         }
       },
-      { label: '閉じる', type: 'secondary' }
+      { label: 'キャンセル', type: 'secondary' }
     ];
   }
 
