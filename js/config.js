@@ -2,6 +2,25 @@
 const EMAIL_NOTIFY_ENABLED = false; //本番では必ず true
 const DEV_AUTO_LOGIN = false; // 本番では必ず false
 
+
+// 固定文字列・URLを window に設定
+window.APP_CONSTANTS = {
+  // SNS・チケットサイトURL
+  SOCIAL_URLS: {
+    X: 'https://x.com/Matsudocityphil',
+    INSTAGRAM: 'https://www.instagram.com/matsudo_city_orchestra/',
+    FACEBOOK: 'https://www.facebook.com/profile.php?id=100092686631174',
+    TEKET: 'https://teket.jp/events?word=%E6%9D%BE%E6%88%B8%E3%82%B7%E3%83%86%E3%82%A3%E3%83%95%E3%82%A3%E3%83%AB&category=&region=&event_date_from=&event_date_to='
+  },
+  // 主要資料リンク先URL
+  LIBRARY_URLS: {
+    DOLCE: 'https://drive.google.com/file/d/...',
+    CONCERT_PLAN: 'https://drive.google.com/file/d/...',
+    PRACTICE_SCHEDULE: 'https://drive.google.com/file/d/...'
+  }
+};
+
+// テストユーザID
 const DEV_TEST_USER_ID = '320e7ac5-a3e7-4241-94d8-619ad4b1e9f3';
 
 
@@ -17,3 +36,4 @@ function formatDateToISO(dateString) {
   if (!dateString) return '';
   return new Date(dateString).toISOString();
 }
+
