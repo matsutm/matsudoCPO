@@ -95,14 +95,14 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
   if (!listContainer) return;
 
   // ★ 1. Supabase Client が準備完了するまで最大2秒待つ
-  await waitForSupabase();
+  //await waitForSupabase();
 
   // ★ 2. ユーザー情報がない場合の安全なフォールバック
-  if (!currentUser || !currentUser.id) {
-    console.warn('ユーザー情報が確認できないため、再取得を試みます');
-    listContainer.innerHTML = '<p class="empty-text">お知らせを読み込み中...</p>';
-    return;
-  }
+  //if (!currentUser || !currentUser.id) {
+  //  console.warn('ユーザー情報が確認できないため、再取得を試みます');
+  //  listContainer.innerHTML = '<p class="empty-text">お知らせを読み込み中...</p>';
+  //  return;
+  //}
 
   try {
     const [posts, readIds] = await Promise.all([
