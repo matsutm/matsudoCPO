@@ -34,6 +34,15 @@ body {
   min-width: 0;
 }
 
+/* ★ <a> タグ自体を Flexbox にして横並びを強制 */
+.header-home-link {
+  display: flex;             /* 横並びにする */
+  align-items: center;       /* 縦中央揃え */
+  gap: 8px;                  /* ロゴと文字の間隔 */
+  text-decoration: none;     /* 下線を消す */
+  color: inherit;            /* 文字色を継承 */
+}
+
 .app-logo {
   height: 38px;
   width: auto;
