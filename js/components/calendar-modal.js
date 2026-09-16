@@ -80,17 +80,17 @@ function renderForm(p, isView = false) {
 
   return `
     <div class="form-group">
-      <label>日付 *</label>
+      <label for="date">日付 *</label>
       <input id="date" type="date" class="form-control" value="${p.raw_date || ''}" ${disabled}>
     </div>
 
     <div class="form-row">
       <div class="form-group flex-1">
-        <label>開始時間 *</label>
+        <label for="start_time">開始時間 *</label>
         <input id="start_time" type="time" class="form-control" value="${p.start_time || '18:00'}" ${disabled}>
       </div>
       <div class="form-group flex-1">
-        <label>終了時間 *</label>
+        <label for="end_time">終了時間 *</label>
         <input id="end_time" type="time" class="form-control" value="${p.end_time || '21:00'}" ${disabled}>
       </div>
     </div>
@@ -101,12 +101,12 @@ function renderForm(p, isView = false) {
     ${renderMapButton(p.location || '')}
 
     <div class="form-group">
-      <label>指導</label>
+      <label for="instructor">指導</label>
       <input id="instructor" type="text" class="form-control" value="${p.instructor || ''}" ${disabled}>
     </div>
 
     <div class="form-group">
-      <label>内容・曲目</label>
+      <label for="program_notes">内容・曲目</label>
       <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${p.notes || ''}</textarea>
     </div>
   `;
@@ -118,7 +118,7 @@ function renderForm(p, isView = false) {
 function locationInput(value = '', disabled = '') {
   return `
     <div class="form-group">
-      <label>場所 *</label>
+      <label for="location">場所 *</label>
       <input id="location" type="text" class="form-control" list="location-list" value="${value}" ${disabled}>
       <datalist id="location-list">
         <option value="森のホール21 リハ室">
