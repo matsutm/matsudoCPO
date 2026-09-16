@@ -48,6 +48,9 @@ async function renderList(currentUser) {
       return;
     }
 
+    // キャッシュの初期化と保存処理を追加
+    window.__ANNOUNCEMENT_CACHE__ = new Map(posts.map(post => [post.id, post]));
+
     listContainer.innerHTML = posts
       .map(post => createAnnouncementRowHTML(post, readIds.has(post.id), true))
       .join('');
