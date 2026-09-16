@@ -51,8 +51,8 @@ export function attachAnnouncementClickEvents(container, currentUserId, onClickP
 
       const postId = Number(row.dataset.id);
 
-      // post データは view 側が管理するキャッシュから取得
-      const post = window.__ANNOUNCEMENT_CACHE__.get(postId);
+      // オプショナルチェイニング (?. ) を使って安全に取得
+      const post = window.__ANNOUNCEMENT_CACHE__?.get(postId);
 
       // モーダルを開くのは view 側
       onClickPost(post);
