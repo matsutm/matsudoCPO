@@ -1,6 +1,7 @@
-import { sendOtpEmail, verifyOtpCode } from '../services/auth-service.js';
+// js/views/auth-view.js
 
-let currentStep = 'EMAIL'; // 'EMAIL' または 'OTP'
+import { sendOtpEmail, verifyOtpCode, getCurrentUser } from '../services/auth-service.js';
+
 let targetEmail = '';
 
 export function renderAuthView() {
@@ -8,7 +9,7 @@ export function renderAuthView() {
     <div class="auth-container">
       <div class="auth-card">
         <h2>松戸シティフィル ポータル</h2>
-        <p class="auth-subtitle">団員確認（初回のみ）</p>
+        <p class="auth-subtitle">団員確認</p>
 
         <!-- ステップ1: メールアドレス入力 -->
         <form id="auth-email-form" class="auth-form">
@@ -19,7 +20,7 @@ export function renderAuthView() {
           <button type="submit" class="btn-primary btn-block" id="btn-send-otp">認証コードを送信</button>
         </form>
 
-        <!-- ステップ2: 6桁パスコード入力 (初期は非表示) -->
+        <!-- ステップ2: 6桁コード入力 -->
         <form id="auth-otp-form" class="auth-form" style="display: none;">
           <p class="otp-notice">
             <strong id="sent-email-label"></strong> 宛に届いた<br>6桁の認証コードを入力してください。
@@ -43,55 +44,61 @@ export function initAuthView(onSuccess) {
   const errorMsg = document.getElementById('auth-error-msg');
   const backBtn = document.getElementById('btn-back-step');
 
-  // ステップ1: メアド送信
+  const toggleError = (msg = '') => {
+    errorMsg.textContent = msg;
+    errorMsg.style.display = msg ? 'block' : 'none';
+  };
+
+  // --- ステップ1: メールアドレス入力 & 判定 ---
   emailForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    hideError();
+    toggleError();
 
-    const email = document.getElementById('auth-email').value.trim();
-    const btn = document.getElementById('btn-send-otp');
+    const email = document.getElementById('auth-email').value.trim().toLowerCase();
+    const savedUser = getCurrentUser();
 
-    // ★ 2回目以降の簡易ログイン
-    if (currentUser && currentUser.email.toLowerCase() === email) {
-      // すぐログイン扱いにする
-      alert(`おかえりなさい、${currentUser.name} さん！`);
-      if (onSuccess) onSuccess(currentUser);
+    // 1. 2回目以降：メールアドレス一致 ➔ そのままログイン
+    if (savedUser && savedUser.email.toLowerCase() === email) {
+      alert(`おかえりなさい、${savedUser.name} さん！`);
+      onSuccess?.(savedUser);
       return;
-    } else {
-      const proceed = confirm(
-        'ユーザ情報が一致しません。\n初回ログイン手続を行いますか？'
-      );
+    }
 
+    // 2. 2回目以降：メールアドレス不一致 ➔ 2択の confirm で確認
+    if (savedUser) {
+      const proceed = confirm(
+        '入力されたメールアドレスが前回のログイン情報と異なります。\n初回ログイン（認証コード送信）へ進みますか？'
+      );
+      
       if (!proceed) {
-        return; // キャンセル → 何もしない
+        toggleError('初回ログインが必要です。名簿に登録されたメールアドレスを入力してください。');
+        return; // キャンセルされたら処理中断
       }
     }
 
-    // ★ 初回ログイン（今まで通り）
+    // 3. OTPコード送信手続き（初回、または上記確認で OK を押した場合）
+    const btn = document.getElementById('btn-send-otp');
     btn.disabled = true;
     btn.textContent = '送信中...';
 
     try {
       await sendOtpEmail(email);
       targetEmail = email;
-
-      // 画面切り替え
       emailForm.style.display = 'none';
       otpForm.style.display = 'block';
       document.getElementById('sent-email-label').textContent = email;
-
     } catch (err) {
-      showError(err.message);
+      toggleError(err.message);
     } finally {
       btn.disabled = false;
       btn.textContent = '認証コードを送信';
     }
   });
 
-// ステップ2: コード検証
+  // --- ステップ2: 6桁コード検証 ---
   otpForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    hideError();
+    toggleError();
 
     const code = document.getElementById('auth-otp-code').value.trim();
     const btn = document.getElementById('btn-verify-otp');
@@ -101,36 +108,20 @@ export function initAuthView(onSuccess) {
 
     try {
       const user = await verifyOtpCode(targetEmail, code);
-      alert(`認証されました。おかえりなさい、${user.name} さん！`);
-      
-      // 認証成功時コールバックを実行してメイン画面へ切り替え
-      if (onSuccess) {
-        onSuccess(user);
-        updateLoginUserDisplay();
-      }
-
+      alert(`認証が完了しました。ようこそ、${user.name} さん！`);
+      onSuccess?.(user);
     } catch (err) {
-      showError(err.message);
+      toggleError(err.message);
     } finally {
       btn.disabled = false;
       btn.textContent = '確定してログイン';
     }
   });
-  
+
   // やり直しボタン
   backBtn.addEventListener('click', () => {
-    hideError();
+    toggleError();
     otpForm.style.display = 'none';
     emailForm.style.display = 'block';
   });
-
-  function showError(msg) {
-    errorMsg.textContent = msg;
-    errorMsg.style.display = 'block';
-  }
-
-  function hideError() {
-    errorMsg.textContent = '';
-    errorMsg.style.display = 'none';
-  }
 }
