@@ -66,12 +66,16 @@ function updateLoginUserDisplay() {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navHome')?.addEventListener('click', () => navigateTo('home'));
 
+  // ブラウザの「戻る・進む」ボタン操作時のイベント
   window.addEventListener('popstate', (event) => {
     const viewName = event.state?.view || 'home';
     navigateTo(viewName, true);
   });
 
+  // URLのハッシュ（例: #announcement）を取得（無ければ 'home'）
   const initialView = location.hash.replace('#', '') || 'home';
+  // 履歴の状態を初期セット
   history.replaceState({ view: initialView }, '', `#${initialView}`);
-  navigateTo('auth', true);
+  // URLのハッシュから判定した画面へ遷移させる
+  navigateTo(initialView, true);
 });
