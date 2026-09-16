@@ -87,10 +87,10 @@ function renderViewContent(body, createdAt) {
 function renderFormContent(title, body) {
   return `
     <div class="announcement-form">
-      <label>タイトル</label>
+      <label for="ann-title">タイトル</label>
       <input id="ann-title" type="text" class="input-text" value="${title}">
 
-      <label>本文</label>
+      <label for="ann-body">本文</label>
       <textarea id="ann-body" class="input-textarea">${body}</textarea>
     </div>
   `;
