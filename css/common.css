@@ -174,3 +174,45 @@ body {
   gap: 0.5rem;
   margin-top: 1.2rem;
 }
+
+
+/* ==========================================
+ * 6. ソーシャルメディア等ロゴ
+ * ========================================== */
+
+/* --- SNS・チケットロゴ 均等配置スタイル --- */
+.social-links-grid {
+  display: flex;
+  justify-content: space-around; /* 4つのロゴを横一列に均等配置 */
+  align-items: center;
+  padding: 12px 4px 4px 4px;
+  margin-top: 12px;
+  border-top: 1px dashed #e2e8f0; /* 上部の区切り線 */
+}
+
+/* ホバー時のアニメーション */
+.social-icon-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.social-icon-item:hover {
+  transform: translateY(-2px);
+  opacity: 0.8;
+}
+
+/* 共通ロゴ画像サイズ */
+.social-logo-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* teketの横長ロゴ用調整 */
+.teket-img {
+  width: auto;
+  height: 24px;
+}
