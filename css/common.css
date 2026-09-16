@@ -18,13 +18,12 @@ body {
  * 2. ヘッダー領域 & レスポンシブ
  * ========================================== */
 .app-header {
-  max-width: 1200px;
-  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 1rem;
-  gap: 0.5rem;
+  padding: 12px 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .app-header-left {
@@ -35,9 +34,8 @@ body {
 }
 
 .app-logo {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
+  height: 44px;
+  width: auto;
 }
 
 .app-header-center {
@@ -54,17 +52,32 @@ body {
   overflow-wrap: break-word;
 }
 
+/* 右側：ユーザー情報＆ボタンエリア（完全右寄せ・縦並び） */
 .app-header-right {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0; /* 右側のボタン類も潰さない */
+  flex-direction: column; /* 縦並びにする */
+  align-items: flex-end;  /* 完全右寄せ */
+  justify-content: center;
+  gap: 4px;               /* ユーザー名とボタンの間の余白 */
+  text-align: right;
 }
 
 .login-user-display {
   font-size: 0.85rem;
   color: #475569;
-  white-space: nowrap; /* お名前＋パート名だけは1行に維持 */
+  white-space: nowrap; /* お名前だけは1行に維持 */
+}
+
+/* 2〜3行目：ログアウトボタン */
+.btn-link {
+  background: none;
+  border: none;
+  color: #666666;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 2px 0;
+  text-decoration: underline;
+  line-height: 1.2;
 }
 
 /* スマホ向け（画面幅 600px 以下）のレイアウト調整 */
