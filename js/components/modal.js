@@ -32,13 +32,15 @@ export function openModal({ title, content, actions }) {
       ? 'btn-danger'
       : 'btn-secondary';
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       if (action.onClick) {
         try {
           await action.onClick();
-          overlay.remove(); // 成功した時だけ消す
+          // 成功した時だけ消す
+          overlay.remove();
         } catch (err) {
           // キャンセルやエラーの時はモーダルを開いたままにする
+          console.log('Action halted or cancelled:', err);
         }
       } else {
         overlay.remove(); // 単なる「閉じる」ボタンの時
