@@ -1,4 +1,4 @@
-// js/views/home-view.js
+	// js/views/home-view.js
 
 import { fetchAnnouncements, fetchUserReadIds } from '../services/announcement-service.js';
 import { getCurrentUser } from '../services/auth-service.js';
@@ -6,6 +6,9 @@ import { openAnnouncementModal } from '../components/announcement-modal.js';
 import { attachAnnouncementClickEvents } from '../components/announcement-card.js';
 import { formatDateShort, escapeHtml } from '../utils.js';
 import { createTooltipText, attachTooltip } from '../components/tooltip.js';
+import { renderPrimaryLibraryLinks } from '../components/library-links.js';
+import { renderSocialLinks } from '../components/social-links.js';
+
 
 // 1. ホーム画面のHTMLを出力
 export function renderHomeView() {
@@ -40,27 +43,17 @@ export function renderHomeView() {
           </div>
           <div class="card-body">
             <ul class="library-quick-links">
+              <!-- 主要3リンク（動的生成パーツ） -->
+              ${renderPrimaryLibraryLinks()}
               <li>
-                <a id="linkDolce" href="#" target="_blank" rel="noopener" class="library-link-item">
-                  <span>📄 Dolce 最新号 (PDF)</span> ➔
-                </a>
-              </li>
-              <li>
-                <a id="linkConcertPlan" href="#" target="_blank" rel="noopener" class="library-link-item">
-                  <span>🎼 今後の演奏会予定</span> ➔
-                </a>
-              </li>
-              <li>
-                <a id="linkPracticeSchedule" href="#" target="_blank" rel="noopener" class="library-link-item">
-                  <span>📋 練習予定表 (全体版)</span> ➔
-                </a>
-              </li>
-              <li>
-                <button id="btnGoMembers" class="library-link-button">
-                  <span>その他</span> ➔
+                <button id="btnGoLibraryOther" class="library-link-button">
+                  <span>📁 その他資料一覧</span> ➔
                 </button>
               </li>
             </ul>
+
+            <!-- SNS・チケットロゴ（配列データから均等配置） -->
+            ${renderSocialLinks()}
           </div>
         </div>
 
