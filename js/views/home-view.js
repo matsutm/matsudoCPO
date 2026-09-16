@@ -5,6 +5,7 @@ import { getCurrentUser } from '../services/auth-service.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
 import { attachAnnouncementClickEvents } from '../components/announcement-card.js';
 import { formatDateShort, escapeHtml } from '../utils.js';
+import { createTooltipText, attachTooltip } from '../components/tooltip.js';
 
 // 1. ホーム画面のHTMLを出力
 export function renderHomeView() {
@@ -173,6 +174,22 @@ async function loadNextTwoSchedules() {
         </div>
       `;
     }).join('');
+
+    // ★ カレンダーと同じホバー処理（attachTooltip）をセット
+    const eventEls = container.querySelectorAll('.event-item');
+    eventEls.forEach((el, index) => {
+      const item = schedules[index];
+      
+      // カレンダーの eventDidMount が受け取るオブジェクト構造に合わせて渡す
+      attachTooltip({
+        el: el,
+        event: {
+          extendedProps: {
+            tooltipText: createTooltipText(item)
+          }
+        }
+      });
+    });
 
   } catch (err) {
     console.error(err);
