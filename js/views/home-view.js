@@ -1,4 +1,4 @@
-	// js/views/home-view.js
+// js/views/home-view.js
 
 import { fetchAnnouncements, fetchUserReadIds } from '../services/announcement-service.js';
 import { getCurrentUser } from '../services/auth-service.js';
@@ -77,7 +77,7 @@ export async function initHomeView(navigateTo) {
   document.getElementById('linkGoAnnouncement')?.addEventListener('click', () => navigateTo('announcement'));
   document.getElementById('linkGoCalendar')?.addEventListener('click', () => navigateTo('calendar'));
   document.getElementById('linkGoLibrary')?.addEventListener('click', () => navigateTo('library'));
-  document.getElementById('btnGoMembers')?.addEventListener('click', () => navigateTo('members'));
+  document.getElementById('btnGoLibraryOther')?.addEventListener('click', () => navigateTo('library'));
 
   // ★主要資料のリンク先URL（必要に応じてGoogle Drive等の固定URLを割り当て）
   // 例: document.getElementById('linkDolce').href = 'https://drive.google.com/...';
