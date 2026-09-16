@@ -32,18 +32,21 @@ export function openModal({ title, content, actions }) {
       ? 'btn-danger'
       : 'btn-secondary';
 
-    if (action.onClick) {
-      btn.addEventListener('click', () => {
-        action.onClick();
-        document.body.removeChild(overlay);
-      });
-    } else {
-      btn.addEventListener('click', () => {
-        document.body.removeChild(overlay);
-      });
-    }
-
+    btn.addEventListener('click', () => {
+      if (action.onClick) {
+        try {
+          await action.onClick();
+          overlay.remove(); // 成功した時だけ消す
+        } catch (err) {
+          // キャンセルやエラーの時はモーダルを開いたままにする
+        }
+      } else {
+        overlay.remove(); // 単なる「閉じる」ボタンの時
+      }
+    });
+ 
     actionsEl.appendChild(btn);
+
   });
 
   box.appendChild(actionsEl);

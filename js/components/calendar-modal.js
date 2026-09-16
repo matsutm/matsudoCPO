@@ -8,6 +8,9 @@ import { confirmAndRun } from '../utils/action-utils.js';
 export function openCalendarModal({ mode, event, onSaved }) {
   const p = event?.extendedProps || {};
 
+  // ★ FullCalendar の ID を安全に取得
+  const scheduleId = event?.id || p.id;
+
   const titles = {
     CREATE: '予定の新規追加',
     EDIT: '予定の編集',
