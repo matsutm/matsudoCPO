@@ -1,16 +1,19 @@
 // js/components/announcement-modal.js
 
 import { openModal } from './modal.js';
-import { saveAnnouncement, updateAnnouncement } from '../services/announcement-service.js';
+import { saveAnnouncement, updateAnnouncement, markAsRead } from '../services/announcement-service.js';
 
 export function openAnnouncementModal({
   mode,          // 'CREATE' | 'VIEW' | 'EDIT'
+  id,            // ★VIEW時に既読登録するための掲示ID
   title,
   body,
   authorId,
+  currentUserId, // ★ログイン中のユーザーID
   createdAt,
   onSaved,       // CREATE 完了後
-  onUpdated      // EDIT 完了後
+  onUpdated,     // EDIT 完了後
+  onClosed       // ★VIEW 閉じ時のコールバック（未読件数再読込用）
 }) {
 
   // ------------------------------
@@ -55,9 +58,16 @@ export function openAnnouncementModal({
   }
 
   // ------------------------------
-  // VIEW モード（閲覧）
+  // VIEW モード（閲覧・自動既読化）
   // ------------------------------
   if (mode === 'VIEW') {
+    // ★開いた瞬間にバックグラウンドで既読登録を発火
+    if (id && currentUserId) {
+      markAsRead(id, currentUserId).catch(err => {
+        console.error('自動既読処理エラー:', err);
+      });
+    }
+
     openModal({
       title,
       content: `
@@ -67,7 +77,13 @@ export function openAnnouncementModal({
         </div>
       `,
       actions: [
-        { label: '閉じる', type: 'primary' }
+        { 
+          label: '閉じる', 
+          type: 'primary',
+          onClick: () => {
+            onClosed?.(); // モーダル閉鎖時に裏の未読カウントを更新
+          }
+        }
       ]
     });
 
