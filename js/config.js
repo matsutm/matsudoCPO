@@ -5,20 +5,29 @@ const DEV_AUTO_LOGIN = false; // 本番では必ず false
 
 // 固定文字列・URLを window に設定
 window.APP_CONSTANTS = {
-  // SNS・チケットサイトURL
-  SOCIAL_URLS: {
-    X: 'https://x.com/Matsudocityphil',
-    INSTAGRAM: 'https://www.instagram.com/matsudo_city_orchestra/',
-    FACEBOOK: 'https://www.facebook.com/profile.php?id=100092686631174',
-    TEKET: 'https://teket.jp/events?word=%E6%9D%BE%E6%88%B8%E3%82%B7%E3%83%86%E3%82%A3%E3%83%95%E3%82%A3%E3%83%AB&category=&region=&event_date_from=&event_date_to='
-  },
-  // 主要資料リンク先URL
-  LIBRARY_URLS: {
-    DOLCE: 'https://drive.google.com/file/d/...',
-    CONCERT_PLAN: 'https://drive.google.com/file/d/...',
-    PRACTICE_SCHEDULE: 'https://drive.google.com/file/d/...'
-  }
+  // 主要資料リスト
+  PRIMARY_LIBRARY_LINKS: [
+    { label: '📄 Dolce 最新号 (PDF)', url: 'https://drive.google.com/...' },
+    { label: '🎼 今後の演奏会予定', url: 'https://drive.google.com/...' },
+    { label: '📋 練習予定表 (全体版)', url: 'https://drive.google.com/...' }
+  ],
+
+  // その他資料・名簿リスト
+  OTHER_LIBRARY_LINKS: [
+    { label: '👥 団員名簿 (閲覧専用)', url: 'https://docs.google.com/...' },
+    { label: '📜 団則・規約 (PDF)', url: 'https://drive.google.com/...' },
+    { label: '📝 休団・退団届フォーム', url: 'https://forms.google.com/...' }
+  ],
+
+  // SNS・チケットロゴリスト（配列化して一括管理）
+  SOCIAL_LINKS: [
+    { name: 'X', url: 'https://x.com/Matsudocityphil', img: './X-logo.png', class: 'x-img' },
+    { name: 'Instagram', url: 'https://www.instagram.com/matsudo_city_orchestra/', img: './Instagram_logo.jpg', class: 'instagram-img' },
+    { name: 'Facebook', url: 'https://www.facebook.com/profile.php?id=100092686631174', img: './Facebook_logo.png', class: 'facebook-img' },
+    { name: 'teket', url: 'teket.jp/events?word=%E6%9D%BE%E6%88%B8%E3%82%B7%E3%83%86%E3%82%A3%E3%83%95%E3%82%A3%E3%83%AB&category=&region=&event_date_from=&event_date_to=', img: './teket-logo-h.png', class: 'teket-img' }
+  ]
 };
+
 
 // テストユーザID
 const DEV_TEST_USER_ID = '320e7ac5-a3e7-4241-94d8-619ad4b1e9f3';
