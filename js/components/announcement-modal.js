@@ -107,6 +107,9 @@ export function openAnnouncementModal({
  * ------------------------------ */
 function renderViewContent(p) {
   const body = p.content || p.body || '';
+  const title = p?.title || '';
+  const createdAt = p?.created_at || '';
+  
   return `
     <div class="form-group">
       <h3 style="margin: 0 0 0.75rem 0; font-size: 1.1rem; color: #1e3a8a;">${title}</h3>
