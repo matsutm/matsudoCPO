@@ -44,6 +44,10 @@ export async function initAnnouncementView(navigateTo) {
 
 async function renderList(currentUser) {
   const listContainer = document.getElementById('announcement-list');
+  const moreContainer = document.getElementById('more-container');
+  const btnViewMore   = document.getElementById('btnViewMore');
+
+
   if (!listContainer) return;
 
   try {
