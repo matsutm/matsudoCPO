@@ -127,7 +127,7 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
         currentUserId: currentUser.Id,
         onClosed: () => loadUnreadAnnouncements(currentUser, navigateTo)
       });
-    )};
+    });
 
   } catch (err) {
     console.error('ホーム未読取得エラー:', err);
