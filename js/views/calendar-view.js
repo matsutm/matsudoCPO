@@ -51,13 +51,17 @@ export async function initCalendarView() {
 
   calendar.render();
 
-  document.getElementById('btnOpenCreateModal')?.addEventListener('click', () => {
-    openCalendarModal({
-      mode: 'CREATE',
-      event: null,
-      onSaved: () => calendar.refetchEvents()
-    });
-  });
+  //createボタン
+  const btn = document.getElementById('btnOpenCreateModal');
+  if (btn) {
+    btn.onclick = () => {
+      openCalendarModal({
+        mode: 'CREATE',
+        event: null,
+        onSaved: () => calendar.refetchEvents()
+      });
+    };
+  }
 }
 
 async function fetchSchedulesForCalendar(fetchInfo, successCallback, failureCallback) {
