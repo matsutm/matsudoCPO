@@ -6,17 +6,22 @@ import { confirmAndRun } from '../utils/action-utils.js';
 
 export function openAnnouncementModal({
   mode,          // 'CREATE' | 'VIEW' | 'EDIT'
-  id,
-  title = '',
-  body = '',
-  authorId,
+  post = null,   //お知らせデータオブジェクト（VIEW/EDIT時に渡す）
+  authorId;      // CREATEに必要
   currentUserId,
-  createdAt = '',
   onSaved,       // CREATE 完了後
   onUpdated,     // EDIT 完了後
   onDeleted,     // DELETE 完了後
   onClosed       // VIEW 閉じ時のコールバック
 }) {
+
+  // post から安全に必要な値を取り出す（content ➔ body の変換もここで吸収）
+  const id        = post?.id;
+  const title     = post?.title || '';
+  const body      = post?.content || post?.body || ''; // ★ ここで吸い上げる！
+  const createdAt = post?.created_at || '';
+  const postAuthorId = post?.author_id || authorId;
+
   const isView = mode === 'VIEW';
   const isEdit = mode === 'EDIT';
 
