@@ -13,7 +13,9 @@ export async function fetchAnnouncements() {
   return data || [];
 }
 
-// ユーザーの既読IDセットの取得
+/**
+ * ユーザーの既読IDセットの取得
+ */
 export async function fetchUserReadIds(memberId) {
   if (!memberId) return new Set();
 
@@ -26,31 +28,35 @@ export async function fetchUserReadIds(memberId) {
   return new Set((data || []).map(r => r.announcement_id));
 }
 
-// 単一お知らせデータの取得
-export async function fetchAnnouncementById(postId) {
+/**
+ * 単一お知らせデータの取得
+ */
+export async function fetchAnnouncementById(id) {
   const { data, error } = await window.supabaseClient
     .from('announcements')
     .select('*, members:author_id(name)')
-    .eq('id', postId)
+    .eq('id', id)
     .single();
+
   if (error) throw error;
   return data;
 }
 
-// 既読登録処理
-export async function markAsRead(postId, memberId) {
-  if (!postId || !memberId) return;
+/**
+ * 既読登録処理
+ */
+export async function markAsRead(id, memberId) {
+  if (!id || !memberId) return;
 
   const { error } = await window.supabaseClient
     .from('announcement_reads')
-    .insert([{ announcement_id: postId, member_id: memberId }]);
+    .insert([{ announcement_id: id, member_id: memberId }]);
 
   if (error && error.code !== '23505') throw error;
 }
 
 /**
  * CREATE（新規投稿）
- * announcement-modal.js の CREATE モードから呼ばれる
  */
 export async function saveAnnouncement({ title, body, authorId }) {
   const postData = {
@@ -58,7 +64,7 @@ export async function saveAnnouncement({ title, body, authorId }) {
     title,
     content: body,
     is_email_sent: false,
-    target_scope: null,
+    target_scope: 'all',
     target_value: null,
     created_at: new Date().toISOString()
   };
@@ -74,22 +80,35 @@ export async function saveAnnouncement({ title, body, authorId }) {
 }
 
 /**
- * EDIT（投稿の更新）
- * announcement-modal.js の EDIT モードから呼ばれる
+ * UPDATE（投稿の更新）
+ * calendar-service の updateSchedule と呼び出しスタイルを統一
  */
-export async function updateAnnouncement(postId, { title, body }) {
+export async function updateAnnouncement(id, { title, body }) {
   const { data, error } = await window.supabaseClient
     .from('announcements')
     .update({
       title,
       content: body
     })
-    .eq('id', postId)
+    .eq('id', id)
     .select()
     .single();
 
   if (error) throw error;
   return data;
+}
+
+/**
+ * DELETE（投稿の削除）
+ * calendar-service の deleteSchedule と統一
+ */
+export async function deleteAnnouncement(id) {
+  const { error } = await window.supabaseClient
+    .from('announcements')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
 }
 
 /**
