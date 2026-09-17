@@ -61,14 +61,14 @@ export async function markAsRead(id, memberId) {
 /**
  * CREATE（新規投稿）
  */
-export async function saveAnnouncement({ title, body, authorId }) {
+export async function createAnnouncement(announcementData) {
   const postData = {
-    author_id: authorId,
-    title,
-    content: body,
-    is_email_sent: false,
-    target_scope: 'all',
-    target_value: null,
+    author_id: announcementData.authorId,
+    title: announcementData.title,
+    content: announcementData.body,
+    is_email_sent: announcementData.isEmailSent || false,
+    target_scope: announcementData.targetScope || 'all',
+    target_value: announcementData.targetValue || null,
     created_at: new Date().toISOString()
   };
 
@@ -86,13 +86,10 @@ export async function saveAnnouncement({ title, body, authorId }) {
  * UPDATE（投稿の更新）
  * calendar-service の updateSchedule と呼び出しスタイルを統一
  */
-export async function updateAnnouncement(id, { title, body }) {
+export async function updateAnnouncement(id, announcementData) {
   const { data, error } = await window.supabaseClient
     .from('announcements')
-    .update({
-      title,
-      content: body
-    })
+    .update(announcementData)
     .eq('id', id)
     .select()
     .single();
