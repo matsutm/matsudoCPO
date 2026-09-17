@@ -55,7 +55,7 @@ export function attachAnnouncementClickEvents(container, currentUserId, onClickP
       const postId = Number(row.dataset.id);
 
       // キャッシュから取得
-      const post = window.__ANNOUNCEMENT_CACHE__?.get(postId);
+      let post = window.__ANNOUNCEMENT_CACHE__?.get(postId);
 
       // キャッシュがない場合（ホーム画面等）はSupabaseから直接1件取得する
       if (!post) {
