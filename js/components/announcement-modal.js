@@ -92,9 +92,9 @@ export function openAnnouncementModal({
   // モーダル表示
   openModal({
     title: titles[mode] || title,
-    content: isView ? renderViewContent(title, body, createdAt) : renderFormContent(title, body),
+    content: isView ? renderViewContent(p) : renderFormContent(p),
     actions
-  });
+  }); 
 
   // メール送信オプションのイベント初期化（CREATE時）
   if (!isView && !isEdit) {
@@ -106,10 +106,10 @@ export function openAnnouncementModal({
  * HTMLレンダリング（common.css のクラス名に統一）
  * ------------------------------ */
 function renderViewContent(p) {
-  const body = p.content || p.body || '';
+  const body = p?.content || p?.body || '';
   const title = p?.title || '';
   const createdAt = p?.created_at || '';
-  
+
   return `
     <div class="form-group">
       <h3 style="margin: 0 0 0.75rem 0; font-size: 1.1rem; color: #1e3a8a;">${title}</h3>
@@ -124,7 +124,9 @@ function renderViewContent(p) {
 }
 
 function renderFormContent(p) {
-  const body = p.content || p.body || '';
+  // p が null や undefined の場合も考慮して安全に変数化
+  const title = p?.title || '';
+  const body  = p?.content || p?.body || '';
   return `
     <div class="form-group">
       <label for="ann-title">タイトル *</label>
