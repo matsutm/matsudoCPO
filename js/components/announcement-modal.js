@@ -41,21 +41,21 @@ export function openAnnouncementModal({
 
   if (isView) {
     actions = [
-      {
-        label: '編集',
-        type: 'primary',
-        onClick: () => openAnnouncementModal({
-          mode: 'EDIT', id, title, body, authorId, currentUserId, createdAt, onUpdated, onDeleted, onClosed
-        })
-      },
-      {
-        label: '削除',
-        type: 'danger',
-        onClick: async () => {
-          await confirmAndRun('この投稿を削除しますか？', () => deleteAnnouncement(id), '削除しました');
-          onDeleted?.();
-        }
-      },
+    /  {
+    /    label: '編集',
+    /    type: 'primary',
+    /    onClick: () => openAnnouncementModal({
+    /      mode: 'EDIT', post,id, title, body, authorId, currentUserId, createdAt, onUpdated, onDeleted, onClosed
+    /    })
+    /  },
+    /  {
+    /    label: '削除',
+    /    type: 'danger',
+    /    onClick: async () => {
+    /      await confirmAndRun('この投稿を削除しますか？', () => deleteAnnouncement(id), '削除しました');
+    /      onDeleted?.();
+    /    }
+    /  },
       {
         label: '閉じる',
         type: 'secondary',
