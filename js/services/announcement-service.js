@@ -65,7 +65,7 @@ export async function createAnnouncement(announcementData) {
   const postData = {
     author_id: announcementData.authorId,
     title: announcementData.title,
-    content: announcementData.body,
+    content: announcementData.content,
     is_email_sent: announcementData.isEmailSent || false,
     target_scope: announcementData.targetScope || 'all',
     target_value: announcementData.targetValue || null,
