@@ -24,13 +24,16 @@ export async function initAnnouncementView(navigateTo) {
   await renderList(currentUser);
 
   // ＋ 新規投稿 → CREATE モードでモーダルを開く
-  document.getElementById('btnNewPost')?.addEventListener('click', () => {
-    openAnnouncementModal({
-      mode: 'CREATE',
-      authorId: currentUser.id,
-      onSaved: () => renderList(currentUser)
-    });
-  });
+  const btn = document.getElementById('btnNewPost');
+  if btn {
+    btn.onclick = () => {
+      openAnnouncementModal({
+        mode: 'CREATE',
+        authorId: currentUser.id,
+        onSaved: () => renderList(currentUser)
+      });
+    };
+  }
 }
 
 async function renderList(currentUser) {
