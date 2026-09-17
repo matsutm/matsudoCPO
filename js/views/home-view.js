@@ -120,9 +120,14 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
     `).join('');
 
     // ★共通関数を呼び出すだけ！
-    attachAnnouncementClickEvents(listContainer, currentUser.id, () => {
-      loadUnreadAnnouncements(currentUser, navigateTo);
-    });
+    attachAnnouncementClickEvents(listContainer, currentUser.id, (post) => {
+      openAnnouncementModal({
+        mode: 'VIEW',
+        post,
+        currentUserId: currentUser.Id,
+        onClosed: () => loadUnreadAnnouncements(currentUser, navigateTo)
+      });
+    }
 
   } catch (err) {
     console.error('ホーム未読取得エラー:', err);

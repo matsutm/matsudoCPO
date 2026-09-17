@@ -62,10 +62,8 @@ async function renderList(currentUser) {
     attachAnnouncementClickEvents(listContainer, currentUser.id, (post) => {
       openAnnouncementModal({
         mode: 'VIEW',
-        title: post.title,
-        body: post.body,
-        createdAt: post.createdAt,
-        authorId: post.authorId,
+        post,
+        currentUserId: currentUser.Id,
         onUpdated: () => renderList(currentUser)
       });
     });
