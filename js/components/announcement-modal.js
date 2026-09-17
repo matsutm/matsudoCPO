@@ -1,7 +1,8 @@
 // js/components/announcement-modal.js
 
 import { openModal } from './modal.js';
-import { saveAnnouncement, updateAnnouncement, deleteAnnouncement, markAsRead } from '../services/announcement-service.js';
+import { createAnnouncement, updateAnnouncement, deleteAnnouncement, markAsRead } from '../services/announcement-service.js';
+import { renderEmailOptionUI, initEmailOptionEvents, getEmailOptionData } from './announcement-email-option.js';
 import { confirmAndRun } from '../utils/action-utils.js';
 
 export function openAnnouncementModal({
@@ -14,6 +15,8 @@ export function openAnnouncementModal({
   onDeleted,     // DELETE 完了後
   onClosed       // VIEW 閉じ時のコールバック
 }) {
+  const p = post || {};
+  const announcementId = p.id; // カレンダーとお揃いのID取得
 
   // post から安全に必要な値を取り出す（content ➔ body の変換もここで吸収）
   const id        = post?.id;
@@ -22,18 +25,18 @@ export function openAnnouncementModal({
   const createdAt = post?.created_at || '';
   const postAuthorId = post?.author_id || authorId;
 
-  const isView = mode === 'VIEW';
-  const isEdit = mode === 'EDIT';
-
   const titles = {
     CREATE: '新規投稿',
     EDIT: '投稿を編集',
     VIEW: 'お知らせの詳細'
   };
 
+  const isView = mode === 'VIEW';
+  const isEdit = mode === 'EDIT';
+
   // VIEW モード：自動既読処理
-  if (isView && id && currentUserId) {
-    markAsRead(id, currentUserId).catch(err => console.error('自動既読処理エラー:', err));
+  if (isView && announcementId && currentUserId) {
+    markAsRead(announcementId, currentUserId).catch(err => console.error('自動既読処理エラー:', err));
   }
 
   // アクションボタンの組み立て（calendar-modal と共通仕様）
@@ -45,7 +48,7 @@ export function openAnnouncementModal({
     //    label: '編集',
     //    type: 'primary',
     //    onClick: () => openAnnouncementModal({
-    //      mode: 'EDIT', post,id, title, body, authorId, currentUserId, createdAt, onUpdated, onDeleted, onClosed
+    //      mode: 'EDIT', post, announcementId, title, body, authorId, currentUserId, createdAt, onUpdated, onDeleted, onClosed
     //    })
     //  },
     //  {
@@ -68,12 +71,12 @@ export function openAnnouncementModal({
         label: isEdit ? '保存' : '投稿',
         type: 'primary',
         onClick: async () => {
-          const newTitle = document.getElementById('ann-title').value.trim();
-          const newBody  = document.getElementById('ann-body').value.trim();
+          // calendar-modal と同じくフォームから一括取得
+          const data = collectFormData();
 
           const action = isEdit
-            ? () => updateAnnouncement({ id, title: newTitle, body: newBody, authorId })
-            : () => saveAnnouncement({ title: newTitle, body: newBody, authorId });
+            ? () => updateAnnouncement(announcementId, data)
+            : () => createAnnouncement({ ...data, authorId });
 
           const msg = isEdit ? '保存しますか？' : '投稿しますか？';
           const successMsg = isEdit ? '保存しました' : '投稿しました';
@@ -92,12 +95,18 @@ export function openAnnouncementModal({
     content: isView ? renderViewContent(title, body, createdAt) : renderFormContent(title, body),
     actions
   });
+
+  // メール送信オプションのイベント初期化（CREATE時）
+  if (!isView && !isEdit) {
+    initEmailOptionEvents();
+  }
 }
 
 /* ------------------------------
  * HTMLレンダリング（common.css のクラス名に統一）
  * ------------------------------ */
-function renderViewContent(title, body, createdAt) {
+function renderViewContent(p) {
+  const body = p.content || p.body || '';
   return `
     <div class="form-group">
       <h3 style="margin: 0 0 0.75rem 0; font-size: 1.1rem; color: #1e3a8a;">${title}</h3>
@@ -111,7 +120,8 @@ function renderViewContent(title, body, createdAt) {
   `;
 }
 
-function renderFormContent(title, body) {
+function renderFormContent(p) {
+  const body = p.content || p.body || '';
   return `
     <div class="form-group">
       <label for="ann-title">タイトル *</label>
@@ -122,5 +132,25 @@ function renderFormContent(title, body) {
       <label for="ann-body">本文 *</label>
       <textarea id="ann-body" class="form-control" rows="6">${body}</textarea>
     </div>
+
+    <!-- メール送信オプション（新規投稿時） -->
+    ${renderEmailOptionUI()}
   `;
+}
+
+/* ------------------------------
+ * フォームデータ収集（calendar-modal と同じ作法）
+ * ------------------------------ */
+function collectFormData() {
+  const title = document.getElementById('ann-title')?.value.trim() || '';
+  const content = document.getElementById('ann-body')?.value.trim() || '';
+
+  // メール設定データも一緒に取り込む
+  const emailData = window.EMAIL_NOTIFY_ENABLED ? getEmailOptionData() : {};
+
+  return {
+    title,
+    content,
+    ...emailData
+  };
 }
