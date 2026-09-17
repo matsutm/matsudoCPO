@@ -1,6 +1,7 @@
 // js/components/announcement-card.js
 
 import { escapeHtml, formatDateShort } from '../utils.js';
+import { fetchAnnouncementById } from '../services/announcement-service.js';
 
 /**
  * お知らせ行（1件1行）のHTML生成
@@ -40,7 +41,8 @@ export function createAnnouncementRowHTML(post, isRead, showQuickReadBtn = true)
 export function attachAnnouncementClickEvents(container, currentUserId, onClickPost) {
   if (!container) return;
 
-  const rows = container.querySelectorAll('.announcement-row');
+  // .unread-row（ホーム用）と .announcement-row（一覧用）の両方を検索対象にする
+  const rows = container.querySelectorAll('.announcement-row, .unread-row');
 
   rows.forEach(row => {
     const clickTarget = row.querySelector('.row-main') || row;
@@ -54,8 +56,20 @@ export function attachAnnouncementClickEvents(container, currentUserId, onClickP
       // オプショナルチェイニング (?. ) を使って安全に取得
       const post = window.__ANNOUNCEMENT_CACHE__?.get(postId);
 
+      // ★ 3. キャッシュがない場合（ホーム画面等）はSupabaseから直接1件取得する
+      if (!post) {
+        try {
+          post = await fetchAnnouncementById(postId);
+        } catch (err) {
+          console.error('お知らせ詳細の取得に失敗:', err);
+          return;
+        }
+      }
+
       // モーダルを開くのは view 側
-      onClickPost(post);
+      if (post) {
+        onClickPost(post);
+      }
     });
   });
 }
