@@ -47,16 +47,17 @@ export function attachAnnouncementClickEvents(container, currentUserId, onClickP
   rows.forEach(row => {
     const clickTarget = row.querySelector('.row-main') || row;
 
-    clickTarget.addEventListener('click', (e) => {
+    // ★ async を追加 ＆ 重複登録防止のため onclick に統一
+    clickTarget.onclick = async (e) => {
       // クイック既読ボタンクリック時はモーダルを開かない
       if (e.target.closest('.btn-quick-read')) return;
 
       const postId = Number(row.dataset.id);
 
-      // オプショナルチェイニング (?. ) を使って安全に取得
+      // キャッシュから取得
       const post = window.__ANNOUNCEMENT_CACHE__?.get(postId);
 
-      // ★ 3. キャッシュがない場合（ホーム画面等）はSupabaseから直接1件取得する
+      // キャッシュがない場合（ホーム画面等）はSupabaseから直接1件取得する
       if (!post) {
         try {
           post = await fetchAnnouncementById(postId);
