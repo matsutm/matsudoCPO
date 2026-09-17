@@ -147,9 +147,13 @@ function renderFormContent(p) {
  * フォームデータ収集（calendar-modal と同じ作法）
  * ------------------------------ */
 function collectFormData() {
-  const title = document.getElementById('ann-title')?.value.trim() || '';
-  const content = document.getElementById('ann-body')?.value.trim() || '';
+  const titleEl = document.getElementById('ann-title');
+  const bodyEl = document.getElementById('ann-body');
 
+  // .value を直接取得し、空の場合は明示的に空文字 '' にする（null を防ぐ）
+  const title = titleEl ? titleEl.value.trim() : '';
+  const content = bodyEl ? bodyEl.value.trim() : '';
+  
   // メール設定データも一緒に取り込む
   const emailData = window.EMAIL_NOTIFY_ENABLED ? getEmailOptionData() : {};
 
