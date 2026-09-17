@@ -1,51 +1,66 @@
 // js/components/announcement-modal.js
 
 import { openModal } from './modal.js';
-import { saveAnnouncement, updateAnnouncement, markAsRead } from '../services/announcement-service.js';
+import { saveAnnouncement, updateAnnouncement, deleteAnnouncement, markAsRead } from '../services/announcement-service.js';
 import { confirmAndRun } from '../utils/action-utils.js';
 
 export function openAnnouncementModal({
   mode,          // 'CREATE' | 'VIEW' | 'EDIT'
-  id,            // VIEW時に既読登録するための掲示ID
+  id,
   title = '',
   body = '',
   authorId,
-  currentUserId, // ログイン中のユーザーID
+  currentUserId,
   createdAt = '',
   onSaved,       // CREATE 完了後
   onUpdated,     // EDIT 完了後
-  onClosed       // VIEW 閉じ時のコールバック（未読件数再読込用）
+  onDeleted,     // DELETE 完了後
+  onClosed       // VIEW 閉じ時のコールバック
 }) {
-
   const isView = mode === 'VIEW';
   const isEdit = mode === 'EDIT';
 
   const titles = {
     CREATE: '新規投稿',
     EDIT: '投稿を編集',
-    VIEW: title
+    VIEW: 'お知らせの詳細'
   };
 
-  // VIEW モード：開いた瞬間に自動既読処理
+  // VIEW モード：自動既読処理
   if (isView && id && currentUserId) {
     markAsRead(id, currentUserId).catch(err => console.error('自動既読処理エラー:', err));
   }
 
-  // アクションボタンの組み立て
+  // アクションボタンの組み立て（calendar-modal と共通仕様）
   let actions = [];
 
   if (isView) {
     actions = [
       {
-        label: '閉じる',
+        label: '編集',
         type: 'primary',
+        onClick: () => openAnnouncementModal({
+          mode: 'EDIT', id, title, body, authorId, currentUserId, createdAt, onUpdated, onDeleted, onClosed
+        })
+      },
+      {
+        label: '削除',
+        type: 'danger',
+        onClick: async () => {
+          await confirmAndRun('この投稿を削除しますか？', () => deleteAnnouncement(id), '削除しました');
+          onDeleted?.();
+        }
+      },
+      {
+        label: '閉じる',
+        type: 'secondary',
         onClick: () => onClosed?.()
       }
     ];
   } else {
     actions = [
       {
-        label: isEdit ? '保存する' : '投稿する',
+        label: isEdit ? '保存' : '投稿',
         type: 'primary',
         onClick: async () => {
           const newTitle = document.getElementById('ann-title').value.trim();
@@ -66,32 +81,41 @@ export function openAnnouncementModal({
     ];
   }
 
-  // モーダル生成
+  // モーダル表示
   openModal({
-    title: titles[mode],
-    content: isView ? renderViewContent(body, createdAt) : renderFormContent(title, body),
+    title: titles[mode] || title,
+    content: isView ? renderViewContent(title, body, createdAt) : renderFormContent(title, body),
     actions
   });
 }
 
 /* ------------------------------
- * HTMLレンダリング用ヘルパー
+ * HTMLレンダリング（common.css のクラス名に統一）
  * ------------------------------ */
-function renderViewContent(body, createdAt) {
+function renderViewContent(title, body, createdAt) {
   return `
-    <div class="announcement-body">${body}</div>
-    <div class="announcement-meta">投稿日時：${createdAt}</div>
+    <div class="form-group">
+      <h3 style="margin: 0 0 0.75rem 0; font-size: 1.1rem; color: #1e3a8a;">${title}</h3>
+    </div>
+    <div class="form-group">
+      <div class="announcement-body">${body}</div>
+    </div>
+    <div class="form-group">
+      <div class="announcement-meta">投稿日時：${createdAt}</div>
+    </div>
   `;
 }
 
 function renderFormContent(title, body) {
   return `
-    <div class="announcement-form">
-      <label for="ann-title">タイトル</label>
-      <input id="ann-title" type="text" class="input-text" value="${title}">
+    <div class="form-group">
+      <label for="ann-title">タイトル *</label>
+      <input id="ann-title" type="text" class="form-control" value="${title}">
+    </div>
 
-      <label for="ann-body">本文</label>
-      <textarea id="ann-body" class="input-textarea">${body}</textarea>
+    <div class="form-group">
+      <label for="ann-body">本文 *</label>
+      <textarea id="ann-body" class="form-control" rows="6">${body}</textarea>
     </div>
   `;
 }
