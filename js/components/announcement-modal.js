@@ -7,7 +7,7 @@ import { confirmAndRun } from '../utils/action-utils.js';
 export function openAnnouncementModal({
   mode,          // 'CREATE' | 'VIEW' | 'EDIT'
   post = null,   //お知らせデータオブジェクト（VIEW/EDIT時に渡す）
-  authorId;      // CREATEに必要
+  authorId,      // CREATEに必要
   currentUserId,
   onSaved,       // CREATE 完了後
   onUpdated,     // EDIT 完了後
