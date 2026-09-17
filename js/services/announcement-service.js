@@ -50,7 +50,10 @@ export async function markAsRead(id, memberId) {
 
   const { error } = await window.supabaseClient
     .from('announcement_reads')
-    .insert([{ announcement_id: id, member_id: memberId }]);
+    .upsert(
+      [{ announcement_id: id, member_id: memberId }],
+      { on Conflict: 'announcement_id, member_id', ignoreDuplicates: ture }
+    );
 
   if (error && error.code !== '23505') throw error;
 }
