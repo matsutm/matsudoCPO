@@ -71,6 +71,6 @@ export function attachAnnouncementClickEvents(container, currentUserId, onClickP
       if (post) {
         onClickPost(post);
       }
-    });
+    };
   });
 }
