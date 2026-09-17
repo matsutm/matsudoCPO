@@ -52,7 +52,7 @@ export async function markAsRead(id, memberId) {
     .from('announcement_reads')
     .upsert(
       [{ announcement_id: id, member_id: memberId }],
-      { on Conflict: 'announcement_id, member_id', ignoreDuplicates: ture }
+      { onConflict: 'announcement_id, member_id', ignoreDuplicates: ture }
     );
 
   if (error && error.code !== '23505') throw error;
