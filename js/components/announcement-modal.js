@@ -74,9 +74,18 @@ export function openAnnouncementModal({
           // calendar-modal と同じくフォームから一括取得
           const data = collectFormData();
 
+          if (!data.title) {
+            alert('タイトルを入力してください。');
+            return;
+          }
+          if (!data.content) {
+            alert('本文を入力してください。');
+            return;
+          }
+
           const action = isEdit
             ? () => updateAnnouncement(announcementId, data)
-            : () => createAnnouncement({ ...data, authorId });
+            : () => createAnnouncement({ ...data, authorId: postAuthorId });
 
           const msg = isEdit ? '保存しますか？' : '投稿しますか？';
           const successMsg = isEdit ? '保存しました' : '投稿しました';
@@ -153,7 +162,7 @@ function collectFormData() {
   // .value を直接取得し、空の場合は明示的に空文字 '' にする（null を防ぐ）
   const title = titleEl ? titleEl.value.trim() : '';
   const content = bodyEl ? bodyEl.value.trim() : '';
-  
+
   // メール設定データも一緒に取り込む
   const emailData = window.EMAIL_NOTIFY_ENABLED ? getEmailOptionData() : {};
 
