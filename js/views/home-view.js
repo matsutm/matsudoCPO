@@ -124,7 +124,7 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
       openAnnouncementModal({
         mode: 'VIEW',
         post,
-        currentUserId: currentUser.Id,
+        currentUserId: currentUser.id,
         onClosed: () => loadUnreadAnnouncements(currentUser, navigateTo)
       });
     });

@@ -63,8 +63,9 @@ async function renderList(currentUser) {
       openAnnouncementModal({
         mode: 'VIEW',
         post,
-        currentUserId: currentUser.Id,
-        onUpdated: () => renderList(currentUser)
+        currentUserId: currentUser.id,
+        onUpdated: () => renderList(currentUser),
+        onClosed: () => renderList(currentUser)
       });
     });
 
