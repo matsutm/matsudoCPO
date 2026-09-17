@@ -74,15 +74,11 @@ export function openAnnouncementModal({
           // calendar-modal と同じくフォームから一括取得
           const data = collectFormData();
 
-          if (!data.title) {
-            alert('タイトルを入力してください。');
-            return;
+          if (!data.title || !data.content) {
+            alert('タイトルと本文を入力してください。');
+            throw new Error('VALIDATION_ERROR');
           }
-          if (!data.content) {
-            alert('本文を入力してください。');
-            return;
-          }
-
+         
           const action = isEdit
             ? () => updateAnnouncement(announcementId, data)
             : () => createAnnouncement({ ...data, authorId: postAuthorId });
