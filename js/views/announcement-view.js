@@ -25,7 +25,7 @@ export async function initAnnouncementView(navigateTo) {
 
   // ＋ 新規投稿 → CREATE モードでモーダルを開く
   const btn = document.getElementById('btnNewPost');
-  if btn {
+  if (btn) {
     btn.onclick = () => {
       openAnnouncementModal({
         mode: 'CREATE',
