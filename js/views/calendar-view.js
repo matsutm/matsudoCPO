@@ -46,7 +46,7 @@ export async function initCalendarView() {
       
       openCalendarModal({
         mode: 'VIEW',
-        event: info.event.id,
+        scheduleId : info.event.id,
         onSaved: () => calendar.refetchEvents()
       });
     }
