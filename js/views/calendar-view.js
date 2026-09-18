@@ -40,13 +40,13 @@ export async function initCalendarView() {
     ],
     eventDidMount: attachTooltip,
 
-    eventClick: function(info) {
+    eventClick: async function(info) {
       // ★ デバッグ用：ブラウザのコンソールでデータの中身を確認
       console.log('クリックされたイベントの extendedProps:', info.event.extendedProps);
       
       openCalendarModal({
         mode: 'VIEW',
-        event: info.event,
+        event: info.event.id,
         onSaved: () => calendar.refetchEvents()
       });
     }
