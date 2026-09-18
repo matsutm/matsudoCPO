@@ -34,6 +34,16 @@ export function openCalendarModal({ mode, event, onSaved }) {
   let actions = [];
 
   if (isView) {
+    // VIEW のときは event が壊れている可能性があるので DB から再取得
+    const fresh = await fetchScheduleById(scheduleId);
+
+    p.location = fresh.location;
+    p.instructor = fresh.instructor;
+    p.notes = fresh.program_notes;
+    p.raw_date = fresh.date;
+    p.start_time = fresh.start_time;
+    p.end_time = fresh.end_time;
+
     // VIEWモード：編集・複製・削除・閉じる
     actions = [
       {
