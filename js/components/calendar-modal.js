@@ -2,7 +2,7 @@
 
 import { openModal } from './modal.js';
 import { renderMapButton } from './map-button.js';
-import { createSchedule, updateSchedule, deleteSchedule } from '../services/calendar-service.js';
+import { createSchedule, updateSchedule, deleteSchedule, fetchScheduleById } from '../services/calendar-service.js';
 import { confirmAndRun } from '../utils/action-utils.js';
 
 export function openCalendarModal({ mode, event, onSaved }) {
