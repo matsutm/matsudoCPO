@@ -8,12 +8,13 @@ import { confirmAndRun } from '../utils/action-utils.js';
 export function openCalendarModal({ mode, event, onSaved }) {
   const p = {
     ...(event || {}),
-    ...(event.extendedProps || {})
+    ...(event?.extendedProps || {})
   };
 
-  p.notes = p.program_notes || p.notes || '';
-  p.location = p.location || event.location || '';
-  p.instructor = p.instructor || event.instructor || '';
+  p.raw_date = p.raw_date || p.date || (event?.startStr ? event.startStr.split('T')[0] : '');
+  p.notes = p.notes || p.program_notes || '';
+  p.location = p.location || '';
+  p.instructor = p.instructor || '';
 
   // ★ FullCalendar の ID を安全に取得
   const scheduleId = event?.id || p.id;
