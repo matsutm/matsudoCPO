@@ -48,7 +48,6 @@ export async function initCalendarView() {
       openCalendarModal({
         mode: 'VIEW',
         scheduleId: info.event.id, // IDを明示的に渡す
-        event: info.event,        // フォールバック用にイベント本体も渡す
         onSaved: () => calendar.refetchEvents()
       });
     }
