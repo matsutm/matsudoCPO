@@ -6,7 +6,7 @@ import { createSchedule, updateSchedule, deleteSchedule } from '../services/cale
 import { confirmAndRun } from '../utils/action-utils.js';
 
 export function openCalendarModal({ mode, event, onSaved }) {
-  const const p = event?.extendedProps || {};
+  const p = event?.extendedProps || {};
 
   // ★ extendedProps のプロパティ名を安全に取得（notes / program_notes の表記ブレを吸収）
   const eventData = {
