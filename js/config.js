@@ -14,6 +14,7 @@ window.APP_CONSTANTS = {
 
   // その他資料・名簿リスト
   OTHER_LIBRARY_LINKS: [
+    { label: '練習録音', url: 'https://drive.google.com/drive/folders/19aC2QggL3Xexj_9YcEaJkqvXy_d8J6qR' },
     { label: '👥 団員名簿 (閲覧専用)', url: 'https://docs.google.com/...' },
     { label: '📜 団則・規約 (PDF)', url: 'https://drive.google.com/...' },
     { label: '📝 休団・退団届フォーム', url: 'https://forms.google.com/...' }
