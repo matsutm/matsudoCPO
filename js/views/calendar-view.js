@@ -40,13 +40,15 @@ export async function initCalendarView() {
     ],
     eventDidMount: attachTooltip,
 
-    eventClick: async function(info) {
-      // ★ デバッグ用：ブラウザのコンソールでデータの中身を確認
-      console.log('クリックされたイベントの extendedProps:', info.event.extendedProps);
-      
+    // ★ ここを修正：scheduleId と event オブジェクトの両方を安全に渡す
+    eventClick: function(info) {
+      // 祝日イベント（IDがないもの）のクリック事故を防ぐ
+      if (!info.event.id) return;
+
       openCalendarModal({
         mode: 'VIEW',
-        scheduleId : info.event.id,
+        scheduleId: info.event.id, // IDを明示的に渡す
+        event: info.event,        // フォールバック用にイベント本体も渡す
         onSaved: () => calendar.refetchEvents()
       });
     }
@@ -54,13 +56,12 @@ export async function initCalendarView() {
 
   calendar.render();
 
-  //createボタン
+  // 予定追加ボタン
   const btn = document.getElementById('btnOpenCreateModal');
   if (btn) {
     btn.onclick = () => {
       openCalendarModal({
         mode: 'CREATE',
-        event: null,
         onSaved: () => calendar.refetchEvents()
       });
     };
@@ -84,7 +85,7 @@ async function fetchSchedulesForCalendar(fetchInfo, successCallback, failureCall
         extendedProps: {
           location: item.location,
           instructor: item.instructor,
-          program_notes: item.program_notes,
+          program_notes: item.program_notes, // キー名をDBと一致
           raw_date: item.date,
           start_time: item.start_time,
           end_time: item.end_time,
