@@ -41,6 +41,9 @@ export async function initCalendarView() {
     eventDidMount: attachTooltip,
 
     eventClick: function(info) {
+      // ★ デバッグ用：ブラウザのコンソールでデータの中身を確認
+      console.log('クリックされたイベントの extendedProps:', info.event.extendedProps);
+      
       openCalendarModal({
         mode: 'VIEW',
         event: info.event,
