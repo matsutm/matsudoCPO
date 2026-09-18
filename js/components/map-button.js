@@ -11,10 +11,10 @@ export function renderMapButton(location) {
 
   return `
     <div class="map-button-container">
-      <button class="btn-map"
-        onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encoded}', '_blank')">
+      <a href='https://www.google.com/maps/search/?api=1&query=${encoded}"
+         target="_blank" rel="noopener" class="btn-map">
         地図で見る
-      </button>
+      </a>
     </div>
   `;
 }
