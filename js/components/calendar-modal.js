@@ -2,26 +2,23 @@
 
 import { openModal } from './modal.js';
 import { renderMapButton } from './map-button.js';
-import { createSchedule, updateSchedule, deleteSchedule } from '../services/calendar-service.js';
+import { fetchScheduleById, createSchedule, updateSchedule, deleteSchedule } from '../services/calendar-service.js';
 import { confirmAndRun } from '../utils/action-utils.js';
 
-export function openCalendarModal({ mode, event, onSaved }) {
-  const p = event?.extendedProps || {};
-
-  // ★ extendedProps のプロパティ名を安全に取得（notes / program_notes の表記ブレを吸収）
-  const eventData = {
-    id: event?.id || p.id,
-    date: p.raw_date || (event?.startStr ? event.startStr.split('T')[0] : ''),
-    start_time: p.start_time || '',
-    end_time: p.end_time || '',
-    location: p.location || '',
-    instructor: p.instructor || '',
-    notes: p.notes || p.program_notes || '' // ★ ここでどちらの名称でも受け取れるように補完
-  };
-
-  // ★ FullCalendar の ID を安全に取得
-  const scheduleId = event?.id || p.id;
-
+export async function openCalendarModal({ mode, scheduleId = null, event = null, onSaved }) {
+  let scheduleData = {};
+  
+  // CREATE 以外で ID がある場合は Supabase から最新データを取得
+  if (mode !== 'CREATE' && scheduleId) {
+    try {
+      scheduleData = await fetchScheduleById(scheduleId);
+    } catch (err) {
+      console.error('予定の取得に失敗しました:', err);
+      alert('予定データの読み込みに失敗しました。');
+      return;
+    }
+  }
+  
   const titles = {
     CREATE: '予定の新規追加',
     EDIT: '予定の編集',
@@ -42,18 +39,18 @@ export function openCalendarModal({ mode, event, onSaved }) {
       {
         label: '編集',
         type: 'primary',
-        onClick: () => openCalendarModal({ mode: 'EDIT', event, onSaved })
+        onClick: () => openCalendarModal({ mode: 'EDIT', scheduleId, onSaved })
       },
       {
         label: '複製',
         type: 'secondary',
-        onClick: () => openCalendarModal({ mode: 'DUPLICATE', event, onSaved })
+        onClick: () => openCalendarModal({ mode: 'DUPLICATE', scheduleId, onSaved })
       },
       {
         label: '削除',
         type: 'danger',
         onClick: async () => {
-          await confirmAndRun('この予定を削除しますか？', () => deleteSchedule(event.id), '削除しました');
+          await confirmAndRun('この予定を削除しますか？', () => deleteSchedule(scheduleId), '削除しました');
           onSaved?.();
         }
       },
@@ -67,7 +64,7 @@ export function openCalendarModal({ mode, event, onSaved }) {
         type: 'primary',
         onClick: async () => {
           const data = collectFormData();
-          const action = isEdit ? () => updateSchedule(event.id, data) : () => createSchedule(data);
+          const action = isEdit ? () => updateSchedule(scheduleId, data) : () => createSchedule(data);
           const msg = isEdit ? '保存しますか？' : '追加しますか？';
           const successMsg = isEdit ? '保存しました' : '追加しました';
 
@@ -82,7 +79,7 @@ export function openCalendarModal({ mode, event, onSaved }) {
   // 2. モーダル表示（フォームを共通利用）
   openModal({
     title: titles[mode],
-    content: renderForm(eventData, isView),
+    content: renderForm(scheduleData, isView),
     actions: actions
   });
 }
@@ -96,7 +93,7 @@ function renderForm(data, isView = false) {
   return `
     <div class="form-group">
       <label for="date">日付 *</label>
-      <input id="date" type="date" class="form-control" value="${data.raw_date || ''}" ${disabled}>
+      <input id="date" type="date" class="form-control" value="${data.date || ''}" ${disabled}>
     </div>
 
     <div class="form-row">
@@ -122,7 +119,7 @@ function renderForm(data, isView = false) {
 
     <div class="form-group">
       <label for="program_notes">内容・曲目</label>
-      <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${data.notes || ''}</textarea>
+      <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${data.program_notes || ''}</textarea>
     </div>
   `;
 }
