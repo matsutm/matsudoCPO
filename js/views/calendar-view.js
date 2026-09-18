@@ -81,7 +81,7 @@ async function fetchSchedulesForCalendar(fetchInfo, successCallback, failureCall
         extendedProps: {
           location: item.location,
           instructor: item.instructor,
-          notes: item.program_notes,
+          program_notes: item.program_notes,
           raw_date: item.date,
           start_time: item.start_time,
           end_time: item.end_time,
