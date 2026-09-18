@@ -2,20 +2,22 @@
 
 import { openModal } from './modal.js';
 import { renderMapButton } from './map-button.js';
-import { createSchedule, updateSchedule, deleteSchedule, fetchScheduleById } from '../services/calendar-service.js';
+import { createSchedule, updateSchedule, deleteSchedule } from '../services/calendar-service.js';
 import { confirmAndRun } from '../utils/action-utils.js';
 
 export function openCalendarModal({ mode, event, onSaved }) {
-  const p = {
-    ...(event || {}),
-    ...(event?.extendedProps || {})
-  };
+  const const p = event?.extendedProps || {};
 
-  // ここで補正
-  p.location = event?.extendedProps?.location ?? event?.location ?? '';
-  p.instructor = event?.extendedProps?.instructor ?? event?.instructor ?? '';
-  p.notes = event?.extendedProps?.program_notes ?? event?.extendedProps?.notes ?? '';
-  p.raw_date = p.raw_date || p.date || (event?.startStr ? event.startStr.split('T')[0] : '');
+  // ★ extendedProps のプロパティ名を安全に取得（notes / program_notes の表記ブレを吸収）
+  const eventData = {
+    id: event?.id || p.id,
+    date: p.raw_date || (event?.startStr ? event.startStr.split('T')[0] : ''),
+    start_time: p.start_time || '',
+    end_time: p.end_time || '',
+    location: p.location || '',
+    instructor: p.instructor || '',
+    notes: p.notes || p.program_notes || '' // ★ ここでどちらの名称でも受け取れるように補完
+  };
 
   // ★ FullCalendar の ID を安全に取得
   const scheduleId = event?.id || p.id;
@@ -80,7 +82,7 @@ export function openCalendarModal({ mode, event, onSaved }) {
   // 2. モーダル表示（フォームを共通利用）
   openModal({
     title: titles[mode],
-    content: renderForm(p, isView),
+    content: renderForm(eventData, isView),
     actions: actions
   });
 }
@@ -88,39 +90,39 @@ export function openCalendarModal({ mode, event, onSaved }) {
 /* ------------------------------
  * 共通フォーム（isView のときは disabled）
  * ------------------------------ */
-function renderForm(p, isView = false) {
+function renderForm(data, isView = false) {
   const disabled = isView ? 'disabled' : '';
 
   return `
     <div class="form-group">
       <label for="date">日付 *</label>
-      <input id="date" type="date" class="form-control" value="${p.raw_date || ''}" ${disabled}>
+      <input id="date" type="date" class="form-control" value="${data.raw_date || ''}" ${disabled}>
     </div>
 
     <div class="form-row">
       <div class="form-group flex-1">
         <label for="start_time">開始時間 *</label>
-        <input id="start_time" type="time" class="form-control" value="${p.start_time || '18:00'}" ${disabled}>
+        <input id="start_time" type="time" class="form-control" value="${data.start_time || '18:00'}" ${disabled}>
       </div>
       <div class="form-group flex-1">
         <label for="end_time">終了時間 *</label>
-        <input id="end_time" type="time" class="form-control" value="${p.end_time || '21:00'}" ${disabled}>
+        <input id="end_time" type="time" class="form-control" value="${data.end_time || '21:00'}" ${disabled}>
       </div>
     </div>
 
-    ${locationInput(p.location || '', disabled)}
+    ${locationInput(data.location || '', disabled)}
 
     <!-- VIEWモードでもGoogleマップボタンは押せるようにする -->
-    ${renderMapButton(p.location || '')}
+    ${renderMapButton(data.location || '')}
 
     <div class="form-group">
       <label for="instructor">指導</label>
-      <input id="instructor" type="text" class="form-control" value="${p.instructor || ''}" ${disabled}>
+      <input id="instructor" type="text" class="form-control" value="${data.instructor || ''}" ${disabled}>
     </div>
 
     <div class="form-group">
       <label for="program_notes">内容・曲目</label>
-      <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${p.notes || ''}</textarea>
+      <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${data.notes || ''}</textarea>
     </div>
   `;
 }
