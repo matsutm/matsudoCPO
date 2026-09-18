@@ -5,7 +5,7 @@ import { fetchAnnouncements, fetchUserReadIds, markAsRead } from '../services/an
 import { createAnnouncementRowHTML, attachAnnouncementClickEvents } from '../components/announcement-card.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
 
-const PAGE_SIZE = 20; // 1回あたりの表示件数
+const PAGE_SIZE = 10; // 1回あたりの表示件数
 
 export function renderAnnouncementView() {
   return `
@@ -64,14 +64,14 @@ async function renderList(currentUser) {
     // キャッシュの初期化と保存処理を追加
     window.__ANNOUNCEMENT_CACHE__ = new Map(posts.map(post => [post.id, post]));
 
-    // 初期表示は 20 件まで
+    // 初期表示は 10 件まで
     let visibleLimit = PAGE_SIZE;
 
     // リスト描画用の内部関数
     const updateListDisplay = () => {
       const targetPosts = posts.slice(0, visibleLimit);
 
-      listContainer.innerHTML = posts
+      listContainer.innerHTML = targetPosts
         .map(post => createAnnouncementRowHTML(post, readIds.has(post.id), true))
         .join('');
 
