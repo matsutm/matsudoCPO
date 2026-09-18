@@ -6,7 +6,14 @@ import { createSchedule, updateSchedule, deleteSchedule } from '../services/cale
 import { confirmAndRun } from '../utils/action-utils.js';
 
 export function openCalendarModal({ mode, event, onSaved }) {
-  const p = event?.extendedProps || {};
+  const p = {
+    ...(event || {}),
+    ...(event.extendedProps || {})
+  };
+
+  p.notes = p.program_notes || p.notes || '';
+  p.location = p.location || event.location || '';
+  p.instructor = p.instructor || event.instructor || '';
 
   // ★ FullCalendar の ID を安全に取得
   const scheduleId = event?.id || p.id;
