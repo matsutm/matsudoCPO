@@ -6,8 +6,17 @@ import { createSchedule, updateSchedule, deleteSchedule } from '../services/cale
 import { confirmAndRun } from '../utils/action-utils.js';
 
 export function openCalendarModal({ mode, event, onSaved }) {
-  const p = event?.extendedProps || {};
+  const p = {
+    ...(event?.extendedProps || {}),
+    ...(event || {})
+  };
 
+  // raw_date や notes のプロパティ名の表記揺れを補正して統一
+  p.raw_date = p.raw_date || p.date || (event?.startStr ? event.startStr.split('T')[0] : '');
+  p.notes = p.notes || p.program_notes || '';
+  p.location = p.location || '';
+  p.instructor = p.instructor || '';
+  
   // ★ FullCalendar の ID を安全に取得
   const scheduleId = event?.id || p.id;
 
