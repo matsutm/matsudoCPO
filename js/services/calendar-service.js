@@ -10,6 +10,18 @@ export async function fetchSchedulesData() {
   return data || [];
 }
 
+// IDで1件取得
+export async function fetchScheduleById(id) {
+  const { data, error } = await window.supabaseClient
+    .from('schedules')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 //create
 export async function createSchedule(scheduleData) {
   const { data, error } = await window.supabaseClient
