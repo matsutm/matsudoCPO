@@ -11,10 +11,11 @@ export function openCalendarModal({ mode, event, onSaved }) {
     ...(event?.extendedProps || {})
   };
 
+  // ここで補正
+  p.location = event?.extendedProps?.location ?? event?.location ?? '';
+  p.instructor = event?.extendedProps?.instructor ?? event?.instructor ?? '';
+  p.notes = event?.extendedProps?.program_notes ?? event?.extendedProps?.notes ?? '';
   p.raw_date = p.raw_date || p.date || (event?.startStr ? event.startStr.split('T')[0] : '');
-  p.notes = p.notes || p.program_notes || '';
-  p.location = p.location || '';
-  p.instructor = p.instructor || '';
 
   // ★ FullCalendar の ID を安全に取得
   const scheduleId = event?.id || p.id;
