@@ -1,6 +1,13 @@
 // js/views/auth-view.js
 
 import { sendOtpEmail, verifyOtpCode, getCurrentUser } from '../services/auth-service.js';
+import { 
+  getCurrentUser, 
+  fetchMemberByEmail, 
+  sendOtpEmail, 
+  saveCurrentUser, 
+  verifyOtpCode 
+} from '../services/auth-service.js';
 
 let targetEmail = '';
 
@@ -16,7 +23,7 @@ export function renderAuthView() {
           <div class="form-group">
             <label for="auth-email">名簿登録メールアドレス</label>
             <input type="email" id="auth-email" placeholder="example@matsudo-cityphil.jp" required />
-          </div>
+         </div>
           <button type="submit" class="btn-primary btn-block" id="btn-send-otp">認証コードを送信</button>
         </form>
 
@@ -57,41 +64,55 @@ export function initAuthView(onSuccess) {
     const email = document.getElementById('auth-email').value.trim().toLowerCase();
     const savedUser = getCurrentUser();
 
-    // 1. 2回目以降：メールアドレス一致 ➔ そのままログイン
-    if (savedUser && savedUser.email.toLowerCase() === email) {
-      alert(`おかえりなさい、${savedUser.name} さん！`);
-      onSuccess?.(savedUser);
-      return;
-    }
-
-    // 2. 2回目以降：メールアドレス不一致 ➔ 2択の confirm で確認
+    // 分岐: 2回目以降のログインで、LocalStorageにユーザー情報が残っている
     if (savedUser) {
+      // A:  LocalStorageのユーザー情報と入力メールアドレスが一致する場合は、OTP送信をスキップして自動ログイン
+      if (savedUser.email.toLowerCase() === email) {
+        alert(`おかえりなさい、${savedUser.name} さん！`);
+        onSuccess?.(savedUser);
+        return;
+      } 
+
+      // B: 入力がlocalstrageと異なる場合は、確認ダイアログを表示して、OTP送信を行うかどうかをユーザーに選択させる
       const proceed = confirm(
-        '入力されたメールアドレスが前回のログイン情報と異なります。\n初回ログイン（認証コード送信）へ進みますか？'
+        `入力されたメールアドレスは、前回ログイン時のメールアドレスと異なります。\n初回ログイン（認証コード送信）へ進みますか？`
       );
-      
       if (!proceed) {
-        toggleError('初回ログインが必要です。名簿に登録されたメールアドレスを入力してください。');
-        return; // キャンセルされたら処理中断
+        toggleError('名簿に登録されたご自身のメールアドレスを入力してください。');
+        return;
       }
     }
 
-    // 3. OTPコード送信手続き（初回、または上記確認で OK を押した場合）
+    // ----------------------------------------------------
+    // 分岐②: 初回アクセス（または別アドレス切替）
+    // ----------------------------------------------------
     const btn = document.getElementById('btn-send-otp');
     btn.disabled = true;
-    btn.textContent = '送信中...';
+    btn.textContent = '確認中...';
 
     try {
-      await sendOtpEmail(email);
-      targetEmail = email;
+      // ① メールアドレスが名簿に登録されているか確認
+      const member = await fetchMemberByEmail(email);
+      // ② DEV_AUTO_LOGINが有効な場合
+      if (dev_auto_login) {
+        const user = saveCurrentUser(member);
+        alert(`認証が完了しました。ようこそ、${user.name} さん！`);
+        onSuccess?.(user);
+        return;
+      }
+
+      // ③ OTP送信
+      await sendOtpEmail(member.email);
+      targetEmail = member.email;
       emailForm.style.display = 'none';
       otpForm.style.display = 'block';
-      document.getElementById('sent-email-label').textContent = email;
+      document.getElementById('sent-email-label').textContent = member.email;
     } catch (err) {
       toggleError(err.message);
     } finally {
       btn.disabled = false;
-      btn.textContent = '認証コードを送信';
+      btn.textContent = 'ログイン / 認証';
+
     }
   });
 
@@ -107,6 +128,7 @@ export function initAuthView(onSuccess) {
     btn.textContent = '照合中...';
 
     try {
+      // ④ OTPコード検証
       const user = await verifyOtpCode(targetEmail, code);
       alert(`認証が完了しました。ようこそ、${user.name} さん！`);
       onSuccess?.(user);
@@ -124,4 +146,4 @@ export function initAuthView(onSuccess) {
     otpForm.style.display = 'none';
     emailForm.style.display = 'block';
   });
-}
+} 
