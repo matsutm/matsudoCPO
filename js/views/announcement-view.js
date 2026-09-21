@@ -1,7 +1,7 @@
 // js/views/announcement-view.js
 
 import { getCurrentUser } from '../services/auth-service.js';
-import { fetchAnnouncements, fetchUserReadIds, markAsRead } from '../services/announcement-service.js';
+import { fetchAnnouncements, fetchUserReadIds, markAsRead, markAsUnread } from '../services/announcement-service.js';
 import { createAnnouncementRowHTML, attachAnnouncementClickEvents } from '../components/announcement-card.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
 
@@ -91,6 +91,15 @@ async function renderList(currentUser) {
         btn.addEventListener('click', async (e) => {
           e.stopPropagation();
           await markAsRead(Number(btn.dataset.id), currentUser.id);
+          await renderList(currentUser);
+        });
+      });
+
+      // ★ 追加：クイック未読に戻すボタン
+      listContainer.querySelectorAll('.btn-quick-unread').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          await markAsUnread(Number(btn.dataset.id), currentUser.id);
           await renderList(currentUser);
         });
       });
