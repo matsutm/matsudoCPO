@@ -52,15 +52,26 @@ function renderViewContent(data = {}) {
   const notesFormatted = data.program_notes ? data.program_notes.replace(/\n/g, '<br>') : 'なし';
 
   console.log('renderViewContent data:', data);
-  
+
   return `
     <div class="form-group">
       <label>日付</label>
       <div class="detail-text">📅 ${data.date || ''} (${timeRange})</div>
     </div>
 
+    <div class="form-row">
+      <div class="form-group flex-1">
+        <label for="start_time">開始時間</label>
+        <div class="detail-text">${startTime}</div>
+      </div>
+      <div class="form-group flex-1">
+        <label for="end_time">終了時間</label>
+        <div class="detail-text">${endTime}</div>
+      </div>
+    </div>
+
     <div class="form-group">
-      <label>場所</label>
+      <label for="location">場所</label>
       <div class="detail-text">📍 ${data.location || '未定'}</div>
       ${renderMapButton(data.location)}
     </div>
