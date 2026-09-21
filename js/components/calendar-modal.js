@@ -10,9 +10,6 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
     ? await fetchScheduleById(scheduleId) 
     : {};
 
-  // ★ ここで取得したデータの中身を確認！
-  console.log('取得したスケジュールのデータ:', scheduleData);
-
   const isEdit = mode === 'EDIT';
   const isView = mode === 'VIEW';
 
@@ -54,8 +51,7 @@ function renderViewContent(data = {}) {
   const timeRange = startTime ? `${startTime} ～ ${endTime}` : '時間未定';
   const notesFormatted = data.program_notes ? data.program_notes.replace(/\n/g, '<br>') : 'なし';
 
-  
-  return `<pre>${JSON.stringify(data, null, 2)}</pre>` + `
+  return `
     <div class="form-group">
       <label>日付</label>
       <div class="detail-text">📅 ${data.date || ''} (${timeRange})</div>
@@ -77,6 +73,7 @@ function renderViewContent(data = {}) {
       <div class="detail-text" style="white-space: pre-wrap; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">${notesFormatted || 'なし'}</div>
     </div>
   `;
+  console.log('renderViewContent data:', data);
 }
 
 // EDIT/CREATE用のフォーム描画
