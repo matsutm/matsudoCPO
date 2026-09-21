@@ -60,17 +60,13 @@ function renderViewContent(data = {}) {
     </div>
 
     <div class="form-group">
-      <label>時間</label>
-      <div class="detail-text">⏰ ${timeRange}</div>
-    </div>
-
-    <div class="form-group">
       <label for="location">場所</label>
       <div class="detail-text">📍 ${data.location || '未定'}</div>
       
     </div>
 
-    ${renderMapButton(data.location)}
+    <!-- ${renderMapButton(data.location)} -->
+
 
     <div class="form-group">
       <label>指導</label>
