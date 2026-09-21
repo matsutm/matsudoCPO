@@ -50,6 +50,7 @@ function renderViewContent(data = {}) {
   const endTime = data.end_time?.slice(0, 5) || '21:00';
   const timeRange = startTime ? `${startTime} ～ ${endTime}` : '時間未定';
   const notesFormatted = data.program_notes ? data.program_notes.replace(/\n/g, '<br>') : 'なし';
+  const safeLocation = (location || '').replace(/'/g, "\\'");
 
   console.log('renderViewContent data:', data);
 
@@ -65,7 +66,7 @@ function renderViewContent(data = {}) {
       
     </div>
 
-    <!-- ${renderMapButton(data.location)} -->
+    <!-- ${renderMapButton(safeLocation)} -->
 
 
     <div class="form-group">
