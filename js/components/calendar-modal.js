@@ -45,30 +45,30 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
 }
 
 function renderForm(data = {}, isView = false) {
-  const disabled = isView ? 'disabled' : '';
+  const readonly = isView ? 'readonly' : '';
   const startTime = data.start_time?.slice(0, 5) || '18:00';
   const endTime = data.end_time?.slice(0, 5) || '21:00';
 
   return `
     <div class="form-group">
       <label for="date">日付 *</label>
-      <input id="date" type="date" class="form-control" value="${data.date || ''}" ${disabled}>
+      <input id="date" type="date" class="form-control" value="${data.date || ''}" ${readonly}>
     </div>
 
     <div class="form-row">
       <div class="form-group flex-1">
         <label for="start_time">開始時間 *</label>
-        <input id="start_time" type="time" class="form-control" value="${startTime}" ${disabled}>
+        <input id="start_time" type="time" class="form-control" value="${startTime}" ${readonly}>
       </div>
       <div class="form-group flex-1">
         <label for="end_time">終了時間 *</label>
-        <input id="end_time" type="time" class="form-control" value="${endTime}" ${disabled}>
+        <input id="end_time" type="time" class="form-control" value="${endTime}" ${readonly}>
       </div>
     </div>
 
     <div class="form-group">
       <label for="location">場所 *</label>
-      <input id="location" type="text" class="form-control" list="location-list" value="${data.location || ''}" ${disabled}>
+      <input id="location" type="text" class="form-control" list="location-list" value="${data.location || ''}" ${readonly}>
       <datalist id="location-list">
         <option value="森のホール21 リハ室">
         <option value="流山エルズ（生涯学習センター）">
@@ -81,12 +81,12 @@ function renderForm(data = {}, isView = false) {
 
     <div class="form-group">
       <label for="instructor">指導</label>
-      <input id="instructor" type="text" class="form-control" value="${data.instructor || ''}" ${disabled}>
+      <input id="instructor" type="text" class="form-control" value="${data.instructor || ''}" ${readonly}>
     </div>
 
     <div class="form-group">
       <label for="program_notes">内容・曲目</label>
-      <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${data.program_notes || ''}</textarea>
+      <textarea id="program_notes" class="form-control" rows="3" ${readonly}>${data.program_notes || ''}</textarea>
     </div>
   `;
 }
