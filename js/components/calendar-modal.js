@@ -67,7 +67,7 @@ function renderViewContent(data = {}) {
     <div class="form-group">
       <label for="location">場所</label>
       <div class="detail-text">📍 ${data.location || '未定'}</div>
-      ${renderMapButton(data.location)}
+      <!-- ${renderMapButton(data.location)} -->
     </div>
 
     <div class="form-group">
