@@ -18,6 +18,21 @@ export function getCurrentUser() {
 }
 
 /**
+ * 前回ログインした端末の記憶データを取得（簡易ログイン用）
+ */
+export function getRememberedUser() {
+  const userStr = localStorage.getItem('rememberedUser') || localStorage.getItem('currentUser');
+  if (userStr) {
+    try {
+      return JSON.parse(userStr);
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
  * 団員情報を LocalStorage に保存する
  * @param {Object} member - Supabase members テーブルのレコード
  * @returns {Object} 保存されたユーザーオブジェクト
@@ -27,7 +42,7 @@ export function saveCurrentUser(member) {
     console.error('保存しようとしたメンバー情報に id が存在しません:', member);
     return null;
   }
-  
+
   const currentUserData = {
     id: member.id,
     name: member.name,
@@ -37,6 +52,7 @@ export function saveCurrentUser(member) {
     instrument: member.instrument
   };
   localStorage.setItem('currentUser', JSON.stringify(currentUserData));
+  localStorage.setItem('rememberedUser', JSON.stringify(currentUserData));
   return currentUserData;
 }
 
@@ -126,6 +142,7 @@ export async function verifyOtpCode(email, code) {
  */
 export function logoutSession() {
   // LocalStorage の currentUser は保持するため、ここでは削除しない
+  localStorage.removeItem('currentUser'); // アクティブセッションのみ削除
 } 
 
 /**
@@ -133,6 +150,7 @@ export function logoutSession() {
  */
 export async function logoutCompletely() {
   localStorage.removeItem('currentUser');
+  localStorage.removeItem('rememberedUser');
   if (window.supabaseClient?.auth) {
     try {
       await window.supabaseClient.auth.signOut();
