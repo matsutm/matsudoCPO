@@ -54,7 +54,8 @@ function renderViewContent(data = {}) {
   const timeRange = startTime ? `${startTime} ～ ${endTime}` : '時間未定';
   const notesFormatted = data.program_notes ? data.program_notes.replace(/\n/g, '<br>') : 'なし';
 
-  return `
+  
+  return `<pre>${JSON.stringify(data, null, 2)}</pre>` + `
     <div class="form-group">
       <label>日付</label>
       <div class="detail-text">📅 ${data.date || ''} (${timeRange})</div>
