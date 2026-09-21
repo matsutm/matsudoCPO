@@ -34,17 +34,25 @@ export function openModal({ title, content, actions }) {
 
     btn.addEventListener('click', async () => {
       if (action.onClick) {
-        try {
-          await action.onClick();
-          // 成功した時だけ消す
+        const result = await action.onClick();
+        // 明示的に false が返ってきた場合（キャンセルやエラー）はモーダルを閉じない
+        if (result !== false) {
           overlay.remove();
-        } catch (err) {
-          // キャンセルやエラーの時はモーダルを開いたままにする
-          console.log('Action halted or cancelled:', err);
         }
       } else {
         overlay.remove(); // 単なる「閉じる」ボタンの時
       }
+      //  try {
+      //    await action.onClick();
+      //   // 成功した時だけ消す
+      //    overlay.remove();
+      //  } catch (err) {
+      //    // キャンセルやエラーの時はモーダルを開いたままにする
+      //    console.log('Action halted or cancelled:', err);
+      //  }
+      //} else {
+      //  overlay.remove(); // 単なる「閉じる」ボタンの時
+      //}
     });
  
     actionsEl.appendChild(btn);
