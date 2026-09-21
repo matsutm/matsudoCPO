@@ -10,9 +10,11 @@ export function renderMapButton(location) {
   const encoded = encodeURIComponent(location);
 
   return `
-    <div class="map-button-container">
-      <a href='https://www.google.com/maps/search/?api=1&query=${encoded}"
-         target="_blank" rel="noopener" class="btn-map">
+    <div class="map-button-container" style="margin: 8px 0;">
+      <a href="https://www.google.com/maps/search/?api=1&query=${encoded}"
+         target="_blank"
+         rel="noopener" 
+         class="btn-map">
         地図で見る
       </a>
     </div>
