@@ -57,11 +57,11 @@ async function renderList(currentUser) {
   if (!listContainer) return;
 
   try {
-    console.log('--- お知らせデータ取得開始 ---');
+    //console.log('--- お知らせデータ取得開始 ---');
     const posts = await fetchAnnouncements();
     const readIds = await fetchUserReadIds(currentUser.id);
-    console.log('取得されたお知らせデータ:', posts);
-    console.log('取得された既読ID:', readIds);
+    //console.log('取得されたお知らせデータ:', posts);
+    //console.log('取得された既読ID:', readIds);
 
     if (!posts || posts.length === 0) {
       listContainer.innerHTML = '<p class="empty-text" style="padding: 1rem; text-align: center; color: #64748b;">現在お知らせはありません。</p>';
