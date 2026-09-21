@@ -1,6 +1,5 @@
 // js/views/auth-view.js
 
-import { sendOtpEmail, verifyOtpCode, getCurrentUser } from '../services/auth-service.js';
 import { 
   getCurrentUser, 
   fetchMemberByEmail, 
