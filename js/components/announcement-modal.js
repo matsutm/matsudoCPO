@@ -79,15 +79,24 @@ export function openAnnouncementModal({
             //throw new Error('VALIDATION_ERROR');
             return false; // バリデーションエラー時はモーダルを閉じない
           }
+
+          // 投稿者IDの確定（新規投稿時は currentUserId または authorId）
+          const finalAuthorId = postAuthorId || currentUserId;
          
+          if (!isEdit && !finalAuthorId) {
+            alert('ログイン情報が取得できていません。再ログインをお試しください。');
+            return false; // 投稿者IDが不明な場合はモーダルを閉じない
+          }
+          
           const action = isEdit
             ? () => updateAnnouncement(announcementId, data)
-            : () => createAnnouncement({ ...data, authorId: postAuthorId });
+            : () => createAnnouncement({ ...data, authorId: finalAuthorId });
 
           const msg = isEdit ? '保存しますか？' : '投稿しますか？';
           const successMsg = isEdit ? '保存しました' : '投稿しました';
 
-          await confirmAndRun(msg, action, successMsg);
+          const isSuccess = await confirmAndRun(msg, action, successMsg);
+
           if (!isSuccess) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
           
           (isEdit ? onUpdated : onSaved)?.();
