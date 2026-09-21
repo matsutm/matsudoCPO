@@ -64,7 +64,7 @@ function renderViewContent(data = {}) {
       <div class="detail-text">📍 ${data.location || '未定'}</div>
     </div>
 
-    <!--${locationInput(disabled)}-->
+    <!--locationInput(disabled)}-->
 
     <!-- VIEWモードでもGoogleマップボタンは押せるようにする -->
     ${renderMapButton(data.location || '')}
