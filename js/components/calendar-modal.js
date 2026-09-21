@@ -18,7 +18,7 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
     { label: '編集', type: 'primary', onClick: () => openCalendarModal({ mode: 'EDIT', scheduleId, onSaved }) },
     { label: '複製', type: 'secondary', onClick: () => openCalendarModal({ mode: 'DUPLICATE', scheduleId, onSaved }) },
     { label: '削除', type: 'danger', onClick: async () => {
-        await confirmAndRun('この予定を削除しますか？', () => deleteSchedule(scheduleId), '削除しました');
+        const result = await confirmAndRun('この予定を削除しますか？', () => deleteSchedule(scheduleId), '削除しました');
         if (result === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
         onSaved?.();
       }
@@ -28,8 +28,8 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
     { label: isEdit ? '保存' : '追加', type: 'primary', onClick: async () => {
         const data = collectFormData();
         const action = isEdit ? () => updateSchedule(scheduleId, data) : () => createSchedule(data);
-        await confirmAndRun(isEdit ? '保存しますか？' : '追加しますか？', action, isEdit ? '保存しました' : '追加しました');
-        if (!isSuccess) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
+        const result = await confirmAndRun(isEdit ? '保存しますか？' : '追加しますか？', action, isEdit ? '保存しました' : '追加しました');
+        if (result === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
         onSaved?.();
       }
     },
