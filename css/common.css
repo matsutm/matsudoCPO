@@ -138,6 +138,14 @@ body {
   cursor: not-allowed;
 }
 
+/* disabled だけでなく readonly もはっきり見やすく表示する */
+.form-control:readonly {
+  background-color: #f8fafc;
+  color: #1e293b;
+  border-color: #cbd5e1;
+  cursor: default;
+}
+
 /* ==========================================
  * 5. モーダルダイアログ共通構造
  * ========================================== */
