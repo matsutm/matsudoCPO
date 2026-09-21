@@ -123,3 +123,18 @@ export async function fetchTargetScopeOptions(scope) {
   if (error || !data) return [];
   return [...new Set(data.map(item => item[columnName]))].filter(Boolean);
 }
+
+/**
+ * 未読に戻す処理（既読レコードの削除）
+ */
+export async function markAsUnread(id, memberId) {
+  if (!id || !memberId) return;
+
+  const { error } = await window.supabaseClient
+    .from('announcement_reads')
+    .delete()
+    .eq('announcement_id', id)
+    .eq('member_id', memberId);
+
+  if (error) throw error;
+}
