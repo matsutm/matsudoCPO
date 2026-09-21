@@ -192,25 +192,13 @@ async function loadNextTwoSchedules() {
 
       // クリックでカレンダーモーダルを開く
       el.addEventListener('click', () => {
-        // eventオブジェクト構造をカレンダーモーダル用に変換
-        const eventAdapter = {
-          id: item.id,
-          extendedProps: {
-            id: item.id,
-            raw_date: item.date,
-            start_time: item.start_time,
-            end_time: item.end_time,
-            location: item.location,
-            instructor: item.instructor,
-            notes: item.program_notes, //item.program_notes
-            program_notes: item.program_notes // こちらもセット
-          }
-        };  
+        // Googleマップリンクをクリックした場合はモーダルを開かない
+        if (e.target.closest('.btn-map-inline')) return;
 
         openCalendarModal({
           mode: 'VIEW',
-          event: eventAdapter,
-          onSaved: () => loadNextTwoSchedules(), // 保存後に再読み込み
+          scheduleId: item.id, // IDのみを渡す
+          onSaved: () => loadNextTwoSchedules() // 保存後に再読み込み
         });
       });      
     });
