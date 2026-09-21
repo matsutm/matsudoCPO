@@ -191,7 +191,7 @@ async function loadNextTwoSchedules() {
       });
 
       // クリックでカレンダーモーダルを開く
-      el.addEventListener('click', () => {
+      el.addEventListener('click', (e) => {
         // Googleマップリンクをクリックした場合はモーダルを開かない
         if (e.target.closest('.btn-map-inline')) return;
 
