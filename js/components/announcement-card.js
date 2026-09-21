@@ -7,7 +7,7 @@ import { fetchAnnouncementById } from '../services/announcement-service.js';
  * お知らせ行（1件1行）のHTML生成
  * → UI の型だけを担当（モーダルは呼ばない）
  */
-export function createAnnouncementRowHTML(post, isRead, showQuickReadBtn = true) {
+export function createAnnouncementRowHTML(post, isRead, showQuickActionBtn = true) {
   const readClass = isRead ? 'read' : 'unread';
   const badgeHTML = isRead ? '' : '<span class="badge-unread">未読</span>';
   
