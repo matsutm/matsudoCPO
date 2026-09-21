@@ -76,7 +76,7 @@ export function initAuthView(onSuccess) {
 
       // B: 入力がlocalstrageと異なる場合は、確認ダイアログを表示して、OTP送信を行うかどうかをユーザーに選択させる
       const proceed = confirm(
-        `入力されたメールアドレスは、前回ログイン時のメールアドレスと異なります。\n初回ログイン（認証コード送信）へ進みますか？`
+        `前回と異なるメールアドレスです。\n初回ログイン（認証コード送信）へ進みますか？`
       );
       if (!proceed) {
         toggleError('名簿に登録されたご自身のメールアドレスを入力してください。');
