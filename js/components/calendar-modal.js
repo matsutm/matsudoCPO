@@ -19,7 +19,7 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
     { label: '複製', type: 'secondary', onClick: () => openCalendarModal({ mode: 'DUPLICATE', scheduleId, onSaved }) },
     { label: '削除', type: 'danger', onClick: async () => {
         await confirmAndRun('この予定を削除しますか？', () => deleteSchedule(scheduleId), '削除しました');
-        if (!isSuccess) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
+        if (result === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
         onSaved?.();
       }
     },
