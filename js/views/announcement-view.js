@@ -17,7 +17,6 @@ export function renderAnnouncementView() {
       <section class="announcement-list-section">
         <div id="announcement-list" class="announcement-list"><p class="loading-text">読み込み中...</p></div>
       </section>
-      <!-- ★ もっと見るボタン領域 -->
       <div id="more-container" style="text-align: center; margin-top: 1rem; display: none;">
         <button id="btnViewMore" class="btn-secondary" style="width: 100%; max-width: 200px;">もっと見る</button>
       </div>
@@ -27,15 +26,23 @@ export function renderAnnouncementView() {
 
 export async function initAnnouncementView(navigateTo) {
   const currentUser = getCurrentUser();
+  
+  if (!currentUser) {
+    console.warn('ユーザー情報がないため認証画面にリダイレクトします');
+    navigateTo('auth');
+    return;
+  }
+
   await renderList(currentUser);
 
-  // ＋ 新規投稿 → CREATE モードでモーダルを開く
+  // ＋ 新規投稿ボタンのイベント設定
   const btn = document.getElementById('btnNewPost');
   if (btn) {
     btn.onclick = () => {
       openAnnouncementModal({
         mode: 'CREATE',
         authorId: currentUser.id,
+        currentUserId: currentUser.id,
         onSaved: () => renderList(currentUser)
       });
     };
@@ -47,27 +54,25 @@ async function renderList(currentUser) {
   const moreContainer = document.getElementById('more-container');
   const btnViewMore   = document.getElementById('btnViewMore');
 
-
   if (!listContainer) return;
 
   try {
-    const [posts, readIds] = await Promise.all([
-      fetchAnnouncements(),
-      fetchUserReadIds(currentUser.id)
-    ]);
+    console.log('--- お知らせデータ取得開始 ---');
+    const posts = await fetchAnnouncements();
+    const readIds = await fetchUserReadIds(currentUser.id);
+    console.log('取得されたお知らせデータ:', posts);
+    console.log('取得された既読ID:', readIds);
 
     if (!posts || posts.length === 0) {
-      listContainer.innerHTML = '<p class="empty-text">現在お知らせはありません。</p>';
+      listContainer.innerHTML = '<p class="empty-text" style="padding: 1rem; text-align: center; color: #64748b;">現在お知らせはありません。</p>';
       return;
     }
 
-    // キャッシュの初期化と保存処理を追加
+    // キャッシュ保存
     window.__ANNOUNCEMENT_CACHE__ = new Map(posts.map(post => [post.id, post]));
 
-    // 初期表示は 10 件まで
     let visibleLimit = PAGE_SIZE;
 
-    // リスト描画用の内部関数
     const updateListDisplay = () => {
       const targetPosts = posts.slice(0, visibleLimit);
 
@@ -75,7 +80,7 @@ async function renderList(currentUser) {
         .map(post => createAnnouncementRowHTML(post, readIds.has(post.id), true))
         .join('');
 
-      // 一覧クリック → VIEW モードでモーダルを開く
+      // 詳細モーダル表示バインド
       attachAnnouncementClickEvents(listContainer, currentUser.id, (post) => {
         openAnnouncementModal({
           mode: 'VIEW',
@@ -86,30 +91,30 @@ async function renderList(currentUser) {
         });
       });
 
-      // クイック既読
+      // クイック既読ボタン
       listContainer.querySelectorAll('.btn-quick-read').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
+        btn.onclick = async (e) => {
           e.stopPropagation();
           await markAsRead(Number(btn.dataset.id), currentUser.id);
           await renderList(currentUser);
-        });
+        };
       });
 
-      // ★ 追加：クイック未読に戻すボタン
+      // クイック未読ボタン
       listContainer.querySelectorAll('.btn-quick-unread').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
+        btn.onclick = async (e) => {
           e.stopPropagation();
           await markAsUnread(Number(btn.dataset.id), currentUser.id);
           await renderList(currentUser);
-        });
+        };
       });
 
-      // 残りの件数があれば「もっと見る」ボタンを表示
+      // 「もっと見る」ボタン表示制御
       if (moreContainer) {
         if (posts.length > visibleLimit) {
           moreContainer.style.display = 'block';
           btnViewMore.onclick = () => {
-            visibleLimit += PAGE_SIZE; // 20件ずつ拡張
+            visibleLimit += PAGE_SIZE;
             updateListDisplay();
           };
         } else {
@@ -118,12 +123,10 @@ async function renderList(currentUser) {
       }
     };
 
-    // 初回描画を実行
     updateListDisplay();
 
-
   } catch (err) {
-    console.error('一覧描画エラー:', err);
-    listContainer.innerHTML = '<p class="error-text">お知らせの読み込みに失敗しました。</p>';
+    console.error('一覧描画エラー詳細:', err);
+    listContainer.innerHTML = `<p class="error-text" style="color: #dc2626; padding: 1rem;">お知らせの読み込みに失敗しました。<br><small>${err.message || ''}</small></p>`;
   }
 }
