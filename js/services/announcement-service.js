@@ -38,8 +38,13 @@ export async function fetchAnnouncementById(id) {
     .eq('id', id)
     .single();
 
-  if (error) throw error;
-  return data;
+  if (error) {
+    console.error('Supabaseエラー詳細:', error); // ★ エラー内容を表示
+    throw error;
+  }
+  
+  console.log('取得したお知らせ件数:', data?.length); // ★ 件数を表示
+  return data || [];
 }
 
 /**
