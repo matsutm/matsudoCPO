@@ -11,9 +11,18 @@ export function createAnnouncementRowHTML(post, isRead, showQuickReadBtn = true)
   const readClass = isRead ? 'read' : 'unread';
   const badgeHTML = isRead ? '' : '<span class="badge-unread">未読</span>';
   
-  const actionHTML = showQuickReadBtn && !isRead
-    ? `<button class="btn-quick-read" data-id="${post.id}">既読にする</button>`
-    : (isRead ? `<span class="text-read-done">既読</span>` : '');
+  //const actionHTML = showQuickReadBtn && !isRead
+    //? `<button class="btn-quick-read" data-id="${post.id}">既読にする</button>`
+    //: (isRead ? `<span class="text-read-done">既読</span>` : '');
+  // ★ 既読・未読に応じてボタンを切り替える
+  let actionHTML = '';
+  if (showQuickActionBtn) {
+    if (isRead) {
+      actionHTML = `<button class="btn-quick-unread" data-id="${post.id}">未読に戻す</button>`;
+    } else {
+      actionHTML = `<button class="btn-quick-read" data-id="${post.id}">既読にする</button>`;
+    }
+  }
 
   return `
     <div class="announcement-row ${readClass}" data-id="${post.id}">
@@ -47,10 +56,11 @@ export function attachAnnouncementClickEvents(container, currentUserId, onClickP
   rows.forEach(row => {
     const clickTarget = row.querySelector('.row-main') || row;
 
-    // ★ async を追加 ＆ 重複登録防止のため onclick に統一
+    // async を追加 ＆ 重複登録防止のため onclick に統一
     clickTarget.onclick = async (e) => {
-      // クイック既読ボタンクリック時はモーダルを開かない
-      if (e.target.closest('.btn-quick-read')) return;
+      // ★ クイック既読・未読ボタンクリック時はモーダルを開かないようにガード
+      //if (e.target.closest('.btn-quick-read')) return;
+      if (e.target.closest('.btn-quick-read') || e.target.closest('.btn-quick-unread')) return;
 
       const postId = Number(row.dataset.id);
 
