@@ -2,7 +2,7 @@
 
 import { 
   getCurrentUser, 
-  getrRememberedUser,
+  getRememberedUser,
   fetchMemberByEmail, 
   sendOtpEmail, 
   saveCurrentUser, 
