@@ -76,7 +76,8 @@ export function openAnnouncementModal({
 
           if (!data.title || !data.content) {
             alert('タイトルと本文を入力してください。');
-            throw new Error('VALIDATION_ERROR');
+            //throw new Error('VALIDATION_ERROR');
+            return false; // バリデーションエラー時はモーダルを閉じない
           }
          
           const action = isEdit
@@ -87,6 +88,8 @@ export function openAnnouncementModal({
           const successMsg = isEdit ? '保存しました' : '投稿しました';
 
           await confirmAndRun(msg, action, successMsg);
+          if (!isSuccess) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
+          
           (isEdit ? onUpdated : onSaved)?.();
         }
       },
