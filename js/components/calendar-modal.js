@@ -59,15 +59,9 @@ function renderViewContent(data = {}) {
       <div class="detail-text">📅 ${data.date || ''} (${timeRange})</div>
     </div>
 
-    <div class="form-row">
-      <div class="form-group flex-1">
-        <label for="start_time">開始時間</label>
-        <div class="detail-text">${startTime}</div>
-      </div>
-      <div class="form-group flex-1">
-        <label for="end_time">終了時間</label>
-        <div class="detail-text">${endTime}</div>
-      </div>
+    <div class="form-group">
+      <label>時間</label>
+      <div class="detail-text">⏰ ${timeRange}</div>
     </div>
 
     <div class="form-group">
