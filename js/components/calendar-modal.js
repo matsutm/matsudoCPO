@@ -51,6 +51,8 @@ function renderViewContent(data = {}) {
   const timeRange = startTime ? `${startTime} ～ ${endTime}` : '時間未定';
   const notesFormatted = data.program_notes ? data.program_notes.replace(/\n/g, '<br>') : 'なし';
 
+  console.log('renderViewContent data:', data);
+  
   return `
     <div class="form-group">
       <label>日付</label>
@@ -73,7 +75,6 @@ function renderViewContent(data = {}) {
       <div class="detail-text" style="white-space: pre-wrap; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">${notesFormatted || 'なし'}</div>
     </div>
   `;
-  console.log('renderViewContent data:', data);
 }
 
 // EDIT/CREATE用のフォーム描画
