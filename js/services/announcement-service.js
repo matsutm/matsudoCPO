@@ -9,7 +9,10 @@ export async function fetchAnnouncements() {
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.error('fetchAnnouncementsエラー:', error);
+    throw error;
+  }
   return data || [];
 }
 
@@ -19,13 +22,20 @@ export async function fetchAnnouncements() {
 export async function fetchUserReadIds(memberId) {
   if (!memberId) return new Set();
 
-  const { data, error } = await window.supabaseClient
-    .from('announcement_reads')
-    .select('announcement_id')
-    .eq('member_id', memberId);
+  try {
+    const { data, error } = await window.supabaseClient
+      .from('announcement_reads')
+      .select('announcement_id')
+      .eq('member_id', memberId);
 
-  if (error) throw error;
-  return new Set((data || []).map(r => r.announcement_id));
+    if (error) {
+      console.warn('既読取得エラー:', error);
+      return new Set();
+    }
+    return new Set((data || []).map(r => r.announcement_id));
+  } catch (err) {
+    return new Set();
+  }
 }
 
 /**
