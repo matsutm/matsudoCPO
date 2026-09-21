@@ -2,6 +2,7 @@
 
 import { 
   getCurrentUser, 
+  getrRememberedUser,
   fetchMemberByEmail, 
   sendOtpEmail, 
   saveCurrentUser, 
@@ -61,16 +62,17 @@ export function initAuthView(onSuccess) {
     toggleError();
 
     const email = document.getElementById('auth-email').value.trim().toLowerCase();
-    const savedUser = getCurrentUser();
+    // 端末に記憶されているユーザー情報を取得
+    const rememberedUser = getRememberedUser();
 
     // 分岐: 2回目以降のログインで、LocalStorageにユーザー情報が残っている
-    if (savedUser) {
+    if (rememberedUser) {
       // A:  LocalStorageのユーザー情報と入力メールアドレスが一致する場合は、OTP送信をスキップして自動ログイン
-      if (savedUser.email.toLowerCase() === email) {
+      if (rememberedUser.email.toLowerCase() === email) {
         // LocalStorage から最新のユーザー情報を復元してログイン成功扱いにする
-        saveCurrentUser(savedUser);
-        alert(`おかえりなさい、${savedUser.name} さん！`);
-        onSuccess?.(savedUser);
+        const user = saveCurrentUser(rememberedUser);
+        alert(`おかえりなさい、${user.name} さん！`);
+        onSuccess?.(user);
         return;
       } 
 
@@ -112,8 +114,7 @@ export function initAuthView(onSuccess) {
       toggleError(err.message);
     } finally {
       btn.disabled = false;
-      btn.textContent = 'ログイン / 認証';
-
+      btn.textContent = '認証コードを送信';
     }
   });
 
