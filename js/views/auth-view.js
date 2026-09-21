@@ -93,7 +93,7 @@ export function initAuthView(onSuccess) {
       // ① メールアドレスが名簿に登録されているか確認
       const member = await fetchMemberByEmail(email);
       // ② DEV_AUTO_LOGINが有効な場合
-      if (dev_auto_login) {
+      if (window.DEV_AUTO_LOGIN) {
         const user = saveCurrentUser(member);
         alert(`認証が完了しました。ようこそ、${user.name} さん！`);
         onSuccess?.(user);
