@@ -9,8 +9,6 @@ import { openModal } from './components/modal.js'; // ★ openModal をインポ
 
 const appContent = document.getElementById('app-content');
 
-let isLoggedOutState = false; // ★ 一時的にログアウト画面を表示しているかのフラグ
-
 // 画面切り替えの司令塔
 export async function navigateTo(viewName, isBrowserBack = false) {
   //一旦退避　updateLoginUserDisplay();
@@ -121,8 +119,6 @@ export function handleLogout() {
 // アプリ起動時の初期化
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navHome')?.addEventListener('click', () => navigateTo('home'));
-
-  // ★ ログアウトボタンのイベント登録を追加
   document.getElementById('btnLogout')?.addEventListener('click', handleLogout);
 
   // ブラウザの「戻る・進む」ボタン操作時のイベント
