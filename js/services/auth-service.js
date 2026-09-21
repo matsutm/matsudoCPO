@@ -23,6 +23,11 @@ export function getCurrentUser() {
  * @returns {Object} 保存されたユーザーオブジェクト
  */
 export function saveCurrentUser(member) {
+  if (!member || !member.id) {
+    console.error('保存しようとしたメンバー情報に id が存在しません:', member);
+    return null;
+  }
+  
   const currentUserData = {
     id: member.id,
     name: member.name,
