@@ -17,11 +17,9 @@ export async function navigateTo(viewName, isBrowserBack = false) {
   const user = getCurrentUser();
 
   // 未認証の場合は強制的にログイン画面へ
-  // 未認証または簡易ログアウト状態の場合は強制的にログイン画面へ
-  if (!user || isLoggedOutState ) {
+  if (!user) {
     appContent.innerHTML = renderAuthView();
     initAuthView(() => {
-      isLoggedOutState = false; // ★ログイン成功したらフラグをリセット
       updateLoginUserDisplay();
       navigateTo('home'); 
     });
@@ -101,7 +99,6 @@ export function handleLogout() {
         type: 'primary',
         onClick: () => {
           logoutSession();
-          isLoggedOutState = true; // ★画面上ログイン待ちにする
           navigateTo('auth');
         }
       },
@@ -109,8 +106,7 @@ export function handleLogout() {
         label: 'データ残さない',
         type: 'danger',
         onClick: async () => {
-          logoutCompletely(); // ★localStorageを消去
-          isLoggedOutState = false;
+          await logoutCompletely(); // ★localStorageを消去
           navigateTo('auth');
         }
       },
