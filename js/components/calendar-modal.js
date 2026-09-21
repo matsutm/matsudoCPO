@@ -50,7 +50,6 @@ function renderViewContent(data = {}) {
   const endTime = data.end_time?.slice(0, 5) || '21:00';
   const timeRange = startTime ? `${startTime} ～ ${endTime}` : '時間未定';
   const notesFormatted = data.program_notes ? data.program_notes.replace(/\n/g, '<br>') : 'なし';
-  const safeLocation = (location || '').replace(/'/g, "\\'");
 
   console.log('renderViewContent data:', data);
 
@@ -63,11 +62,12 @@ function renderViewContent(data = {}) {
     <div class="form-group">
       <label for="location">場所</label>
       <div class="detail-text">📍 ${data.location || '未定'}</div>
-      
     </div>
 
-    <!-- ${renderMapButton(safeLocation)} -->
+    ${locationInput(disabled)}
 
+    <!-- VIEWモードでもGoogleマップボタンは押せるようにする -->
+    ${renderMapButton(data.location || '')}
 
     <div class="form-group">
       <label>指導</label>
