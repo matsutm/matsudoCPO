@@ -117,14 +117,11 @@ export async function verifyOtpCode(email, code) {
 
 /**
  * 簡易ログアウト（画面をメールアドレス入力へ戻すのみ）
- * LocalStorage の記憶は保持する
+ * LocalStorage の記憶は保持する、Supabase セッションも維持する
  */
 export function logoutSession() {
   // LocalStorage の currentUser は保持するため、ここでは削除しない
-  window.supabaseClient.auth.signOut().catch((error) => {
-    console.error('ログアウトエラー:', error);
-  });
-}
+} 
 
 /**
  * 完全ログアウト（端末の保存情報・Supabaseセッションを全消去）
@@ -132,6 +129,11 @@ export function logoutSession() {
 export async function logoutCompletely() {
   localStorage.removeItem('currentUser');
   if (window.supabaseClient?.auth) {
-    await window.supabaseClient.auth.signOut();
+    try {
+      await window.supabaseClient.auth.signOut();
+    } catch (error) {
+      console.error('完全ログアウトエラー:', error);
+    }
   }
 }
+
