@@ -10,7 +10,8 @@
 export async function confirmAndRun(confirmMsg, actionFn, successMsg) {
   // 1. キャンセル時は例外を投げて後続のモーダル閉じ・onSavedを阻止
   if (!window.confirm(confirmMsg)) {
-    throw new Error('USER_CANCELLED');
+    //throw new Error('USER_CANCELLED');
+    return false; // ユーザーがキャンセルした場合は false を返す
   }
 
   try {
@@ -26,8 +27,9 @@ export async function confirmAndRun(confirmMsg, actionFn, successMsg) {
     if (err.message !== 'USER_CANCELLED') {
       console.error('処理エラー:', err);
       window.alert(`エラーが発生しました:\n${err.message || '時間を置いて再度お試しください。'}`);
+      return false; // エラーが発生した場合は false 返してモーダル保持＆後続阻止  
     }
     // エラー時もモーダル閉じを阻止するため再スロー
-    throw err;
+    //throw err;
   }
 }
