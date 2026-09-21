@@ -67,6 +67,8 @@ export function initAuthView(onSuccess) {
     if (savedUser) {
       // A:  LocalStorageのユーザー情報と入力メールアドレスが一致する場合は、OTP送信をスキップして自動ログイン
       if (savedUser.email.toLowerCase() === email) {
+        // LocalStorage から最新のユーザー情報を復元してログイン成功扱いにする
+        saveCurrentUser(savedUser);
         alert(`おかえりなさい、${savedUser.name} さん！`);
         onSuccess?.(savedUser);
         return;
