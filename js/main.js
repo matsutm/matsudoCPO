@@ -5,8 +5,11 @@ import { renderHomeView, initHomeView } from './views/home-view.js';
 import { renderCalendarView, initCalendarView } from './views/calendar-view.js';
 import { renderAnnouncementView, initAnnouncementView } from './views/announcement-view.js';
 import { renderLibraryView, initLibraryView } from './views/library-view.js';
+import { openModal } from './components/modal.js'; // ★ openModal をインポート
 
 const appContent = document.getElementById('app-content');
+
+let isLoggedOutState = false; // ★ 一時的にログアウト画面を表示しているかのフラグ
 
 // 画面切り替えの司令塔
 export async function navigateTo(viewName, isBrowserBack = false) {
@@ -14,13 +17,16 @@ export async function navigateTo(viewName, isBrowserBack = false) {
   const user = getCurrentUser();
 
   // 未認証の場合は強制的にログイン画面へ
-  if (!user) {
+  // 未認証または簡易ログアウト状態の場合は強制的にログイン画面へ
+  if (!user || isLoggedOutState ) {
     appContent.innerHTML = renderAuthView();
     initAuthView(() => {
+      isLoggedOutState = false; // ★ログイン成功したらフラグをリセット
       updateLoginUserDisplay();
-      navigateTo('home');
+      navigateTo('home'); 
     });
-    return;
+    updateLoginUserDisplay();
+    return; // ここで処理を終了して、以降の画面切り替え処理をスキップ
   }
 
   updateLoginUserDisplay();
@@ -58,6 +64,7 @@ export async function navigateTo(viewName, isBrowserBack = false) {
   }
 }
 
+
 //ユーザ名を表示する
 function updateLoginUserDisplay() {
   const user = getCurrentUser();
@@ -94,6 +101,7 @@ export function handleLogout() {
         type: 'primary',
         onClick: () => {
           logoutSession();
+          isLoggedOutState = true; // ★画面上ログイン待ちにする
           navigateTo('auth');
         }
       },
@@ -101,7 +109,8 @@ export function handleLogout() {
         label: 'データ残さない',
         type: 'danger',
         onClick: async () => {
-          await logoutCompletely();
+          logoutCompletely(); // ★localStorageを消去
+          isLoggedOutState = false;
           navigateTo('auth');
         }
       },
@@ -116,6 +125,9 @@ export function handleLogout() {
 // アプリ起動時の初期化
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navHome')?.addEventListener('click', () => navigateTo('home'));
+
+  // ★ ログアウトボタンのイベント登録を追加
+  document.getElementById('btnLogout')?.addEventListener('click', handleLogout);
 
   // ブラウザの「戻る・進む」ボタン操作時のイベント
   window.addEventListener('popstate', (event) => {
