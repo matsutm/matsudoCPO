@@ -6,7 +6,7 @@
 export async function fetchAnnouncements() {
   const { data, error } = await window.supabaseClient
     .from('announcements')
-    .select('*, members:author_id(name)')
+    .select('*')
     .order('created_at', { ascending: false });
 
   if (error) throw error;
@@ -34,7 +34,7 @@ export async function fetchUserReadIds(memberId) {
 export async function fetchAnnouncementById(id) {
   const { data, error } = await window.supabaseClient
     .from('announcements')
-    .select('*, members:author_id(name)')
+    .select('*')
     .eq('id', id)
     .single();
 
@@ -109,6 +109,11 @@ export async function deleteAnnouncement(id) {
     .eq('id', id);
 
   if (error) throw error;
+  const { error: readError } = await window.supabaseClient
+    .from('announcement_reads')
+    .delete()
+    .eq('announcement_id', id);
+  if (readError) throw readError;
 }
 
 /**
