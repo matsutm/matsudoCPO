@@ -8,6 +8,7 @@ import { formatDateShort, escapeHtml } from '../utils.js';
 import { createTooltipText, attachTooltip } from '../components/tooltip.js';
 import { renderPrimaryLibraryLinks } from '../components/library-links.js';
 import { renderSocialLinks } from '../components/social-links.js';
+import { openCalendarModal } from '../components/calendar-modal.js';
 
 
 // 1. ホーム画面のHTMLを出力
@@ -164,7 +165,7 @@ async function loadNextTwoSchedules() {
         : '';
 
       return `
-        <div class="event-item" style="margin-bottom: 12px;">
+        <div class="event-item" data-index="${index}" style="margin-bottom: 12px; cursor: pointer;">
           <span class="event-badge">${labelText}</span>
           <div class="event-date">📅 ${item.date} (${timeRange})</div>
           <div class="event-detail">📍 【場所】${item.location || '未定'}</div>
@@ -188,6 +189,30 @@ async function loadNextTwoSchedules() {
           }
         }
       });
+
+      // クリックでカレンダーモーダルを開く
+      el.addEventListener('click', () => {
+        // eventオブジェクト構造をカレンダーモーダル用に変換
+        const eventAdapter = {
+          id: item.id,
+          extendedProps: {
+            id: item.id,
+            raw_date: item.date,
+            start_time: item.start_time,
+            end_time: item.end_time,
+            location: item.location,
+            instructor: item.instructor,
+            notes: item.program_notes //item.program_notes
+            program_notes: item.program_notes // こちらもセット
+          }
+        };  
+
+        openCalendarModal({
+          mode: 'VIEW',
+          event: eventAdapter,
+          onSaved: () => loadNextTwoSchedules(), // 保存後に再読み込み
+        });
+      });      
     });
 
   } catch (err) {
