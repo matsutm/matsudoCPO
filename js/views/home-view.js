@@ -202,7 +202,7 @@ async function loadNextTwoSchedules() {
             end_time: item.end_time,
             location: item.location,
             instructor: item.instructor,
-            notes: item.program_notes //item.program_notes
+            notes: item.program_notes, //item.program_notes
             program_notes: item.program_notes // こちらもセット
           }
         };  
