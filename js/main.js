@@ -96,21 +96,64 @@ export function handleLogout() {
         label: 'ログアウト',
         type: 'primary',
         onClick: () => {
-          logoutSession();
-          navigateTo('auth');
+          showConfirmModal(
+            '端末に記憶を残してログアウトします。',
+            () => {
+              logoutSession();
+              navigateTo('auth');
+            }
+          );
         }
       },
       {
         label: 'データ残さない',
         type: 'danger',
         onClick: async () => {
-          await logoutCompletely(); // ★localStorageを消去
-          navigateTo('auth');
+          showConfirmModal(
+            '端末の記憶を消去してログアウトします。',
+            async () => {
+              await logoutCompletely();
+              navigateTo('auth');
+            }
+          );
         }
       },
       {
         label: 'キャンセル',
         type: 'secondary'
+      }
+    ]
+  });
+}
+
+/**
+ * ログアウトの最終確認モーダルを表示するヘルパー関数
+ */
+function showConfirmModal(confirmMessage, onConfirm) {
+  openModal({
+    title: 'ログアウトの確認',
+    content: `
+      <p class="logout-guide-text">
+        ${confirmMessage}
+      </p>
+      <p class="logout-confirm-title">
+        本当にログアウトしますか？
+      </p>
+    `,
+    actions: [
+      {
+        label: 'はい',
+        type: 'danger',
+        onClick: async () => {
+          await onConfirm();
+        }
+      },
+      {
+        label: 'いいえ',
+        type: 'secondary',
+        onClick: () => {
+          handleLogout();
+        }
       }
     ]
   });
