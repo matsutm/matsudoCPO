@@ -1,16 +1,16 @@
 // js/services/announcement-service.js
 
 /**
- * 全掲示の取得（投稿者情報付き）
+ * 全掲示の取得
  */
 export async function fetchAnnouncements() {
   const { data, error } = await window.supabaseClient
     .from('announcements')
-    .select('*')
+    .select('*') // ★ シンプルに全取得
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('fetchAnnouncementsエラー:', error);
+    console.error('Supabase fetchAnnouncements エラー:', error);
     throw error;
   }
   return data || [];
@@ -34,6 +34,7 @@ export async function fetchUserReadIds(memberId) {
     }
     return new Set((data || []).map(r => r.announcement_id));
   } catch (err) {
+    console.warn('既読取得例外:', err);
     return new Set();
   }
 }
@@ -48,13 +49,8 @@ export async function fetchAnnouncementById(id) {
     .eq('id', id)
     .single();
 
-  if (error) {
-    console.error('Supabaseエラー詳細:', error); // ★ エラー内容を表示
-    throw error;
-  }
-  
-  console.log('取得したお知らせ件数:', data?.length); // ★ 件数を表示
-  return data || [];
+  if (error) throw error;
+  return data;
 }
 
 /**
@@ -99,7 +95,6 @@ export async function createAnnouncement(announcementData) {
 
 /**
  * UPDATE（投稿の更新）
- * calendar-service の updateSchedule と呼び出しスタイルを統一
  */
 export async function updateAnnouncement(id, announcementData) {
   const { data, error } = await window.supabaseClient
@@ -115,7 +110,6 @@ export async function updateAnnouncement(id, announcementData) {
 
 /**
  * DELETE（投稿の削除）
- * calendar-service の deleteSchedule と統一
  */
 export async function deleteAnnouncement(id) {
   const { error } = await window.supabaseClient
@@ -124,11 +118,6 @@ export async function deleteAnnouncement(id) {
     .eq('id', id);
 
   if (error) throw error;
-  const { error: readError } = await window.supabaseClient
-    .from('announcement_reads')
-    .delete()
-    .eq('announcement_id', id);
-  if (readError) throw readError;
 }
 
 /**
