@@ -44,87 +44,6 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
   });
 }
 
-// 1. ビュー用のコンテンツ描画
-function renderViewContent(data = {}) {
-  const startTime = data.start_time?.slice(0, 5) || '18:00';
-  const endTime = data.end_time?.slice(0, 5) || '21:00';
-  const timeRange = startTime ? `${startTime} ～ ${endTime}` : '時間未定';
-  const notesFormatted = data.program_notes ? data.program_notes.replace(/\n/g, '<br>') : 'なし';
-
-  console.log('renderViewContent data:', data);
-
-  return `
-    <div class="form-group">
-      <label>日付</label>
-      <div class="detail-text">📅 ${data.date || ''} (${timeRange})</div>
-    </div>
-
-    <div class="form-group">
-      <label for="location">場所</label>
-      <div class="detail-text">📍 ${data.location || '未定'}</div>
-    </div>
-
-    <!--locationInput(disabled)}-->
-
-    <!-- VIEWモードでもGoogleマップボタンは押せるようにする -->
-    ${renderMapButton(data.location || '')}
-
-    <div class="form-group">
-      <label>指導</label>
-      <div class="detail-text">👤 ${data.instructor || 'なし'}</div>
-    </div>
-
-    <div class="form-group">
-      <label>内容・曲目</label>
-      <div class="detail-text" style="white-space: pre-wrap; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">${notesFormatted || 'なし'}</div>
-    </div>
-  `;
-}
-
-// EDIT/CREATE用のフォーム描画
-function renderFormContent(data = {}) {
-  const startTime = data.start_time?.slice(0, 5) || '18:00';
-  const endTime = data.end_time?.slice(0, 5) || '21:00';
-  return `
-  <div class="form-group">
-      <label for="date">日付 *</label>
-      <input id="date" type="date" class="form-control" value="${data.date || ''}">
-    </div>
-
-    <div class="form-row">
-      <div class="form-group flex-1">
-        <label for="start_time">開始時間 *</label>
-        <input id="start_time" type="time" class="form-control" value="${startTime}">
-      </div>
-      <div class="form-group flex-1">
-        <label for="end_time">終了時間 *</label>
-        <input id="end_time" type="time" class="form-control" value="${endTime}">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="location">場所 *</label>
-      <input id="location" type="text" class="form-control" list="location-list" value="${data.location || ''}">
-      <datalist id="location-list">
-        <option value="森のホール21 リハ室">
-        <option value="流山エルズ（生涯学習センター）">
-        <option value="きらりホール">
-        <option value="けやきプラザ（我孫子市）">
-      </datalist>
-    </div>
-
-    <div class="form-group">
-      <label for="instructor">指導</label>
-      <input id="instructor" type="text" class="form-control" value="${data.instructor || ''}">
-    </div>
-
-    <div class="form-group">
-      <label for="program_notes">内容・曲目</label>
-      <textarea id="program_notes" class="form-control" rows="3">${data.program_notes || ''}</textarea>
-    </div>
-  `;
-}
-
 function renderForm(data = {}, isView = false) {
   const disabled = isView ? 'disabled' : '';
   const startTime = data.start_time?.slice(0, 5) || '18:00';
@@ -158,9 +77,6 @@ function renderForm(data = {}, isView = false) {
       </datalist>
     </div>
 
-    ${renderMapButton(data.location)}
-    
-    <!-- VIEWモードでもGoogleマップボタンは押せるようにする -->
     ${renderMapButton(data.location || '')}
 
     <div class="form-group">
