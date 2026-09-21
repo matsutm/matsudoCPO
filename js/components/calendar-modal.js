@@ -10,6 +10,9 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
     ? await fetchScheduleById(scheduleId) 
     : {};
 
+  // ★ ここで取得したデータの中身を確認！
+  console.log('取得したスケジュールのデータ:', scheduleData);
+  
   const isEdit = mode === 'EDIT';
   const isView = mode === 'VIEW';
 
