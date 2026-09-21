@@ -74,7 +74,7 @@ function renderViewContent(data = {}) {
 
     <div class="form-group">
       <label>内容・曲目</label>
-      <div class="detail-text" style="white-space: pre-wrap; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">${data.program_notes || 'なし'}</div>
+      <div class="detail-text" style="white-space: pre-wrap; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">${notesFormatted || 'なし'}</div>
     </div>
   `;
 }
