@@ -1,5 +1,5 @@
 // js/main.js
-import { getCurrentUser } from './services/auth-service.js';
+import { getCurrentUser, logoutSession, logoutCompletely } from './services/auth-service.js';
 import { renderAuthView, initAuthView } from './views/auth-view.js';
 import { renderHomeView, initHomeView } from './views/home-view.js';
 import { renderCalendarView, initCalendarView } from './views/calendar-view.js';
@@ -10,17 +10,20 @@ const appContent = document.getElementById('app-content');
 
 // 画面切り替えの司令塔
 export async function navigateTo(viewName, isBrowserBack = false) {
-  updateLoginUserDisplay();
+  //一旦退避　updateLoginUserDisplay();
   const user = getCurrentUser();
 
   // 未認証の場合は強制的にログイン画面へ
   if (!user) {
     appContent.innerHTML = renderAuthView();
     initAuthView(() => {
+      updateLoginUserDisplay();
       navigateTo('home');
     });
     return;
   }
+
+  updateLoginUserDisplay();
 
   // ルーティング分岐
   switch (viewName) {
@@ -58,14 +61,56 @@ export async function navigateTo(viewName, isBrowserBack = false) {
 //ユーザ名を表示する
 function updateLoginUserDisplay() {
   const user = getCurrentUser();
-  const el = document.getElementById('loginUserDisplay');
-  if (!el) return;
+  const elUser = document.getElementById('loginUserDisplay');
+  const btnlogout = document.getElementById('btnLogout');
 
   if (user) {
-    el.textContent = `${user.name} さん`;
+    if (elUser) elUser.textContent = `${user.name} さん`;
+    if (btnlogout) btnlogout.style.display = 'inline-block';
   } else {
-    el.textContent = '';
-  }
+    if (elUser) elUser.textContent = '';
+    if (btnlogout) btnlogout.style.display = 'none';
+  } 
+}
+
+/**
+ * 選択式ログアウトモーダルの表示ハンドラー
+ */
+export function handleLogout() {
+  openModal({
+    title: 'ログアウト',
+    content: `
+      <p style="margin-bottom: 12px; font-size: 0.95rem; color: #374151;">
+        ログアウト方法を選択してください。
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: #4b5563;">
+        <div><strong>【ログアウト】</strong><br>端末に記憶を残します。次回はメールアドレス入力のみで再ログインできます。</div>
+        <div><strong>【データ残さない】</strong><br>共有PC等で端末の記憶を消去します。次回は6桁コード（OTP）からやり直します。</div>
+      </div>
+    `,
+    actions: [
+      {
+        label: 'ログアウト',
+        type: 'primary',
+        onClick: () => {
+          logoutSession();
+          navigateTo('auth');
+        }
+      },
+      {
+        label: 'データ残さない',
+        type: 'danger',
+        onClick: async () => {
+          await logoutCompletely();
+          navigateTo('auth');
+        }
+      },
+      {
+        label: 'キャンセル',
+        type: 'secondary'
+      }
+    ]
+  });
 }
 
 // アプリ起動時の初期化
