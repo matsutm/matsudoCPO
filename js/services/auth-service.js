@@ -4,8 +4,7 @@
  * localStorageのユーザー情報を取得
  */
 export function getCurrentUser() {
-  const userStr = sessionStorage.getItem('currentUser');
-
+  const userStr = sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser');
   if (userStr) {
     try {
       return JSON.parse(userStr);
@@ -21,7 +20,7 @@ export function getCurrentUser() {
  * 前回ログインした端末の記憶データを取得（簡易ログイン用）
  */
 export function getRememberedUser() {
-  const userStr = localStorage.getItem('rememberedUser') || localStorage.getItem('currentUser');
+  const userStr = localStorage.getItem('rememberedUser');
   if (userStr) {
     try {
       return JSON.parse(userStr);
@@ -137,12 +136,12 @@ export async function verifyOtpCode(email, code) {
 }
 
 /**
- * 簡易ログアウト（画面をメールアドレス入力へ戻すのみ）
- * LocalStorage の記憶は保持する、Supabase セッションも維持する
+ * 簡易ログアウト（画面上は未ログイン状態に戻すが、
+ * 端末記憶と Supabase セッションは保持する）
  */
 export function logoutSession() {
-  // LocalStorage の currentUser は保持するため、ここでは削除しない
-  sessionStorage.removeItem('currentUser'); // アクティブセッションのみ削除
+  sessionStorage.removeItem('currentUser');
+  localStorage.removeItem('currentUser'); // アクティブユーザー状態を解除（rememberedUser は保持）
 } 
 
 /**
@@ -150,7 +149,9 @@ export function logoutSession() {
  */
 export async function logoutCompletely() {
   sessionStorage.removeItem('currentUser');
+  localStorage.removeItem('currentUser');
   localStorage.removeItem('rememberedUser');
+  
   if (window.supabaseClient?.auth) {
     try {
       await window.supabaseClient.auth.signOut();
