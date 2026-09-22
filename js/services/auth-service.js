@@ -122,7 +122,7 @@ export async function verifyOtpCode(email, code) {
   const { error } = await window.supabaseClient.auth.verifyOtp({
     email: cleanEmail,
     token: code,
-    type: 'otp'
+    type: 'email'
   });
   if (error) {
     console.error('OTP検証エラー:', error);
