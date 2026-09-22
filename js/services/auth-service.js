@@ -4,7 +4,7 @@
  * localStorageのユーザー情報を取得
  */
 export function getCurrentUser() {
-  const userStr = localStorage.getItem('currentUser');
+  const userStr = sessionStorage.getItem('currentUser');
 
   if (userStr) {
     try {
@@ -51,7 +51,7 @@ export function saveCurrentUser(member) {
     section: member.section,
     instrument: member.instrument
   };
-  localStorage.setItem('currentUser', JSON.stringify(currentUserData));
+  sessionStorage.setItem('currentUser', JSON.stringify(currentUserData));
   localStorage.setItem('rememberedUser', JSON.stringify(currentUserData));
   return currentUserData;
 }
@@ -122,7 +122,7 @@ export async function verifyOtpCode(email, code) {
   const { error } = await window.supabaseClient.auth.verifyOtp({
     email: cleanEmail,
     token: code,
-    type: 'email'
+    type: 'otp'
   });
   if (error) {
     console.error('OTP検証エラー:', error);
@@ -142,14 +142,14 @@ export async function verifyOtpCode(email, code) {
  */
 export function logoutSession() {
   // LocalStorage の currentUser は保持するため、ここでは削除しない
-  localStorage.removeItem('currentUser'); // アクティブセッションのみ削除
+  sessionStorage.removeItem('currentUser'); // アクティブセッションのみ削除
 } 
 
 /**
  * 完全ログアウト（端末の保存情報・Supabaseセッションを全消去）
  */
 export async function logoutCompletely() {
-  localStorage.removeItem('currentUser');
+  sessionStorage.removeItem('currentUser');
   localStorage.removeItem('rememberedUser');
   if (window.supabaseClient?.auth) {
     try {
