@@ -4,6 +4,7 @@ import { openModal } from './modal.js';
 import { createAnnouncement, updateAnnouncement, deleteAnnouncement, markAsRead } from '../services/announcement-service.js';
 import { renderEmailOptionUI, initEmailOptionEvents, getEmailOptionData } from './announcement-email-option.js';
 import { confirmAndRun } from '../utils/action-utils.js';
+import { formatText, formatDateTime } from '../utils.js'; // ★ utils.jsからimport
 
 export function openAnnouncementModal({
   mode,          // 'CREATE' | 'VIEW' | 'EDIT'
@@ -44,21 +45,21 @@ export function openAnnouncementModal({
 
   if (isView) {
     actions = [
-    //  {
-    //    label: '編集',
-    //    type: 'primary',
-    //    onClick: () => openAnnouncementModal({
-    //      mode: 'EDIT', post, announcementId, title, body, authorId, currentUserId, createdAt, onUpdated, onDeleted, onClosed
-    //    })
-    //  },
-    //  {
-    //    label: '削除',
-    //    type: 'danger',
-    //    onClick: async () => {
-    //      await confirmAndRun('この投稿を削除しますか？', () => deleteAnnouncement(id), '削除しました');
-    //      onDeleted?.();
-    //    }
-    //  },
+      {
+        label: '編集',
+        type: 'primary',
+        onClick: () => openAnnouncementModal({
+          mode: 'EDIT', post, announcementId, title, body, authorId, currentUserId, createdAt, onUpdated, onDeleted, onClosed
+        })
+      },
+      {
+        label: '削除',
+        type: 'danger',
+        onClick: async () => {
+          await confirmAndRun('この投稿を削除しますか？', () => deleteAnnouncement(id), '削除しました');
+          onDeleted?.();
+        }
+      },
       {
         label: '閉じる',
         type: 'secondary',
@@ -132,10 +133,10 @@ function renderViewContent(p) {
       <h3 style="margin: 0 0 0.75rem 0; font-size: 1.1rem; color: #1e3a8a;">${title}</h3>
     </div>
     <div class="form-group">
-      <div class="announcement-body">${body}</div>
+      <div class="announcement-body">${formatText(body)}</div>
     </div>
     <div class="form-group">
-      <div class="announcement-meta">投稿日時：${createdAt}</div>
+      <div class="announcement-meta">投稿日時：${formatDateTime(createdAt)}</div>
     </div>
   `;
 }
