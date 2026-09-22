@@ -57,7 +57,8 @@ export function openAnnouncementModal({
         type: 'danger',
         onClick: async () => {
           await confirmAndRun('この投稿を削除しますか？', () => deleteAnnouncement(id), '削除しました');
-          onDeleted?.();
+          //onDeleted?.();
+          onUpdated?.();
         }
       },
       {
