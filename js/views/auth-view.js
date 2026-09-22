@@ -69,9 +69,9 @@ export function initAuthView(onSuccess) {
     const { data: { session } } = await window.supabaseClient.auth.getSession();
     const rememberedUser = getRememberedUser();
     
-    console.log('--- 認証処理開始 ---');
-    console.log('入力されたEmail:', inputEmail);
-    console.log('取得されたrememberedUser:', rememberedUser);
+    //console.log('--- 認証処理開始 ---');
+    //console.log('入力されたEmail:', inputEmail);
+    //console.log('取得されたrememberedUser:', rememberedUser);
 
     // ★ パターンA：端末に正規セッションとユーザー情報が残っている場合
     if (session && rememberedUser) {
