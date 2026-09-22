@@ -64,6 +64,10 @@ export function initAuthView(onSuccess) {
     const email = document.getElementById('auth-email').value.trim().toLowerCase();
     // 端末に記憶されているユーザー情報を取得
     const rememberedUser = getRememberedUser();
+    
+    console.log('--- 認証処理開始 ---');
+    console.log('入力されたEmail:', email);
+    console.log('取得されたrememberedUser:', rememberedUser);
 
     // 分岐: 2回目以降のログインで、LocalStorageにユーザー情報が残っている
     if (rememberedUser) {
