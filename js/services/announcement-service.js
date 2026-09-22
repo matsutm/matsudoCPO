@@ -6,14 +6,20 @@
 export async function fetchAnnouncements() {
   const { data, error } = await window.supabaseClient
     .from('announcements')
-    .select('*') // ★ シンプルに全取得
+    .select(`*, // ★ シンプルに全取得
+      members:author_id ( name ) // ★ author_id をキーにして members テーブルから name を取得
+    `)
     .order('created_at', { ascending: false });
 
   if (error) {
     console.error('Supabase fetchAnnouncements エラー:', error);
     throw error;
   }
-  return data || [];
+  // 取得したデータ整形（author_name プロパティをセットしておく）
+  return (data || []).map(post => ({
+    ...post,
+    author_name: post.members?.name || '不明'
+  }));
 }
 
 /**
