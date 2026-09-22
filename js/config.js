@@ -42,7 +42,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // 全画面共有のSupabaseクライアントインスタンス
 window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
-    storage: window.sessionStorage, // ブラウザ終了で消える（セキュリティ担保）
+    storage: window.localStorage, // Supabase AuthのセッションをlocalStorageに保存
     persistSession: true, // セッションをsessionStorageに保存
     autoRefreshToken: true, // トークンの自動更新をsessionStorageに保存
   }
