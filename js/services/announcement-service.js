@@ -5,9 +5,10 @@
  */
 export async function fetchAnnouncements() {
   const { data, error } = await window.supabaseClient
-    .from('announcements')
-    .select(`*, // ★ シンプルに全取得
-      members:author_id ( name ) // ★ author_id をキーにして members テーブルから name を取得
+    .from('announcements') // ★ シンプルに全取得
+    // ★ author_id をキーにして members テーブルから name を取得
+    .select(`*, 
+      members:author_id ( name ) 
     `)
     .order('created_at', { ascending: false });
 
