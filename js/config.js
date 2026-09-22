@@ -1,6 +1,6 @@
 //メール送信機能は本番環境のみで実現する。またはテストで切り替える
 window.EMAIL_NOTIFY_ENABLED = false; //本番では必ず true
-window.DEV_AUTO_LOGIN = true; // 本番では必ず false
+window.DEV_AUTO_LOGIN = false; // 本番では必ず false
 
 
 // 固定文字列・URLを window に設定
@@ -42,8 +42,9 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // 全画面共有のSupabaseクライアントインスタンス
 window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
-    //persistSession: false, // セッションをブラウザに保存しない（セキュリティ上の理由）
-    //autoRefreshToken: false, // トークンの自動更新を無効化
+    storage: window.sessionStorage, // ブラウザ終了で消える（セキュリティ担保）
+    persistSession: true, // セッションをsessionStorageに保存
+    autoRefreshToken: true, // トークンの自動更新をsessionStorageに保存
   }
 });
 
