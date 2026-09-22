@@ -6,7 +6,8 @@ import {
   fetchMemberByEmail, 
   sendOtpEmail, 
   saveCurrentUser, 
-  verifyOtpCode 
+  verifyOtpCode,
+  logoutCompletely 
 } from '../services/auth-service.js';
 
 let targetEmail = '';
@@ -61,45 +62,47 @@ export function initAuthView(onSuccess) {
     e.preventDefault();
     toggleError();
 
-    const email = document.getElementById('auth-email').value.trim().toLowerCase();
-    // 端末に記憶されているユーザー情報を取得
+    const inputEmail = document.getElementById('auth-email').value.trim().toLowerCase();
+    const btn = document.getElementById('btn-send-otp');
+    
+    // Supabaseの有効なセッション ＆ ローカル記憶を取得
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
     const rememberedUser = getRememberedUser();
     
     console.log('--- 認証処理開始 ---');
-    console.log('入力されたEmail:', email);
+    console.log('入力されたEmail:', inputEmail);
     console.log('取得されたrememberedUser:', rememberedUser);
 
-    // 分岐: 2回目以降のログインで、LocalStorageにユーザー情報が残っている
-    if (rememberedUser) {
-      // A:  LocalStorageのユーザー情報と入力メールアドレスが一致する場合は、OTP送信をスキップして自動ログイン
-      if (rememberedUser.email.toLowerCase() === email) {
-        // LocalStorage から最新のユーザー情報を復元してログイン成功扱いにする
-        const user = saveCurrentUser(rememberedUser);
-        alert(`おかえりなさい、${user.name} さん！`);
-        onSuccess?.(user);
+    // ★ パターンA：端末に正規セッションとユーザー情報が残っている場合
+    if (session && rememberedUser) {
+      if (rememberedUser.email.toLowerCase() === inputEmail) {
+      // ① セッションのユーザー情報と入力メールアドレスが一致する場合は、OTP送信をスキップして自動ログイン
+        saveCurrentUser(rememberedUser);
+        alert(`おかえりなさい、${rememberedUser.name} さん！`);
+        onSuccess?.(rememberedUser);
         return;
-      } 
-
-      // B: 入力がlocalstrageと異なる場合は、確認ダイアログを表示して、OTP送信を行うかどうかをユーザーに選択させる
-      const proceed = confirm(
-        `前回と異なるメールアドレスです。\n初回ログイン（認証コード送信）へ進みますか？`
-      );
-      if (!proceed) {
-        toggleError('名簿に登録されたご自身のメールアドレスを入力してください。');
-        return;
+      } else {
+        // メアド不一致：アカウント切り替えの確認
+        const confirmSwitch = confirm(
+          '前回と異なるメールアドレスです。\n初回ログイン（認証コード送信）へ進みますか？'
+        );
+        if (confirmSwitch) {
+          await logoutCompletely(); // 端末のセッションと記憶を削除
+          alert('前回のセッションを終了しました。新しいメールアドレスでログインしてください。');
+          // その後、OTP送信処理に進む
+        } else {
+          return; // ユーザーがキャンセルした場合は処理を中断（なにもしない）
+        }
       }
     }
 
-    // ----------------------------------------------------
-    // 分岐②: 初回アクセス（または別アドレス切替）
-    // ----------------------------------------------------
-    const btn = document.getElementById('btn-send-otp');
+    // ★ パターンB：端末にセッションがない、または初回アクセスの場合
     btn.disabled = true;
-    btn.textContent = '確認中...';
+    btn.textContent = '送信中...';
 
     try {
-      // ① メールアドレスが名簿に登録されているか確認
-      const member = await fetchMemberByEmail(email);
+      const member = await fetchMemberByEmail(inputEmail);
+      
       // ② DEV_AUTO_LOGINが有効な場合
       if (window.DEV_AUTO_LOGIN) {
         const user = saveCurrentUser(member);
