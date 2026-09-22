@@ -97,7 +97,7 @@ export function openAnnouncementModal({
 
           const isSuccess = await confirmAndRun(msg, action, successMsg);
 
-          if (!isSuccess === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
+          if (isSuccess === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
           
           (isEdit ? onUpdated : onSaved)?.();
         }
