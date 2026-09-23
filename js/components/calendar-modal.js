@@ -38,7 +38,7 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
           // チェックボックス有効ならお知らせに登録
           if (!isEdit && isPostToAnnouncement) {
             // Supabaseのユーザー情報を取得
-            const newScheduleId = Array.isArray(savedData) ? savedData[0].id : savedData.id;
+            const newScheduleId = Array.isArray(savedData) ? savedData[0].id : savedData.id ?? null;
             await syncToAnnouncement(formData, newScheduleId);
           }
           return savedData;
