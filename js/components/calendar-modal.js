@@ -4,7 +4,7 @@ import { openModal } from './modal.js';
 import { renderMapButton } from './map-button.js';
 import { confirmAndRun } from '../utils/action-utils.js';
 import { createAnnouncement } from '../services/announcement-service.js';
-import { getCurrentUser } from '../services/user-service.js';
+import { getCurrentUser } from '../services/auth-service.js';
 import { formatText, formatDateTime } from '../utils.js';
 
 export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
