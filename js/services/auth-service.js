@@ -161,3 +161,21 @@ export async function logoutCompletely() {
   }
 }
 
+/**
+ * 💡 開発環境用：パスワード認証でSupabaseの正規セッションを自動発行する
+ */
+export async function loginForDev() {
+  if (!window.DEV_AUTO_LOGIN || !window.DEV_AUTH_CREDENTIALS) return null;
+
+  const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+    email: window.DEV_AUTH_CREDENTIALS.email,
+    password: window.DEV_AUTH_CREDENTIALS.password,
+  });
+
+  if (error) {
+    console.error('開発用自動ログイン（Supabase Auth）に失敗しました:', error);
+    return null;
+  }
+
+  return data.session;
+}
