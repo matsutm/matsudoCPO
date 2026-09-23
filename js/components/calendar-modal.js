@@ -105,7 +105,7 @@ function renderForm(data = {}, isView = false) {
       <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${data.program_notes || ''}</textarea>
     </div>
 
-    ${!isView && mode !== 'EDIT' ? `
+    ${!isView && isEdit ? `
       <div class="form-group" style="margin-top": 1rem; padding-top: 0.75rem; border-top: 1px dashed #cbd5e1;">
         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: bold; color: #334155;">
           <input type="checkbox" id="sync_announcement" checked style="width: 18px; height: 18px; accent-color: #2563eb;" />
