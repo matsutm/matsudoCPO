@@ -30,8 +30,8 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
   ] : [
     { label: isEdit ? '保存' : '追加', type: 'primary', onClick: async () => {
         const data = collectFormData();
-        //const action = isEdit ? () => updateSchedule(scheduleId, data) : () => createSchedule(data);
-        const action = async () => {
+        const action = isEdit ? () => updateSchedule(scheduleId, data) : () => createSchedule(data);
+        /* const action = async () => {
           // カレンダー予定の登録更新
           const savedData = isEdit ? await updateSchedule(scheduleId, data) : await createSchedule(data);
           // チェックボックス有効ならお知らせに登録
@@ -42,6 +42,7 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
           }
           return savedData;
         };
+        */
 
         const result = await confirmAndRun(isEdit ? '保存しますか？' : '追加しますか？', action, isEdit ? '保存しました' : '追加しました');
         if (result === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
