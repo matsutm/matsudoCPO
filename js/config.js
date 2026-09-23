@@ -33,7 +33,11 @@ window.APP_CONSTANTS = {
 // テストユーザID
 const DEV_TEST_USER_ID = '320e7ac5-a3e7-4241-94d8-619ad4b1e9f3';
 
-
+//　Supabase Authログイン情報
+const DEV_AUTH_CREDENTIALS = {
+  email: 'naritatomoyuki.p@gmail.com',
+  password: 'aki1112yui'
+};
 
 // Supabase接続設定
 const SUPABASE_URL = 'https://dylrgcsrlqvyjjggbrdb.supabase.co';
