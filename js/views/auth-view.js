@@ -7,8 +7,10 @@ import {
   sendOtpEmail, 
   saveCurrentUser, 
   verifyOtpCode,
-  logoutCompletely 
+  logoutCompletely,
+  loginForDev
 } from '../services/auth-service.js';
+
 
 let targetEmail = '';
 
@@ -105,6 +107,9 @@ export function initAuthView(onSuccess) {
       
       // ② DEV_AUTO_LOGINが有効な場合
       if (window.DEV_AUTO_LOGIN) {
+        // ★ Supabase Auth 側にも正規セッションを生成する
+        await loginForDev();
+        
         const user = saveCurrentUser(member);
         alert(`認証が完了しました。ようこそ、${user.name} さん！`);
         onSuccess?.(user);
