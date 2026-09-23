@@ -26,7 +26,8 @@ export async function fetchScheduleById(id) {
 export async function createSchedule(scheduleData) {
   const { data, error } = await window.supabaseClient
     .from('schedules')
-    .insert([scheduleData]);
+    .insert([scheduleData])
+    .select(); // 挿入レコードを返す
 
   if (error) throw error;
   return data;
