@@ -114,7 +114,8 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
     listContainer.innerHTML = displayPosts.map(post => `
       <div class="unread-row" data-id="${post.id}" style="cursor: pointer; padding: 8px 0; border-bottom: 1px solid #fef3c7;">
         <div class="unread-row-title">
-          <span class="badge-new-text" style="color: #d97706; font-weight: bold;">[NEW]</span> ${escapeHtml(post.title)}
+          <span class="badge-new-text" style="color: #d97706; font-weight: bold;">[NEW]</span>
+          <span class="unread-title-text"> ${escapeHtml(post.title)} </span>
         </div>
         <span class="unread-row-date" style="font-size: 0.8em; color: #78350f;">${formatDateShort(post.created_at)}</span>
       </div>
