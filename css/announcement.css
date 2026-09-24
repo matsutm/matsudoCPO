@@ -25,59 +25,67 @@
 /* ==========================================
  * 2. ホーム画面（未読掲示リスト）用スタイル
  * ========================================== */
-.unread-row {  //1
+/* css/announcement.css */
+
+/* ==========================================
+ * 2. ホーム画面（未読掲示リスト）用スタイル
+ * ========================================== */
+.unread-row {
   padding: 0.65rem 0;
-  border-top: 1px dashed #fcd34d;
+  border-bottom: 1px solid #fef3c7;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
   gap: 0.5rem;
   transition: background-color 0.15s ease;
-  min-width: 0;
+  min-width: 0; /* カード枠の横拡張を防止 */
 }
 
-.unread-row:hover {  //2
+.unread-row:hover {
   background-color: rgba(253, 230, 138, 0.25);
 }
 
-
-/* タイトルテキスト本体：長くなったら「...」にする */
-.unread-title-text {  //5
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #78350f;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* [NEW]バッジとタイトル文字列を包むコンテナ */
+.unread-row-title {
+  display: flex; /* 横並びレイアウトにする */
+  align-items: center;
+  gap: 0.3rem;
   flex: 1;
-  min-width: 0;
+  min-width: 0; /* これがないと「...」が効かずに横に伸びる */
+  overflow: hidden;
 }
 
-.unread-row-title {  //3
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #78350f;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-  min-width: 0;
-}
-
+/* [NEW] バッジ：幅を絶対に潰さない */
 .badge-new-text {
   color: #d97706;
   font-weight: bold;
-  margin-right: 0.3rem;
-}
-
-.unread-row-date {  //6
-  font-size: 0.8rem;
-  color: #b45309;
+  font-size: 0.85rem;
+  flex-shrink: 0; /* 幅固定 */
   white-space: nowrap;
 }
 
-.unread-card-footer {  //7
+/* タイトル本文：枠を超えたら「...」にする */
+.unread-title-text {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #78350f;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 三点リーダー表示 */
+  white-space: nowrap;    /* 改行禁止 */
+  flex: 1;
+  min-width: 0;
+}
+
+/* 日付：幅を絶対に潰さない */
+.unread-row-date {
+  font-size: 0.8rem;
+  color: #b45309;
+  white-space: nowrap;
+  flex-shrink: 0; /* 幅固定 */
+}
+
+.unread-card-footer {
   text-align: right;
   margin-top: 0.5rem;
   padding-top: 0.25rem;
