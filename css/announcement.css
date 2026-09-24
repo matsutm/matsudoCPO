@@ -41,6 +41,15 @@
   background-color: rgba(253, 230, 138, 0.25);
 }
 
+/* [NEW] バッジ：絶対に潰さない */
+.badge-new-text {
+  color: #d97706;
+  font-weight: bold;
+  font-size: 0.85rem;
+  flex-shrink: 0; /* 文字幅を絶対に維持 */
+  white-space: nowrap;
+}
+
 .unread-row-title {
   font-size: 0.9rem;
   font-weight: bold;
