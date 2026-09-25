@@ -3,6 +3,7 @@
 import { openModal } from './modal.js';
 import { createAnnouncement, updateAnnouncement, deleteAnnouncement, markAsRead } from '../services/announcement-service.js';
 import { renderEmailOptionUI, initEmailOptionEvents, getEmailOptionData } from './announcement-email-option.js';
+import { renderAttachmentField, initAttachmentFieldEvents, collectAttachmentData, renderAttachmentLink } from './attachment-field.js'; // ★追加
 import { confirmAndRun } from '../utils/action-utils.js';
 import { formatText, formatDateTime } from '../utils.js'; // ★ utils.jsからimport
 
@@ -73,8 +74,14 @@ export function openAnnouncementModal({
         label: isEdit ? '保存' : '投稿',
         type: 'primary',
         onClick: async () => {
+          let data;
           // calendar-modal と同じくフォームから一括取得
-          const data = collectFormData();
+          try {
+            data = await collectFormData({ attachment_url: p.attachment_url, attachment_name:p.attachment_name});
+          } catch err {
+            alert(err.message);
+            return false;
+          }
 
           if (!data.title || !data.content) {
             alert('タイトルと本文を入力してください。');
@@ -119,6 +126,11 @@ export function openAnnouncementModal({
   if (!isView && !isEdit) {
     initEmailOptionEvents();
   }
+  // 添付ファイル処理初期化
+  if (!isView) {
+    initAttachmentFieldEvents();
+  }
+
 }
 
 /* ------------------------------
@@ -136,6 +148,7 @@ function renderViewContent(p) {
     <div class="form-group">
       <div class="announcement-body">${formatText(body)}</div>
     </div>
+    ${renderAttachmentLink(p?.attachment_url, p?.attachment_name)}
     <div class="form-group">
       <div class="announcement-meta">投稿日時：${formatDateTime(createdAt)}</div>
     </div>
@@ -157,6 +170,9 @@ function renderFormContent(p) {
       <textarea id="ann-body" class="form-control" rows="6">${body}</textarea>
     </div>
 
+    <!-- ファイル添付 -->
+    ${renderAttachmentField(p?.attachment_name)}
+    
     <!-- メール送信オプション（新規投稿時） -->
     ${renderEmailOptionUI()}
   `;
@@ -165,7 +181,7 @@ function renderFormContent(p) {
 /* ------------------------------
  * フォームデータ収集（calendar-modal と同じ作法）
  * ------------------------------ */
-function collectFormData() {
+async function collectFormData() {
   const titleEl = document.getElementById('ann-title');
   const bodyEl = document.getElementById('ann-body');
 
@@ -176,9 +192,13 @@ function collectFormData() {
   // メール設定データも一緒に取り込む
   const emailData = window.EMAIL_NOTIFY_ENABLED ? getEmailOptionData() : {};
 
+  const attachmentData = await collectAttachmentData(existingAttachment); // ★共通関数呼び出し
+
+
   return {
     title,
     content,
-    ...emailData
+    ...emailData,
+    ...attachmentData
   };
 }
