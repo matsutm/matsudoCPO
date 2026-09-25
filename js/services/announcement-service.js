@@ -1,4 +1,5 @@
 // js/services/announcement-service.js
+import { deleteAttachmentFile } from './attachment-service';
 
 /**
  * 全掲示の取得
@@ -70,7 +71,7 @@ export async function markAsRead(id, memberId) {
     .from('announcement_reads')
     .upsert(
       [{ announcement_id: id, member_id: memberId }],
-      { onConflict: 'announcement_id, member_id', ignoreDuplicates: true }
+      { onConflict: 'announcement_id,member_id', ignoreDuplicates: true }
     );
 
   if (error && error.code !== '23505') throw error;
@@ -119,12 +120,24 @@ export async function updateAnnouncement(id, announcementData) {
  * DELETE（投稿の削除）
  */
 export async function deleteAnnouncement(id) {
+  // attachment_url取得
+  const { data: existing } = await window.supabaseClient
+    .from('announcements')
+    .select('attachment_url')
+    .eq('id', id)
+    .single();
+
   const { error } = await window.supabaseClient
     .from('announcements')
     .delete()
     .eq('id', id);
 
   if (error) throw error;
+
+  // urlがあれば、attachmentを削除する
+  if (existing?.attachment_url) {
+    await deleteAttachmentFile(existing.attachment_url);
+  }
 }
 
 /**
