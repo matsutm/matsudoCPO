@@ -181,7 +181,7 @@ function renderFormContent(p) {
 /* ------------------------------
  * フォームデータ収集（calendar-modal と同じ作法）
  * ------------------------------ */
-async function collectFormData() {
+async function collectFormData(existingAttachment = {}) {
   const titleEl = document.getElementById('ann-title');
   const bodyEl = document.getElementById('ann-body');
 
