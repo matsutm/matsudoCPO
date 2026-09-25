@@ -78,7 +78,7 @@ export function openAnnouncementModal({
           // calendar-modal と同じくフォームから一括取得
           try {
             data = await collectFormData({ attachment_url: p.attachment_url, attachment_name:p.attachment_name});
-          } catch err {
+          } catch (err) {
             alert(err.message);
             return false;
           }
