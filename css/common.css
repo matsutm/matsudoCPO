@@ -169,12 +169,24 @@ body {
   width: 90%;
   max-width: 450px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* ★ここから追加 */
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+
 }
 
 .modal-title {
   margin-top: 0;
   font-size: 1.2rem;
   color: #1e3a8a;
+  flex-shrink: 0; /* タイトルは縮まないように固定 */
+}
+
+.modal-content {
+  overflow-y: auto; /* ★本文だけがスクロールする */
+  flex: 1;
+  min-height: 0; /* flexで overflow を効かせるために必要 */
 }
 
 .modal-actions {
@@ -182,6 +194,7 @@ body {
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1.2rem;
+  flex-shrink: 0; /* ボタン群は常に画面内に固定表示 */
 }
 
 
