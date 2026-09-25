@@ -88,6 +88,8 @@ export async function createAnnouncement(announcementData) {
     is_email_sent: announcementData.isEmailSent || false,
     target_scope: announcementData.targetScope || 'all',
     target_value: announcementData.targetValue || null,
+    attachment_url: announcementData.attachment_url,
+    attachment_name: announcementData.attachment_name,
     created_at: new Date().toISOString()
   };
 
