@@ -24,6 +24,7 @@
   border: 1px solid #eef2f5;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 /* 3. 各カードのヘッダータイトルボタン */
