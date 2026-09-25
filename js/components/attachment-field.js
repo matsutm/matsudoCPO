@@ -29,6 +29,7 @@ export function initAttachmentFieldEvents() {
   if (!fileInput) return;
 
   fileInput.addEventListener('change', () => {
+    /*
     const file = fileInput.files[0];
     if (file && file.size > MAX_ATTACHMENT_SIZE) {
       fileError.textContent = 'ファイルサイズは5MBまでです。別のファイルを選んでください。';
@@ -37,6 +38,7 @@ export function initAttachmentFieldEvents() {
     } else {
       fileError.style.display = 'none';
     }
+      */
   });
 }
 
