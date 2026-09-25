@@ -1,5 +1,5 @@
 // js/services/announcement-service.js
-import { deleteAttachmentFile } from './attachment-service';
+import { deleteAttachmentFile } from './attachment-service.js';
 
 /**
  * 全掲示の取得
