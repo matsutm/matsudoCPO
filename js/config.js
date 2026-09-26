@@ -31,8 +31,8 @@ window.APP_CONSTANTS = {
 
 
 // テストユーザID
-const DEV_TEST_USER_ID = '320e7ac5-a3e7-4241-94d8-619ad4b1e9f3';
-
+//const DEV_TEST_USER_ID = '320e7ac5-a3e7-4241-94d8-619ad4b1e9f3';
+const DEV_TEST_USER_ID = '182409af-df6e-4220-a3c7-64553e0842f7';
 // Supabase接続設定
 const SUPABASE_URL = 'https://dylrgcsrlqvyjjggbrdb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHJnY3NybHF2eWpqZ2dicmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MTU3MjEsImV4cCI6MjEwNDM5MTcyMX0.a1wHWtVJYIdihnNqd16AtyB0cczwnH0vtEQctQA98rE';
