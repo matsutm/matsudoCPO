@@ -5,7 +5,7 @@ import { renderHomeView, initHomeView } from './views/home-view.js';
 import { renderCalendarView, initCalendarView } from './views/calendar-view.js';
 import { renderAnnouncementView, initAnnouncementView } from './views/announcement-view.js';
 import { renderLibraryView, initLibraryView } from './views/library-view.js';
-import { openModal } from './components/modal.js'; // ★ openModal をインポート
+import { openModal, closeModalOnBack } from './components/modal.js'; // ★ openModal をインポート
 
 const appContent = document.getElementById('app-content');
 
@@ -166,6 +166,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ブラウザの「戻る・進む」ボタン操作時のイベント
   window.addEventListener('popstate', (event) => {
+    // ★モーダルが開いていた場合は閉じるだけにして、画面遷移は行わない
+    if (closeModalOnBack()) return;
+    
     const viewName = event.state?.view || 'home';
     navigateTo(viewName, true);
   });
