@@ -60,7 +60,7 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
   });
 }
 
-function renderForm(data = {}, isView = false) {
+function renderForm(data = {}, isView = false, isEdit) {
   const disabled = isView ? 'disabled' : '';
   const startTime = data.start_time?.slice(0, 5) || '18:00';
   const endTime = data.end_time?.slice(0, 5) || '21:00';
