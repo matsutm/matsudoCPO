@@ -43,6 +43,11 @@ export function renderAuthView() {
         </form>
 
         <p id="auth-error-msg" class="auth-error" style="display: none;"></p>
+
+        <!-- ★追加：ホーム画面追加の案内 -->
+        <p class="auth-hint">
+          💡 ホーム画面に追加／アプリをインストールすると、次回以降のログインがスムーズになります
+        </p>
       </div>
     </div>
   `;
