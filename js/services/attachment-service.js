@@ -14,7 +14,11 @@ export async function uploadAttachment(file) {
     throw new Error('ファイルサイズは5MBまでです。');
   }
 
-  const filePath = `${crypto.randomUUID()}_${file.name}`;
+  // ★拡張子だけを取り出す（日本語部分を含む元のファイル名は使わない）
+  const extMatch = file.name.match(/\.[^.]+$/);
+  const ext = extMatch ? extMatch[0] : '';
+
+  const filePath = `${crypto.randomUUID()}_${ext}`;
 
   const { error: uploadError } = await window.supabaseClient
     .storage
