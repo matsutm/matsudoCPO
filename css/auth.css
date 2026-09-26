@@ -118,3 +118,15 @@
   border-radius: 6px;
   text-align: left;
 }
+
+.auth-hint {
+  margin-top: 1.25rem;
+  padding: 0.65rem 0.75rem;
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1e40af;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  text-align: center;
+  line-height: 1.5;
+}
