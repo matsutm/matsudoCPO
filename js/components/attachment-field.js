@@ -1,6 +1,6 @@
 // js/components/attachment-field.js
 
-import { uploadAttachment, MAX_ATTACHMENT_SIZE } from '../services/attachment-service.js';
+import { uploadAttachment, deleteAttachmentFile, MAX_ATTACHMENT_SIZE } from '../services/attachment-service.js';
 
 /**
  * 添付ファイル入力欄のHTMLを生成
@@ -10,10 +10,17 @@ export function renderAttachmentField(existingName = '') {
   return `
     <div class="form-group">
       <label for="attachment-file">添付ファイル(5MBまで)</label>
+      <!--
       ${existingName
         ? `<div style="font-size:0.85rem; color:#475569; margin-bottom:0.4rem;">現在の添付:${existingName}</div>`
         : ''}
+      -->
+      <div id="attachment-existing-row" style="display:${existingName ? 'flex' : 'none'}; align-items:center; gap:8px; margin-bottom:0.4rem;">
+        <span style="font-size:0.85rem; color:#475569;">現在の添付:${existingName}</span>
+        <button type="button" id="btn-remove-attachment" class="btn-link" style="color:#dc2626;">削除</button>
+      </div>
       <input id="attachment-file" type="file" class="form-control">
+      <input type="hidden" id="attachment-removed-flag" value="false">
       <div id="attachment-file-error" style="color:#dc2626; font-size:0.8rem; display:none; margin-top:0.3rem;"></div>
     </div>
   `;
@@ -26,20 +33,31 @@ export function renderAttachmentField(existingName = '') {
 export function initAttachmentFieldEvents() {
   const fileInput = document.getElementById('attachment-file');
   const fileError = document.getElementById('attachment-file-error');
-  if (!fileInput) return;
+  const existingRow = document.getElementById('attachment-existing-row');
+  const removeBtn = document.getElementById('btn-remove-attachment');
+  const removedFlag = document.getElementById('attachment-removed-flag');
+  
+  //if (!fileInput) return;
+  if (fileInput) {
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file && file.size > MAX_ATTACHMENT_SIZE) {
+        fileError.textContent = 'ファイルサイズは5MBまでです。別のファイルを選んでください。';
+        fileError.style.display = 'block';
+        fileInput.value = '';
+      } else {
+        fileError.style.display = 'none';
+        if (file && existingRow) existingRow.style.display = 'none';
+      }
+    });
+  }
 
-  fileInput.addEventListener('change', () => {
-    /*
-    const file = fileInput.files[0];
-    if (file && file.size > MAX_ATTACHMENT_SIZE) {
-      fileError.textContent = 'ファイルサイズは5MBまでです。別のファイルを選んでください。';
-      fileError.style.display = 'block';
-      fileInput.value = '';
-    } else {
-      fileError.style.display = 'none';
-    }
-      */
-  });
+  if (removeBtn) {
+    removeBtn.addEventListener('click', () => {
+      removedFlag.value = 'true';
+      existingRow.style.display = 'none';
+    });
+  }  
 }
 
 /**
@@ -50,7 +68,15 @@ export function initAttachmentFieldEvents() {
  */
 export async function collectAttachmentData(existing = {}) {
   const fileInput = document.getElementById('attachment-file');
+  const removedFlag = document.getElementById('attachment-removed-flag');
   const file = fileInput?.files?.[0];
+
+  if (removedFlag?.value === 'true' && !file) {
+    if (existing.attachment_url) {
+      await deleteAttachmentFile(existing.attachment_url);
+    }
+      return { attachment_url: null, attachment_name: null };
+  }
 
   if (!file) {
     return {
@@ -59,6 +85,10 @@ export async function collectAttachmentData(existing = {}) {
     };
   }
 
+  if (existing.attachment_url) {
+    await deleteAttachmentFile(existing.attachment_url);
+  }
+  
   const uploaded = await uploadAttachment(file); // 5MB超は内部でthrow
   return { attachment_url: uploaded.url, attachment_name: uploaded.name };
 }
