@@ -1,5 +1,12 @@
 // components/modal.js
 
+function closeModal(overlay) {
+  overlay.remove();
+  if (history.state?.modalOpen) {
+    history.replaceState({ ...history.state, modalOpen: false}, '', location.href);
+  }
+}
+
 export function openModal({ title, content, actions }) {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay active';
@@ -23,6 +30,8 @@ export function openModal({ title, content, actions }) {
   const actionsEl = document.createElement('div');
   actionsEl.className = 'modal-actions';
 
+  history.pushState({ ...history.state, modalOpen: true }, '', location.href);
+
   actions.forEach(action => {
     const btn = document.createElement('button');
     btn.textContent = action.label;
@@ -35,31 +44,29 @@ export function openModal({ title, content, actions }) {
     btn.addEventListener('click', async () => {
       if (action.onClick) {
         const result = await action.onClick();
-        // 明示的に false が返ってきた場合（キャンセルやエラー）はモーダルを閉じない
-        if (result !== false) {
-          overlay.remove();
-        }
+        // 
+        if (result !== false) closeModal(overlay);
       } else {
-        overlay.remove(); // 単なる「閉じる」ボタンの時
+        closeModal(overlay); // 
       }
-      //  try {
-      //    await action.onClick();
-      //   // 成功した時だけ消す
-      //    overlay.remove();
-      //  } catch (err) {
-      //    // キャンセルやエラーの時はモーダルを開いたままにする
-      //    console.log('Action halted or cancelled:', err);
-      //  }
-      //} else {
-      //  overlay.remove(); // 単なる「閉じる」ボタンの時
-      //}
     });
- 
     actionsEl.appendChild(btn);
-
   });
 
   box.appendChild(actionsEl);
   overlay.appendChild(box);
   document.body.appendChild(overlay);
+}
+
+/**
+ * 戻るボタン押下時に main.js から呼ぶ。
+ * 開いているモーダルをDOMから直接探して閉じる。
+ */
+export function closeModalOnBack() {
+  const overlay = document.querySelector('.modal-overlay');
+  if (overlay) {
+    overlay.remove();
+    return true;
+  }
+  return false;
 }
