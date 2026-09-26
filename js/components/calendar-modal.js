@@ -31,7 +31,7 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
   ] : [
     { label: isEdit ? '保存' : '追加', type: 'primary', onClick: async () => {
         const data = collectFormData();
-        const action = isEdit ? () => updateSchedule(scheduleId, data) : () => createSchedule(data);
+        //const action = isEdit ? () => updateSchedule(scheduleId, data) : () => createSchedule(data);
         
         const isPostToAnnouncement = document.getElementById('sync_announcement')?.checked;
         const action = async () => {
