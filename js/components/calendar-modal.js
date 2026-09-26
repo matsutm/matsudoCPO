@@ -6,6 +6,7 @@ import { confirmAndRun } from '../utils/action-utils.js';
 import { createAnnouncement } from '../services/announcement-service.js';
 import { getCurrentUser } from '../services/auth-service.js';
 import { formatText, formatDateTime } from '../utils.js';
+import { createTooltipText } from './tooltip.js';
 
 export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
   // 1. データ取得（CREATE以外はIDから一括取得に一本化）
@@ -32,20 +33,16 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
         const data = collectFormData();
         const action = isEdit ? () => updateSchedule(scheduleId, data) : () => createSchedule(data);
         
-        /*
         const isPostToAnnouncement = document.getElementById('sync_announcement')?.checked;
         const action = async () => {
           // カレンダー予定の登録更新
           const savedData = isEdit ? await updateSchedule(scheduleId, data) : await createSchedule(data);
           // チェックボックス有効ならお知らせに登録
-          if (!isEdit && isPostToAnnouncement) {
-            // Supabaseのユーザー情報を取得
-            const newScheduleId = Array.isArray(savedData) ? savedData[0].id : savedData.id ?? null;
-            await syncToAnnouncement(formData, newScheduleId);
+          if (isPostToAnnouncement) {
+            await syncToAnnouncement(data, isEdit);
           }
           return savedData;
         };
-        */
 
         const result = await confirmAndRun(isEdit ? '保存しますか？' : '追加しますか？', action, isEdit ? '保存しました' : '追加しました');
         if (result === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
@@ -58,7 +55,7 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
   // 3. 描画
   openModal({
     title: { CREATE: '予定の新規追加', EDIT: '予定の編集', DUPLICATE: '予定の複製追加', VIEW: '予定の詳細' }[mode],
-    content: isView ? renderForm(scheduleData, true) : renderForm(scheduleData, false),
+    content: isView ? renderForm(scheduleData, true, isEdit) : renderForm(scheduleData, false, isEdit),
     actions
   });
 }
@@ -108,17 +105,14 @@ function renderForm(data = {}, isView = false) {
       <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${data.program_notes || ''}</textarea>
     </div>
 
-    <!-- 
     ${!isView ? `
-      <div class="form-group" style="margin-top": 1rem; padding-top: 0.75rem; border-top: 1px dashed #cbd5e1;">
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: bold; color: #334155;">
-          <input type="checkbox" id="sync_announcement" checked style="width: 18px; height: 18px; accent-color: #2563eb;" />
+      <div class="form-group sync-announcement-group">
+        <label class="sync-announcement-label">
+          <input type="checkbox" id="sync_announcement" ${!isEdit ? 'checked' : ''} class="sync-announcement-checkbox" />
           掲示板・お知らせにも投稿する
         </label>
       </div>
     ` : ''}
-    -->
-
   `;
 }
 
@@ -137,36 +131,29 @@ function collectFormData() {
 /**
  * 独立関数：カレンダー予定をお知らせ（掲示板）へ連携投稿する
  * @param {Object} formData - フォームから取得した予定データ
- * @param {number|string|null} newScheduleId - 作成されたカレンダー予定のID
+ * @param {boolean} isEdit - 編集による更新かどうか（文言の出し分けに使用）
  */
-async function syncToAnnouncement(formData, newScheduleId = null) {
+async function syncToAnnouncement(formData, isEdit = false) {
   const currentUser = getCurrentUser();
   if (!currentUser) return;
 
-  const title = `【スケジュール追加】${formData.date} ${formData.location || ''}`.trim();
+  const actionLabel = isEdit ? '更新' : '追加';
+  const title = `【スケジュール${actionLabel}】${formData.date} ${formData.location || ''}`.trim();
   
-  // モーダル直呼び出し用リンクの生成（IDがある場合のみ埋め込み）
-  const linkHtml = newScheduleId 
-    ? `\n\n👉 <a href="#calendar-${newScheduleId}" class="link-calendar-modal" data-schedule-id="${newScheduleId}">カレンダーで詳細を見る</a>` 
-    : '';
-
-  const content = `新しい練習スケジュールが追加されました。\n\n` +
-    `■ 日時: ${formData.date} ${formData.start_time}〜${formData.end_time}\n` +
-    `■ 場所: ${formData.location || '未定'}\n` +
-    (formData.instructor ? `■ 指導: ${formData.instructor}\n` : '') +
-    (formData.program_notes ? `■ 内容: ${formData.program_notes}\n` : '') +
-    linkHtml;
+  // カレンダーのホバー表示（tooltip.js）と同じ内容を使い、日付だけ先頭に追加
+  const toolTipText = createTooltipText(formData);
+  const content = `練習スケジュールが${actionLabel}されました。\n\n【日付】${formData.date}\n${tooltipText}`;
 
   try {
     await createAnnouncement({
       authorId: currentUser.id,
       title: title,
       content: content,
-      targetScope: 'all',
+      targetscope: 'all',
       targetValue: null
     });
   } catch (err) {
-    console.error('お知らせ自動連携エラー:', err);
+    console.error('お知らせ自動連携エラー：', err);
     // カレンダー登録自体は完了しているため、エラーログのみ出力して処理を通す
   }
 }
