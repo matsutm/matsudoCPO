@@ -141,7 +141,7 @@ async function syncToAnnouncement(formData, isEdit = false) {
   const title = `【スケジュール${actionLabel}】${formData.date} ${formData.location || ''}`.trim();
   
   // カレンダーのホバー表示（tooltip.js）と同じ内容を使い、日付だけ先頭に追加
-  const toolTipText = createTooltipText(formData);
+  const tooltipText = createTooltipText(formData);
   const content = `練習スケジュールが${actionLabel}されました。\n\n【日付】${formData.date}\n${tooltipText}`;
 
   try {
