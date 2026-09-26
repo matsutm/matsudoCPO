@@ -58,7 +58,7 @@ export async function fetchAnnouncementById(id) {
     .single();
 
   if (error) throw error;
-  return data;
+  return { ...data, author_name: data.members?.name || '不明' }; // ★author_nameを追加
 }
 
 /**
