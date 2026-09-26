@@ -56,7 +56,11 @@ export async function navigateTo(viewName, isBrowserBack = false) {
   }
 
   if (!isBrowserBack) {
-    history.pushState({ view: viewName }, '', `#${viewName}`);
+    // ★ 直前の履歴と違う画面名のときだけ、積む
+    if (history.state?.view !== viewName) {
+      history.pushState({ view: viewName }, '', `#${viewName}`);
+    }
+    
   }
 }
 
