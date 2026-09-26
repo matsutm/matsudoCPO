@@ -165,17 +165,23 @@ export async function logoutCompletely() {
  * 💡 開発環境用：パスワード認証でSupabaseの正規セッションを自動発行する
  */
 export async function loginForDev() {
-  if (!window.DEV_AUTO_LOGIN || !window.DEV_AUTH_CREDENTIALS) return null;
+  const res = await fetch(
+    'https://dylrgcsrlqvyjjggbrdb.supabase.co/functions/v1/dev-login',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ testUserId: DEV_TEST_USER_ID }),
+    }
+  )
 
-  const { data, error } = await window.supabaseClient.auth.signInWithPassword({
-    email: window.DEV_AUTH_CREDENTIALS.email,
-    password: window.DEV_AUTH_CREDENTIALS.password,
-  });
+  const { token_hash, error } = await res.json()
+  if (error) throw new Error(error)
 
-  if (error) {
-    console.error('開発用自動ログイン（Supabase Auth）に失敗しました:', error);
-    return null;
-  }
+  // 受け取ったトークンでクライアント側のセッションを確立
+  const { error: verifyError } = await window.supabaseClient.auth.verifyOtp({
+    token_hash,
+    type: 'magiclink',
+  })
 
-  return data.session;
+  if (verifyError) throw verifyError
 }
