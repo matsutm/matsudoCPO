@@ -140,6 +140,7 @@ function renderViewContent(p) {
   const body = p?.content || p?.body || '';
   const title = p?.title || '';
   const createdAt = p?.created_at || '';
+  const authorName = p?.author_name || p?.members?.name || '不明'; //どちらの取得経路でもOK
 
   return `
     <div class="form-group">
@@ -150,7 +151,7 @@ function renderViewContent(p) {
     </div>
     ${renderAttachmentLink(p?.attachment_url, p?.attachment_name)}
     <div class="form-group">
-      <div class="announcement-meta">投稿日時：${formatDateTime(createdAt)}</div>
+      <div class="announcement-meta">投稿者：${authorName}　　投稿日時：${formatDateTime(createdAt)}</div>
     </div>
   `;
 }
