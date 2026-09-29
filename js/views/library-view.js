@@ -11,7 +11,7 @@ export function renderLibraryView() {
         <div class="card-header-title"><h2>📁 資料庫</h2></div>
         <div class="card-body">
           
-          <div class="library-group">
+          <div class="library-group concert-grid">
             <h3>🎼 今後の演奏会予定</h3>
             <div id="concert-list-container">
               <p class="loading-text">読み込み中...</p>
