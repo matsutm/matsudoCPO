@@ -99,10 +99,10 @@ export function openAnnouncementModal({
           }
           
           //const action = isEdit
-          const action = async => {
+          const action = async () => {
             const saved = isEdit
-              ? () => await updateAnnouncement(announcementId, data)
-              : () => await createAnnouncement({ ...data, authorId: finalAuthorId });
+              ? await updateAnnouncement(announcementId, data)
+              : await createAnnouncement({ ...data, authorId: finalAuthorId });
 
             // ★新規投稿かつチェックがONの時だけメール送信
             if (!isEdit && data.is_email_sent) {
@@ -118,7 +118,8 @@ export function openAnnouncementModal({
                 alert('投稿は完了しましたが、メール送信には失敗しました。');
               }
             }
-          };
+            return saved;
+         };
           
           const msg = isEdit ? '保存しますか？' : '投稿しますか？';
           const successMsg = isEdit ? '保存しました' : '投稿しました';
@@ -127,8 +128,7 @@ export function openAnnouncementModal({
 
           if (isSuccess === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
           
-          //isEdit ? onUpdated : onSaved)?.();
-          return saved;
+          isEdit ? onUpdated : onSaved)?.();
         }
       },
       { label: 'キャンセル', type: 'secondary' }
