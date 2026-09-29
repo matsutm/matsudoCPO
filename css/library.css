@@ -1,0 +1,42 @@
+/* library.css */
+
+/* 演奏会予定を横並びにするグリッド */
+.concert-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* スマホ：1列 */
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .concert-grid {
+    grid-template-columns: repeat(3, 1fr); /* PC・タブレット：3列 */
+  }
+}
+
+.concert-block {
+  padding: 12px 14px;
+  background: #fffbeb;
+  border-left: 4px solid #d97706;
+  border-radius: 6px;
+  min-width: 0; /* 長いタイトル・詳細でグリッド幅が広がるのを防ぐ(以前の home-card と同じ理由) */
+}
+
+.concert-date {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #92400e;
+}
+
+.concert-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-top: 2px;
+}
+
+.concert-detail {
+  font-size: 0.85rem;
+  color: #475569;
+  margin-top: 6px;
+  line-height: 1.6;
+}
