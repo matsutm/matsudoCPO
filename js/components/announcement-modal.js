@@ -98,24 +98,27 @@ export function openAnnouncementModal({
             return false; // 投稿者IDが不明な場合はモーダルを閉じない
           }
           
-          const action = isEdit
-            ? () => await updateAnnouncement(announcementId, data)
-            : () => await createAnnouncement({ ...data, authorId: finalAuthorId });
+          //const action = isEdit
+          const action = async => {
+            const saved = isEdit
+              ? () => await updateAnnouncement(announcementId, data)
+              : () => await createAnnouncement({ ...data, authorId: finalAuthorId });
 
-          // ★新規投稿かつチェックがONの時だけメール送信
-          if (!isEdit && data.is_email_sent) {
-            try {
-              await sendBulletinEmail({
-                title: data.title,
-                content: data.content,
-                targetScope: data.target_scope,
-                targetValue: data.target_value
-              });
-            } catch (err) {
-              console.error('メール送信エラー:', err);
-              alert('投稿は完了しましたが、メール送信には失敗しました。');
+            // ★新規投稿かつチェックがONの時だけメール送信
+            if (!isEdit && data.is_email_sent) {
+              try {
+                await sendBulletinEmail({
+                  title: data.title,
+                  content: data.content,
+                  targetScope: data.target_scope,
+                  targetValue: data.target_value
+                });
+              } catch (err) {
+                console.error('メール送信エラー:', err);
+                alert('投稿は完了しましたが、メール送信には失敗しました。');
+              }
             }
-          }
+          };
           
           const msg = isEdit ? '保存しますか？' : '投稿しますか？';
           const successMsg = isEdit ? '保存しました' : '投稿しました';
@@ -124,7 +127,8 @@ export function openAnnouncementModal({
 
           if (isSuccess === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
           
-          (isEdit ? onUpdated : onSaved)?.();
+          //isEdit ? onUpdated : onSaved)?.();
+          return saved;
         }
       },
       { label: 'キャンセル', type: 'secondary' }
