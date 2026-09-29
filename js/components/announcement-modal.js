@@ -128,7 +128,7 @@ export function openAnnouncementModal({
 
           if (isSuccess === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
           
-          isEdit ? onUpdated : onSaved)?.();
+          (isEdit ? onUpdated : onSaved)?.();
         }
       },
       { label: 'キャンセル', type: 'secondary' }
