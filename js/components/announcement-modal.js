@@ -6,6 +6,7 @@ import { renderEmailOptionUI, initEmailOptionEvents, getEmailOptionData } from '
 import { renderAttachmentField, initAttachmentFieldEvents, collectAttachmentData, renderAttachmentLink } from './attachment-field.js'; // ★追加
 import { confirmAndRun } from '../utils/action-utils.js';
 import { formatText, formatDateTime } from '../utils.js'; // ★ utils.jsからimport
+import { sendBulletinEmail } from '../services/email-service.js';
 
 export function openAnnouncementModal({
   mode,          // 'CREATE' | 'VIEW' | 'EDIT'
@@ -98,9 +99,24 @@ export function openAnnouncementModal({
           }
           
           const action = isEdit
-            ? () => updateAnnouncement(announcementId, data)
-            : () => createAnnouncement({ ...data, authorId: finalAuthorId });
+            ? () => await updateAnnouncement(announcementId, data)
+            : () => await createAnnouncement({ ...data, authorId: finalAuthorId });
 
+          // ★新規投稿かつチェックがONの時だけメール送信
+          if (!isEdit && data.is_email_sent) {
+            try {
+              await sendBulletinEmail({
+                title: data.title,
+                content: data.content,
+                targetScope: data.target_scope,
+                targetValue: data.target_value
+              });
+            } catch (err) {
+              console.error('メール送信エラー:', err);
+              alert('投稿は完了しましたが、メール送信には失敗しました。');
+            }
+          }
+          
           const msg = isEdit ? '保存しますか？' : '投稿しますか？';
           const successMsg = isEdit ? '保存しました' : '投稿しました';
 
@@ -199,7 +215,11 @@ async function collectFormData(existingAttachment = {}) {
   return {
     title,
     content,
-    ...emailData,
+    //...emailData,
+    is_email_sent: emailData.isEmailSent || false,  // スネークケースに統一
+    target_scope: emailData.targetScope || 'all',   // 
+    target_value: emailData.targetValue || null,    //
     ...attachmentData
+    
   };
 }
