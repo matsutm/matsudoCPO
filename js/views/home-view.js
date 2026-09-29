@@ -6,10 +6,10 @@ import { openAnnouncementModal } from '../components/announcement-modal.js';
 import { attachAnnouncementClickEvents } from '../components/announcement-card.js';
 import { formatDateShort, escapeHtml } from '../utils.js';
 import { createTooltipText, attachTooltip } from '../components/tooltip.js';
-import { renderPrimaryLibraryLinks } from '../components/library-links.js';
+import { renderPrimaryLibraryLinks, renderNextConcertLink } from '../components/library-links.js';
 import { renderSocialLinks } from '../components/social-links.js';
 import { openCalendarModal } from '../components/calendar-modal.js';
-
+import { fetchUpcomingConcerts } from '../services/concert-service.js';
 
 // 1. ホーム画面のHTMLを出力
 export function renderHomeView() {
@@ -74,6 +74,9 @@ export async function initHomeView(navigateTo) {
   // 2. お知らせ取得は await せずにバックグラウンドで走らせ、読み込みエラーを回避
   loadUnreadAnnouncements(currentUser, navigateTo);
 
+  // 3. 直近演奏会情報取得
+  loadNextConcert();
+
   // タイトルおよびボタンの遷移イベントを設定
   document.getElementById('linkGoAnnouncement')?.addEventListener('click', () => navigateTo('announcement'));
   document.getElementById('linkGoCalendar')?.addEventListener('click', () => navigateTo('calendar'));
@@ -108,8 +111,8 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
       return;
     }
 
-    // 最大4件表示
-    const displayPosts = unreadPosts.slice(0, 4);
+    // 最大6件表示
+    const displayPosts = unreadPosts.slice(0, 6);
 
     listContainer.innerHTML = displayPosts.map(post => `
       <div class="unread-row" data-id="${post.id}" style="cursor: pointer; padding: 8px 0; border-bottom: 1px solid #fef3c7;">
@@ -207,5 +210,30 @@ async function loadNextTwoSchedules() {
   } catch (err) {
     console.error(err);
     container.innerHTML = '<p class="error-text">予定の読み込みに失敗しました。</p>';
+  }
+}
+
+// ★追加：直近の演奏会1件だけを資料庫カードの先頭に差し込む
+async function loadNextConcert() {
+  try {
+    const concerts = await fetchUpcomingConcerts(1);
+    if (concerts.length === 0) return;
+
+    const list = document.querySelector('#view-home .library-quick-links');
+    if (list) {
+      list.insertAdjacentHTML('afterbegin', renderNextConcertLink(concerts[0]));
+
+      // #library へのハッシュリンクは、通常の<a>だとハッシュ遷移がpopstateを発火させないため
+      // クリックイベントで navigateTo を直接呼ぶよう上書きする
+      const link = list.querySelector('.library-quick-links li:first-child a');
+      if (link) {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          navigateTo('library');
+        });
+      }
+    }
+  } catch (err) {
+    console.error('直近演奏会取得エラー:', err);
   }
 }
