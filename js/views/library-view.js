@@ -11,7 +11,7 @@ export function renderLibraryView() {
         <div class="card-header-title"><h2>📁 資料庫</h2></div>
         <div class="card-body">
           
-          <div class="library-group concert-grid">
+          <div class="library-group">
             <h3>🎼 今後の演奏会予定</h3>
             <div id="concert-list-container">
               <p class="loading-text">読み込み中...</p>
@@ -52,7 +52,7 @@ export async function initLibraryView() {
 
   try {
     const concerts = await fetchUpcomingConcerts(3);
-    container.innerHTML = renderConcertBlocks(concerts);
+    container.innerHTML = '<div class="concert-grid">${renderConcertBlocks(concerts)}</div>';
   } catch (err) {
     console.error('演奏会予定取得エラー:', err);
     container.innerHTML = '<p class="error-text">読み込みに失敗しました。</p>';
