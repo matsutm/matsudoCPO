@@ -215,16 +215,17 @@ async function loadNextTwoSchedules() {
 
 // 直近の演奏会1件だけを資料庫カードの先頭に差し込む
 async function loadNextConcert() {
+  const requestId = ++concertRequestToken; // 呼ばれるたびに新しい番号を発行
+  
   try {
-    // すでに読み込み済みであれば何もしない
-    if (document.getElementById('next-concert-link')) return;
     
     const concerts = await fetchUpcomingConcerts(1);
+    
+    // 既に新しい呼出が始まっていたらいまはやめる
+    if (requestId !== concertRequestToken) return;
+    
     if (concerts.length === 0) return;
 
-    // awaitの後も念のためチェック、すでに読み込み済みであれば何もしない
-    if (document.getElementById('next-concert-link')) return;
-    
     const list = document.querySelector('#view-home .library-quick-links');
     if (list) {
       list.insertAdjacentHTML('afterbegin', renderNextConcertLink(concerts[0]));
