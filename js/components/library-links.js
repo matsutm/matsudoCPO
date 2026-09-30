@@ -55,4 +55,7 @@ export function renderConcertBlocks(concerts) {
       ${c.venue ? `<div class="concert-detail">${formatText(c.venue)}</div>` : ''}
     </div>
   `).join('');
+  
+  return `<div class="concert-grid">${items}</div>`; //
+  
 }
