@@ -77,7 +77,7 @@ export async function initHomeView(navigateTo) {
   loadUnreadAnnouncements(currentUser, navigateTo);
 
   // 3. 直近演奏会情報取得
-  loadNextConcert();
+  loadNextConcert(navigateTo);
 
   // タイトルおよびボタンの遷移イベントを設定
   document.getElementById('linkGoAnnouncement')?.addEventListener('click', () => navigateTo('announcement'));
@@ -216,7 +216,7 @@ async function loadNextTwoSchedules() {
 }
 
 // 直近の演奏会1件だけを資料庫カードの先頭に差し込む
-async function loadNextConcert() {
+async function loadNextConcert(navigateTo) {
   const requestId = ++concertRequestToken; // 呼ばれるたびに新しい番号を発行
   
   try {
