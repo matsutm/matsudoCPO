@@ -220,11 +220,10 @@ async function loadNextConcert(navigateTo) {
   const requestId = ++concertRequestToken; // 呼ばれるたびに新しい番号を発行
   
   try {
-    
-    const concerts = await fetchUpcomingConcerts(1);
-    
     // 既に新しい呼出が始まっていたらいまはやめる
     if (requestId !== concertRequestToken) return;
+    
+    const concerts = await fetchUpcomingConcerts(1);
     
     if (concerts.length === 0) return;
 
