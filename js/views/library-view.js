@@ -11,12 +11,12 @@ export function renderLibraryView() {
         <div class="card-header-title"><h2>📁 資料庫</h2></div>
         <div class="card-body">
           
-          <div class="concert-grid">
-            <h3>🎼 今後の演奏会予定</h3>
-            <div id="concert-list-container">
-              <p class="loading-text">読み込み中...</p>
-            </div>
+         <!-- 0. 次回以降の演奏会 -->
+         <h3>🎼 今後の演奏会予定</h3>
+          <div id="concert-list-container">
+            <p class="loading-text">読み込み中...</p>
           </div>
+          
           <!-- 1. 主要資料（config.js の PRIMARY_LIBRARY_LINKS から動的生成） -->
           <div class="library-group" style="margin-top: 24px;">
             <h3>主要資料</h3>
