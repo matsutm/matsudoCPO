@@ -44,7 +44,7 @@ export function renderHomeView() {
           </div>
           <div class="card-body">
             <ul class="library-quick-links">
-              <!-- 主要3リンク（動的生成パーツ） -->
+              <!-- 主要リンク（動的生成パーツ） -->
               ${renderPrimaryLibraryLinks()}
               <li>
                 <button id="btnGoLibraryOther" class="library-link-button">
@@ -213,19 +213,24 @@ async function loadNextTwoSchedules() {
   }
 }
 
-// ★追加：直近の演奏会1件だけを資料庫カードの先頭に差し込む
+// 直近の演奏会1件だけを資料庫カードの先頭に差し込む
 async function loadNextConcert() {
   try {
+    // すでに読み込み済みであれば何もしない
+    if (document.getElementById('next-concert-link')) return;
+    
     const concerts = await fetchUpcomingConcerts(1);
     if (concerts.length === 0) return;
 
+    // awaitの後も念のためチェック、すでに読み込み済みであれば何もしない
+    if (document.getElementById('next-concert-link')) return;
+    
     const list = document.querySelector('#view-home .library-quick-links');
     if (list) {
       list.insertAdjacentHTML('afterbegin', renderNextConcertLink(concerts[0]));
 
-      // #library へのハッシュリンクは、通常の<a>だとハッシュ遷移がpopstateを発火させないため
-      // クリックイベントで navigateTo を直接呼ぶよう上書きする
-      const link = list.querySelector('.library-quick-links li:first-child a');
+      // 
+      const link = document.getElementById('next-concert-link');
       if (link) {
         link.addEventListener('click', (e) => {
           e.preventDefault();
