@@ -11,6 +11,8 @@ import { renderSocialLinks } from '../components/social-links.js';
 import { openCalendarModal } from '../components/calendar-modal.js';
 import { fetchUpcomingConcerts } from '../services/concert-service.js';
 
+let concertRequestToken = 0; // 演奏会情報読み込みカウンタ
+
 // 1. ホーム画面のHTMLを出力
 export function renderHomeView() {
   return `
