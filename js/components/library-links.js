@@ -37,7 +37,14 @@ export function renderOtherLibraryLinks() {
 export function renderNextConcertLink(concert) {
   if (!concert) return '';
   const label = `🎼 ${formatDateShort(concert.event_date)} ${concert.title}`;
-  return renderLinkList([{ label, url: '#library' }]); // クリックで資料庫へ誘導
+  //return renderLinkList([{ label, url: '#library' }]); // クリックで資料庫へ誘導
+  return `
+    <li>
+      <a href="#library" class="library-link-item" id="next-concert-link">
+        <span>${escapeHtml(label)}</span> ➔
+      </a>
+    </li>
+  `;
 }
 
 /**
@@ -48,7 +55,7 @@ export function renderConcertBlocks(concerts) {
     return '<p class="empty-text">今後の演奏会予定はありません。</p>';
   }
 
-  return concerts.map(c => `
+  const items = concerts.map(c => `
     <div class="concert-block">
       <div class="concert-date">${formatDateShort(c.event_date)}</div>
       <div class="concert-title">${escapeHtml(c.title)}</div>
