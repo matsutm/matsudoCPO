@@ -1,5 +1,5 @@
 //メール送信機能は本番環境のみで実現する。またはテストで切り替える
-window.EMAIL_NOTIFY_ENABLED = false; //本番では必ず true
+window.EMAIL_NOTIFY_ENABLED = true; //本番では必ず true
 window.DEV_AUTO_LOGIN = true; // 本番では必ず false
 
 
