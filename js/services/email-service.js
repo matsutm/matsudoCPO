@@ -22,8 +22,8 @@ export async function sendBulletinEmail({ title, content, targetScope, targetVal
 
     const recipientEmails = members.map(m => m.email).filter(Boolean);
 
-    // 2. Supabase Edge Function (send-email) を呼び出す
-    const { data, error: funcError } = await window.supabaseClient.functions.invoke('send-email', {
+    // 2. Supabase Edge Function (resend-email) を呼び出す
+    const { data, error: funcError } = await window.supabaseClient.functions.invoke('resend-email', {
       body: {
         to: recipientEmails,
         subject: `【楽団連絡】${title}`,
