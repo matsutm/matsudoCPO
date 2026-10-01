@@ -130,3 +130,12 @@
   text-align: center;
   line-height: 1.5;
 }
+
+@media (max-width: 420px) {
+  .auth-card {
+    padding: 1.25rem 1rem; /* 元は2rem(32px)だった左右の余白を、1rem(16px)に縮小 */
+  }
+  .auth-card h2 {
+    font-size: 1.25rem; /* 元の1.4remから少しだけ縮小 */
+  }
+}
