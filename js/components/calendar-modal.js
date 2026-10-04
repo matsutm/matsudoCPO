@@ -148,7 +148,7 @@ async function syncToAnnouncement(formData, isEdit = false) {
     await createAnnouncement({
       authorId: currentUser.id,
       title: title,
-      content: formatText(content),
+      content: content,
       targetscope: 'all',
       targetValue: null
     });
