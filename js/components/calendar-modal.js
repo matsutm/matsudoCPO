@@ -124,7 +124,8 @@ function collectFormData() {
     end_time: document.getElementById('end_time').value,
     location: document.getElementById('location').value,
     instructor: document.getElementById('instructor').value,
-    program_notes: formatText(document.getElementById('program_notes').value)
+    //program_notes: formatText(document.getElementById('program_notes').value)
+    program_notes: document.getElementById('program_notes').value
   };
 }
 
