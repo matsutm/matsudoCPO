@@ -2,8 +2,14 @@
 
 function closeModal(overlay) {
   overlay.remove();
+  /*
   if (history.state?.modalOpen) {
     history.replaceState({ ...history.state, modalOpen: false}, '', location.href);
+  }
+  */
+  // ★ ボタン操作で閉じる時は、openModalで積んだ履歴(pushState)を1つ戻す
+  if (history.state?.modalOpen) {
+    history.back();
   }
 }
 
