@@ -2,9 +2,11 @@
 
 function closeModal(overlay) {
   overlay.remove();
+  
   if (history.state?.modalOpen) {
     history.replaceState({ ...history.state, modalOpen: false}, '', location.href);
   }
+  
 }
 
 export function openModal({ title, content, actions }) {

@@ -27,7 +27,7 @@ export function renderAuthView() {
             <label for="auth-email">名簿登録メールアドレス</label>
             <input type="email" id="auth-email" placeholder="example@matsudo-cityphil.jp" required />
          </div>
-          <button type="submit" class="btn-primary btn-block" id="btn-send-otp">認証コードを送信</button>
+          <button type="submit" class="btn-primary btn-block" id="btn-send-otp">ログイン</button>
         </form>
 
         <!-- ステップ2: 6桁コード入力 -->
@@ -96,6 +96,7 @@ export function initAuthView(onSuccess) {
         if (confirmSwitch) {
           await logoutCompletely(); // 端末のセッションと記憶を削除
           alert('前回のセッションを終了しました。新しいメールアドレスでログインしてください。');
+          return;
           // その後、OTP送信処理に進む
         } else {
           return; // ユーザーがキャンセルした場合は処理を中断（なにもしない）
@@ -104,9 +105,6 @@ export function initAuthView(onSuccess) {
     }
 
     // ★ パターンB：端末にセッションがない、または初回アクセスの場合
-    btn.disabled = true;
-    btn.textContent = '送信中...';
-
     try {
       const member = await fetchMemberByEmail(inputEmail);
       
@@ -121,6 +119,13 @@ export function initAuthView(onSuccess) {
         return;
       }
 
+      // ★追加：初回ログインの確認（キャンセル可）
+      const ok = confirm(`初回ログインです。\n${member.email} 宛に認証コードを送信します。`);
+      if (!ok) return;
+
+      btn.disabled = true;
+      btn.textContent = '送信中...';
+
       // ③ OTP送信
       await sendOtpEmail(member.email);
       targetEmail = member.email;
@@ -131,7 +136,7 @@ export function initAuthView(onSuccess) {
       toggleError(err.message);
     } finally {
       btn.disabled = false;
-      btn.textContent = '認証コードを送信';
+      btn.textContent = 'ログイン';
     }
   });
 
