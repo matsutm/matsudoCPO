@@ -96,6 +96,7 @@ export function initAuthView(onSuccess) {
         if (confirmSwitch) {
           await logoutCompletely(); // 端末のセッションと記憶を削除
           alert('前回のセッションを終了しました。新しいメールアドレスでログインしてください。');
+          return;
           // その後、OTP送信処理に進む
         } else {
           return; // ユーザーがキャンセルした場合は処理を中断（なにもしない）
