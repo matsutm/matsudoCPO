@@ -5,9 +5,12 @@ import { renderHomeView, initHomeView } from './views/home-view.js';
 import { renderCalendarView, initCalendarView } from './views/calendar-view.js';
 import { renderAnnouncementView, initAnnouncementView } from './views/announcement-view.js';
 import { renderLibraryView, initLibraryView } from './views/library-view.js';
-import { openModal, closeModalOnBack } from './components/modal.js'; // ★ openModal をインポート
+import { openModal, closeModalOnBack, resetModalState } from './components/modal.js'; // ★ openModal をインポート
 
 const appContent = document.getElementById('app-content');
+
+// ホームボタンで履歴を一番底まで巻き戻している最中かどうか
+let resettingToHome = false;
 
 // 画面切り替えの司令塔
 export async function navigateTo(viewName, isBrowserBack = false) {
@@ -58,7 +61,11 @@ export async function navigateTo(viewName, isBrowserBack = false) {
   if (!isBrowserBack) {
     // ★ 直前の履歴と違う画面名のときだけ、積む
     if (history.state?.view !== viewName) {
-      history.pushState({ view: viewName }, '', `#${viewName}`);
+      //history.pushState({ view: viewName }, '', `#${viewName}`);
+      history.pushState(
+        { view: viewName, depth: (history.state?.depth || 0) + 1 },
+        '', `#${viewName}`
+      );
     }
     
   }
@@ -92,7 +99,7 @@ export function handleLogout() {
       </p>
       <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: #4b5563;">
         <div><strong>【ログアウト】</strong><br>端末に記憶を残します。次回はメールアドレス入力のみで再ログインできます。</div>
-        <div><strong>【データ残さない】</strong><br>共有PC等で端末の記憶を消去します。次回は6桁コード（OTP）からやり直します。</div>
+        <div><strong>【データ残さない】</strong><br>共有PC等で端末の記憶を消去します。次回は6桁認証コードによる認証手続きが必要です。</div>
       </div>
     `,
     actions: [
@@ -163,13 +170,38 @@ function showConfirmModal(confirmMessage, onConfirm) {
   });
 }
 
+// ホームへ戻るときの挙動
+function goHomeAndReset() {
+  const depth = history.state?.depth || 0;
+  if (depth === 0) {
+    history.replaceState({ view: 'home', depth: 0 }, '', '#home');
+    navigateTo('home', true);
+    return;
+  }
+  resettingToHome = true;
+  history.go(-depth);
+}
+
+
 // アプリ起動時の初期化
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('navHome')?.addEventListener('click', () => navigateTo('home'));
+  document.getElementById('navHome')?.addEventListener('click', (e) => { //navigateTo('home'));
+    e.preventDefault();
+    goHomeAndReset();
+  });
   document.getElementById('btnLogout')?.addEventListener('click', handleLogout);
 
   // ブラウザの「戻る・進む」ボタン操作時のイベント
   window.addEventListener('popstate', (event) => {
+    // ★ホームボタンによる巻き戻しが完了したとき
+    if (resettingToHome) {
+      resettingToHome = false;
+      resetModalState();
+      document.querySelectorAll('.modal-overlay')?.forEach(o => o.remove());
+      history.replaceState({ view: 'home', depth: 0 }, '', '#home');
+      navigateTo('home', true);
+      return;
+    }
     // ★モーダルが開いていた場合は閉じるだけにして、画面遷移は行わない
     if (closeModalOnBack()) return;
     
@@ -180,7 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // URLのハッシュ（例: #announcement）を取得（無ければ 'home'）
   const initialView = location.hash.replace('#', '') || 'home';
   // 履歴の状態を初期セット
-  history.replaceState({ view: initialView }, '', `#${initialView}`);
+  //history.replaceState({ view: initialView }, '', `#${initialView}`);
+  history.replaceState({ view: initialView, depth: 0 }, '', `#${initialView}`);
   // URLのハッシュから判定した画面へ遷移させる
   navigateTo(initialView, true);
 });
