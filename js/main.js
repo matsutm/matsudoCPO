@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navHome')?.addEventListener('click', (e) => { //navigateTo('home'));
     e.preventDefault();
     goHomeAndReset();
-  )};
+  });
   document.getElementById('btnLogout')?.addEventListener('click', handleLogout);
 
   // ブラウザの「戻る・進む」ボタン操作時のイベント
