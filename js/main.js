@@ -174,7 +174,7 @@ function showConfirmModal(confirmMessage, onConfirm) {
 function goHomeAndReset() {
   const depth = history.state?.depth || 0;
   if (depth === 0) {
-    history.replaceState({ view: 'home', depth: 0 }, '', '#home';
+    history.replaceState({ view: 'home', depth: 0 }, '', '#home');
     navigateTo('home', true);
     return;
   }
