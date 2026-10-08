@@ -145,11 +145,6 @@
   text-overflow: ellipsis;
 }
 
-.icon-attachment {
-  flex-shrink: 0;   /* タイトルが長くても記号は潰さない */
-  font-size: 0.85rem;
-}
-
 .badge-unread {
   background-color: #ef4444;
   color: #ffffff;
@@ -176,6 +171,12 @@
 
 .row-action {
   flex-shrink: 0;
+  gap: 0.4rem;
+}
+
+.icon-attachment {
+  flex-shrink: 0;   /* タイトルが長くても記号は潰さない */
+  font-size: 0.9rem;
 }
 
 .btn-quick-read {
