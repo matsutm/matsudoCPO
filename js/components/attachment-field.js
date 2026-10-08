@@ -1,6 +1,11 @@
 // js/components/attachment-field.js
-
+import { escapeHtml } from '../utils.js';
 import { uploadAttachment, deleteAttachmentFile, MAX_ATTACHMENT_SIZE } from '../services/attachment-service.js';
+
+// ブラウザ内でそのまま表示できる拡張子（これらは download を付けず、普通に開く）
+const INLINE_VIEWABLE_EXTS = [
+  'pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'txt', 'mp3', 'mp4', 'wav'
+];
 
 /**
  * 添付ファイル入力欄のHTMLを生成
@@ -93,15 +98,30 @@ export async function collectAttachmentData(existing = {}) {
   return { attachment_url: uploaded.url, attachment_name: uploaded.name };
 }
 
+function isInlineViewable(fileName = '') {
+  const ext = fileName.split('.').pop()?.toLowerCase();
+  return INLINE_VIEWABLE_EXTS.includes(ext);
+}
+
+
 /**
  * 添付ファイルへのリンクHTML（VIEW表示用）
+ * - 表示できる形式 → ブラウザで開く
+ * - それ以外（Word/Excel/zipなど）→ 元のファイル名でダウンロード
  */
 export function renderAttachmentLink(attachmentUrl, attachmentName) {
   if (!attachmentUrl) return '';
+  
+  // ダウンロード時のファイル名を元の名前に指定する
+  const needsDownloadName = attachmentName && !isInlineViewable(attachmentName);
+  const href = needsDownloadName
+    ? `${attachmentUrl}${attachmentUrl.includes('?') ? '&' : '?'}download=${encodeURIComponent(attachmentName)}`
+    : attachmentUrl;
+
   return `
     <div class="form-group">
-      <a href="${attachmentUrl}" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none; display:inline-block;">
-        📎 ${attachmentName || '添付ファイル'} を開く
+      <a href="${href}" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none; display:inline-block;">
+        📎 ${escapeHtml(attachmentName) || '添付ファイル'} を開く
       </a>
     </div>
   `;
