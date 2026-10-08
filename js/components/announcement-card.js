@@ -30,6 +30,7 @@ export function createAnnouncementRowHTML(post, isRead, showQuickActionBtn = tru
         <div class="row-title-line">
           ${badgeHTML}
           <span class="row-title">${escapeHtml(post.title)}</span>
+          ${post.attachment_url ? '<span class="icon-attachment" title="添付ファイルあり">📎</span>' : ''}
         </div>
         <div class="row-meta">
           ${post.members?.name || '不明'} • ${formatDateShort(post.created_at)}
