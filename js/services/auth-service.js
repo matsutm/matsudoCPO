@@ -154,7 +154,7 @@ export async function logoutCompletely() {
   
   if (window.supabaseClient?.auth) {
     try {
-      await window.supabaseClient.auth.signOut();
+      await window.supabaseClient.auth.signOut({ scope: 'local' });
     } catch (error) {
       console.error('完全ログアウトエラー:', error);
     }

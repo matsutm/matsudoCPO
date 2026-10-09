@@ -36,6 +36,7 @@ export function createAnnouncementRowHTML(post, isRead, showQuickActionBtn = tru
         </div>
       </div>
       <div class="row-action">
+        ${post.attachment_url ? '<span class="icon-attachment" title="添付ファイルあり">📎</span>' : ''}
         ${actionHTML}
       </div>
     </div>
