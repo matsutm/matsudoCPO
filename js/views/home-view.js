@@ -4,7 +4,7 @@ import { fetchAnnouncements, fetchUserReadIds } from '../services/announcement-s
 import { getCurrentUser } from '../services/auth-service.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
 import { attachAnnouncementClickEvents } from '../components/announcement-card.js';
-import { formatDateShort, escapeHtml } from '../utils.js';
+import { formatDateShort, escapeHtml, formatWeekday } from '../utils.js';
 import { createTooltipText, attachTooltip } from '../components/tooltip.js';
 import { renderPrimaryLibraryLinks, renderNextConcertLink } from '../components/library-links.js';
 import { renderSocialLinks } from '../components/social-links.js';
@@ -165,7 +165,7 @@ async function loadNextTwoSchedules() {
 
     container.innerHTML = schedules.map((item, index) => {
       const labelText = index === 0 ? '次回の予定' : '次々回の予定';
-      const timeRange = item.start_time ? `${item.start_time.slice(0, 5)}〜${item.end_time ? item.end_time.slice(0, 5) : ''}` : '時間未定';
+      //const timeRange = item.start_time ? `${item.start_time.slice(0, 5)}〜${item.end_time ? item.end_time.slice(0, 5) : ''}` : '時間未定';
       const mapLink = item.location 
         ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}" target="_blank" class="btn-map-inline">🗺 Googleマップ</a>`
         : '';
@@ -173,7 +173,7 @@ async function loadNextTwoSchedules() {
       return `
         <div class="event-item" data-index="${index}" style="margin-bottom: 12px; cursor: pointer;">
           <span class="event-badge">${labelText}</span>
-          <div class="event-date">📅 ${item.date} (${timeRange})</div>
+          <div class="event-date">📅 ${item.date}(${formatWeekday(item.date)}) ${item.start_time.slice(0,5)}</div>
           <div class="event-detail">📍 【場所】${item.location || '未定'}</div>
           ${item.instructor ? `<div class="event-detail">👤 【指導】${item.instructor}</div>` : ''}
           ${mapLink}
