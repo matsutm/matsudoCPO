@@ -60,3 +60,15 @@ export function formatDateTime(dateString) {
     minute: '2-digit'
   });
 }
+
+/**
+ * 曜日を返す（例: '2026-10-12' → '月'）
+ * ※ new Date('YYYY-MM-DD') は UTC 解釈になるため、年月日に分解してローカル日付で生成する
+ */
+export function formatWeekday(dateString) {
+  if (!dateString) return '';
+  const [y, m, d] = dateString.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  if (isNaN(date.getTime())) return '';
+  return ['日', '月', '火', '水', '木', '金', '土'][date.getDay()];
+}
