@@ -78,7 +78,7 @@ async function fetchSchedulesForCalendar(fetchInfo, successCallback, failureCall
 
       return {
         id: item.id,
-        title: `${timeRange} ${item.location || ''}`.trim(),
+        title: `${startTime} ${item.location || ''}`.trim(),
         start: `${item.date}T${item.start_time}`,
         end: `${item.date}T${item.end_time}`,
         extendedProps: {
@@ -92,7 +92,6 @@ async function fetchSchedulesForCalendar(fetchInfo, successCallback, failureCall
         }
       };
     });
-
     successCallback(events);
   } catch (err) {
     console.error('スケジュール取得失敗:', err);

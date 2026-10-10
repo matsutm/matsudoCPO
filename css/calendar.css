@@ -134,3 +134,20 @@
   height: 18px;
   accent-color: #2563eb;
 }
+
+/* モーダル：日付＋曜日 */
+.date-with-weekday {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.date-with-weekday .form-control {
+  flex: 1;
+}
+.date-weekday {
+  font-weight: bold;
+  white-space: nowrap;
+  min-width: 2.5em;
+}
+.date-weekday .sun { color: #dc2626; }
+.date-weekday .sat { color: #2563eb; }

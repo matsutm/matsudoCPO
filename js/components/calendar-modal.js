@@ -5,10 +5,17 @@ import { renderMapButton } from './map-button.js';
 import { confirmAndRun } from '../utils/action-utils.js';
 import { createAnnouncement } from '../services/announcement-service.js';
 import { getCurrentUser } from '../services/auth-service.js';
-import { formatText, formatDateTime } from '../utils.js';
+import { formatText, formatDateTime, formatWeekday } from '../utils.js';
 import { createTooltipText } from './tooltip.js';
 
 export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
+  const dateEl = document.getElementById('date');
+  const weekdayEl = document.getElementById('date-weekday');
+  if (dateEl && weekdayEl) {
+    const update = () => { weekdayEl.innerHTML = weekdayHTML(dateEl.value); };
+    dateEl.addEventListener('input', update);
+    dateEl.addEventListener('change', update);
+  }
   // 1. データ取得（CREATE以外はIDから一括取得に一本化）
   const scheduleData = (mode !== 'CREATE' && scheduleId) 
     ? await fetchScheduleById(scheduleId) 
@@ -68,7 +75,10 @@ function renderForm(data = {}, isView = false, isEdit) {
   return `
     <div class="form-group">
       <label for="date">日付 *</label>
-      <input id="date" type="date" class="form-control" value="${data.date || ''}" ${disabled}>
+      <div class="date-with-weekday">
+        <input id="date" type="date" class="form-control" value="${data.date || ''}" ${disabled}>
+        <span id="date-weekday" class="date-weekday">${weekdayHTML(data.date)}</span>
+      </div>
     </div>
 
     <div class="form-row">
@@ -158,3 +168,12 @@ async function syncToAnnouncement(formData, isEdit = false) {
     // カレンダー登録自体は完了しているため、エラーログのみ出力して処理を通す
   }
 }
+
+// 曜日ラベル（例: 「(月)」）。日曜は赤、土曜は青にするためクラスを付ける
+function weekdayHTML(dateString) {
+  const w = formatWeekday(dateString);
+  if (!w) return '';
+  const cls = w === '日' ? 'sun' : w === '土' ? 'sat' : '';
+  return `<span class="${cls}">(${w})</span>`;
+}
+
