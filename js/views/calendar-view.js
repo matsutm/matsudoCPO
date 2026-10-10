@@ -38,6 +38,7 @@ export async function initCalendarView() {
       { events: fetchSchedulesForCalendar },
       { events: holidayEvents }
     ],
+    eventDisplay: 'block',
     eventDidMount: attachTooltip,
 
     // ★ ここを修正：scheduleId と event オブジェクトの両方を安全に渡す
