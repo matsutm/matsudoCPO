@@ -1,63 +1,60 @@
 import { fetchTargetScopeOptions } from '../services/announcement-service.js';
 import { escapeHtml } from '../utils.js';
 
-/**
- * メール送信設定のHTMLを出力
- */
-export function renderEmailOptionUI() {
-  const isEnabled = window.EMAIL_NOTIFY_ENABLED;
-  const disableAttr = isEnabled ? '' : 'disabled';
 
+/** お知らせ先（表示範囲）UI。メール設定とは独立 */
+export function renderAudienceUI() {
   return `
-    <div id="email-option-section" class="email-option-box" style="margin-top: 1rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px;">
-      <!--  
-        <label class="checkbox-label" style="font-weight: bold; cursor: pointer;">
-        <input type="checkbox" id="send-email-check" /> 同時にメール通知を送信する
-      -->
-      <label class="checkbox-label" style="font-weight: bold; cursor: ${isEnabled ? 'pointer' : 'not-allowed'}; color: ${isEnabled ? 'inherit' : '#94a3b8'};">
-        <input type="checkbox" id="send-email-check" ${disableAttr} /> 同時にメール通知を送信する
-      </label>
-      ${!isEnabled ? '<p style="color: #dc2626; font-size: 0.75rem; margin: 4px 0 0 0;">開発環境のためメール通知機能は無効です。</p>' : ''}
-      
-      <div id="email-target-container" style="display: none; margin-top: 0.5rem; padding-left: 1.5rem;">
-        <label for="email-target-scope" style="font-size: 0.85rem;">送信範囲：</label>
-        <select id="email-target-scope" class="form-control-sm">
-          <option value="all">全団員</option>
-          <option value="section">特定のセクション（弦・木管など）</option>
-          <option value="instrument">特定のパート（ファゴットなど）</option>
-        </select>
-        <select id="email-target-value" class="form-control-sm" style="display: none; margin-left: 0.3rem;"></select>
-      </div>
+    <div class="form-group">
+      <label for="audience-scope">お知らせ先</label>
+      <select id="audience-scope" class="form-control-sm">
+        <option value="all">全団員</option>
+        <option value="section">特定のセクション（弦・木管など）</option>
+        <option value="instrument">特定のパート（ファゴットなど）</option>
+      </select>
+      <select id="audience-value" class="form-control-sm" style="display: none; margin-left: 0.3rem;"></select>
     </div>
   `;
 }
 
-/**
- * メール送信UIのイベントリスナーを設定
- */
-export function initEmailOptionEvents() {
-  const check = document.getElementById('send-email-check');
-  const scopeSelect = document.getElementById('email-target-scope');
-  const valueSelect = document.getElementById('email-target-value');
-  const container = document.getElementById('email-target-container');
+export function initAudienceEvents() {
+  const scopeSelect = document.getElementById('audience-scope');
+  const valueSelect = document.getElementById('audience-value');
+  if (!scopeSelect) return;
 
-  if (!check) return;
-
-  check.addEventListener('change', (e) => {
-    container.style.display = e.target.checked ? 'block' : 'none';
-  });
-
-  scopeSelect?.addEventListener('change', async (e) => {
+  scopeSelect.addEventListener('change', async (e) => {
     const scope = e.target.value;
     if (scope === 'all') {
       valueSelect.style.display = 'none';
       valueSelect.innerHTML = '';
-    } else {
-      valueSelect.style.display = 'inline-block';
-      const options = await fetchTargetScopeOptions(scope);
-      valueSelect.innerHTML = options.map(opt => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`).join('');
+      return;
     }
+    valueSelect.style.display = 'inline-block';
+    const options = await fetchTargetScopeOptions(scope);
+    valueSelect.innerHTML = options
+      .map(opt => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`)
+      .join('');
   });
+}
+
+
+export function getAudienceData() {
+  const scope = document.getElementById('audience-scope')?.value || 'all';
+  const value = scope === 'all' ? null : (document.getElementById('audience-value')?.value || null);
+  return { targetScope: scope, targetValue: value };
+}
+
+/** メール送信チェック（宛先は「お知らせ先」と同じ） */
+export function renderEmailOptionUI() {
+  const isEnabled = window.EMAIL_NOTIFY_ENABLED;
+  return `
+    <div id="email-option-section" class="email-option-box" style="margin-top: 1rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px;">
+      <label class="checkbox-label" style="font-weight: bold; cursor: ${isEnabled ? 'pointer' : 'not-allowed'}; color: ${isEnabled ? 'inherit' : '#94a3b8'};">
+        <input type="checkbox" id="send-email-check" ${isEnabled ? '' : 'disabled'} /> お知らせ先にメールも送る
+      </label>
+      ${!isEnabled ? '<p style="color: #dc2626; font-size: 0.75rem; margin: 4px 0 0 0;">開発環境のためメール通知機能は無効です。</p>' : ''}
+    </div>
+  `;
 }
 
 /**
@@ -65,12 +62,5 @@ export function initEmailOptionEvents() {
  */
 export function getEmailOptionData() {
   const check = document.getElementById('send-email-check');
-  const isEmailSent = check ? check.checked : false;
-  const scopeSelect = document.getElementById('email-target-scope');
-  const valueSelect = document.getElementById('email-target-value');
-
-  const targetScope = isEmailSent ? scopeSelect.value : 'all';
-  const targetValue = (isEmailSent && targetScope !== 'all') ? valueSelect.value : null;
-
-  return { isEmailSent, targetScope, targetValue };
+  return { isEmailSent: check ? check.checked : false };
 }
