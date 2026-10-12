@@ -25,11 +25,6 @@
 /* ==========================================
  * 2. ホーム画面（未読掲示リスト）用スタイル
  * ========================================== */
-/* css/announcement.css */
-
-/* ==========================================
- * 2. ホーム画面（未読掲示リスト）用スタイル
- * ========================================== */
 .unread-row {
   padding: 0.65rem 0;
   border-bottom: 1px solid #fef3c7;
@@ -226,6 +221,27 @@
 /* フォーム共通設定（calendar-modal と同じクラスを活用） */
 .announcement-form .form-group {
   margin-bottom: 1rem;
+}
+
+/* お知らせ詳細：本文だけスクロール */
+.modal-content:has(.announcement-body-scroll) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;          /* モーダル全体はスクロールさせない */
+}
+
+.modal-content:has(.announcement-body-scroll) > * {
+  flex-shrink: 0;            /* 題名・添付・投稿者情報は縮めない */
+}
+
+.modal-content:has(.announcement-body-scroll) > .announcement-body-scroll {
+  flex: 1 1 auto;
+  min-height: 3em;
+  overflow-y: auto;          /* 本文だけスクロール */
+}
+
+.announcement-body-scroll .announcement-body {
+  margin-bottom: 0;
 }
 
 .announcement-form label {
