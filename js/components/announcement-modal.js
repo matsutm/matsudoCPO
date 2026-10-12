@@ -7,6 +7,7 @@ import { renderAttachmentField, initAttachmentFieldEvents, collectAttachmentData
 import { confirmAndRun } from '../utils/action-utils.js';
 import { formatText, formatDateTime, escapeHtml } from '../utils.js'; // ★ utils.jsからimport
 import { sendBulletinEmail } from '../services/email-service.js';
+import { renderAudienceBadge } from './announcement-card.js';
 
 export function openAnnouncementModal({
   mode,          // 'CREATE' | 'VIEW' | 'EDIT'
@@ -167,6 +168,7 @@ function renderViewContent(p) {
   return `
     <div class="form-group">
       <h3 style="margin: 0 0 0.75rem 0; font-size: 1.1rem; color: #1e3a8a;">${title}</h3>
+	  ${renderAudienceBadge(p)}
     </div>
     <div class="form-group announcement-body-scroll">
       <div class="announcement-body">${formatText(body)}</div>
