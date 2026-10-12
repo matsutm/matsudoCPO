@@ -166,7 +166,7 @@ function renderViewContent(p) {
     <div class="form-group">
       <h3 style="margin: 0 0 0.75rem 0; font-size: 1.1rem; color: #1e3a8a;">${title}</h3>
     </div>
-    <div class="form-group">
+    <div class="form-group announcement-body-scroll">
       <div class="announcement-body">${formatText(body)}</div>
     </div>
     ${renderAttachmentLink(p?.attachment_url, p?.attachment_name)}
