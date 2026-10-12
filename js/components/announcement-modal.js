@@ -189,7 +189,7 @@ function renderAudienceLabel(p) {
   `;
 }
 
-function renderFormContent(p. isEdit = false) {
+function renderFormContent(p, isEdit = false) {
   // p が null や undefined の場合も考慮して安全に変数化
   const title = p?.title || '';
   const body  = p?.content || p?.body || '';
