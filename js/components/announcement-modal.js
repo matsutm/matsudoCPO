@@ -2,11 +2,12 @@
 
 import { openModal } from './modal.js';
 import { createAnnouncement, updateAnnouncement, deleteAnnouncement, markAsRead } from '../services/announcement-service.js';
-import { renderEmailOptionUI, initEmailOptionEvents, getEmailOptionData } from './announcement-email-option.js';
+import { renderAudienceUI, initAudienceEvents, getAudienceData, renderEmailOptionUI, getEmailOptionData } from './announcement-email-option.js';
 import { renderAttachmentField, initAttachmentFieldEvents, collectAttachmentData, renderAttachmentLink } from './attachment-field.js'; // ★追加
 import { confirmAndRun } from '../utils/action-utils.js';
-import { formatText, formatDateTime } from '../utils.js'; // ★ utils.jsからimport
+import { formatText, formatDateTime, escapeHtml } from '../utils.js'; // ★ utils.jsからimport
 import { sendBulletinEmail } from '../services/email-service.js';
+import { renderAudienceBadge } from './announcement-card.js';
 
 export function openAnnouncementModal({
   mode,          // 'CREATE' | 'VIEW' | 'EDIT'
@@ -78,7 +79,11 @@ export function openAnnouncementModal({
           let data;
           // calendar-modal と同じくフォームから一括取得
           try {
-            data = await collectFormData({ attachment_url: p.attachment_url, attachment_name:p.attachment_name});
+            data = await collectFormData({ attachment_url: p.attachment_url, attachment_name: p.attachment_name }, isEdit);
+			if (!isEdit && data.target_scope !== 'all' && !data.target_value) {
+			  alert('お知らせ先を選択してください。');
+			  return false;
+			}
           } catch (err) {
             alert(err.message);
             return false;
@@ -138,14 +143,12 @@ export function openAnnouncementModal({
   // モーダル表示
   openModal({
     title: titles[mode] || title,
-    content: isView ? renderViewContent(p) : renderFormContent(p),
+    content: isView ? renderViewContent(p) : renderFormContent(p, isEdit),
     actions
   }); 
 
-  // メール送信オプションのイベント初期化（CREATE時）
-  if (!isView && !isEdit) {
-    initEmailOptionEvents();
-  }
+  if (!isView && !isEdit) initAudienceEvents();; //表示先は新規のみ変更可
+  
   // 添付ファイル処理初期化
   if (!isView) {
     initAttachmentFieldEvents();
@@ -165,6 +168,7 @@ function renderViewContent(p) {
   return `
     <div class="form-group">
       <h3 style="margin: 0 0 0.75rem 0; font-size: 1.1rem; color: #1e3a8a;">${title}</h3>
+	  ${renderAudienceBadge(p)}
     </div>
     <div class="form-group announcement-body-scroll">
       <div class="announcement-body">${formatText(body)}</div>
@@ -176,54 +180,61 @@ function renderViewContent(p) {
   `;
 }
 
-function renderFormContent(p) {
+function renderAudienceLabel(p) {
+  const label = (p?.target_scope === 'section' || p?.target_scope === 'instrument')
+    ? p.target_value : '全団員';
+  return `
+    <div class="form-group">
+      <label>お知らせ先</label>
+      <div style="font-size:0.9rem;">${escapeHtml(label)}（投稿後は変更できません）</div>
+    </div>
+  `;
+}
+
+function renderFormContent(p, isEdit = false) {
   // p が null や undefined の場合も考慮して安全に変数化
   const title = p?.title || '';
   const body  = p?.content || p?.body || '';
   return `
     <div class="form-group">
       <label for="ann-title">タイトル *</label>
-      <input id="ann-title" type="text" class="form-control" value="${title}">
+      <input id="ann-title" type="text" class="form-control" value="${escapeHtml(title)}">
     </div>
 
     <div class="form-group">
       <label for="ann-body">本文 *</label>
-      <textarea id="ann-body" class="form-control" rows="6">${body}</textarea>
+      <textarea id="ann-body" class="form-control" rows="6">${escapeHtml(body)}</textarea>
     </div>
+	${isEdit ? renderAudienceLabel(p) : renderAudienceUI()}
 
     <!-- ファイル添付 -->
     ${renderAttachmentField(p?.attachment_name)}
     
     <!-- メール送信オプション（新規投稿時） -->
-    ${renderEmailOptionUI()}
+    ${isEdit ? '' : renderEmailOptionUI()}
   `;
 }
 
 /* ------------------------------
  * フォームデータ収集（calendar-modal と同じ作法）
  * ------------------------------ */
-async function collectFormData(existingAttachment = {}) {
-  const titleEl = document.getElementById('ann-title');
-  const bodyEl = document.getElementById('ann-body');
-
+async function collectFormData(existingAttachment = {}, isEdit = false) {
   // .value を直接取得し、空の場合は明示的に空文字 '' にする（null を防ぐ）
-  const title = titleEl ? titleEl.value.trim() : '';
-  const content = bodyEl ? bodyEl.value.trim() : '';
+  const title = document.getElementById('ann-title')?.value.trim() || '';
+  const content = document.getElementById('ann-body')?.value.trim() || '';
+  const attachmentData = await collectAttachmentData(existingAttachment); // 共通関数呼び出し
 
+  const base = { title, content, ...attachmentData };
+  if (isEdit) return base; // 編集時は表示先・メール設定を触らない（上書き禁止）
+  
+  const audience = getAudienceData();
   // メール設定データも一緒に取り込む
-  const emailData = window.EMAIL_NOTIFY_ENABLED ? getEmailOptionData() : {};
-
-  const attachmentData = await collectAttachmentData(existingAttachment); // ★共通関数呼び出し
-
+  const email = getEmailOptionData();
 
   return {
-    title,
-    content,
-    //...emailData,
-    is_email_sent: emailData.isEmailSent || false,  // スネークケースに統一
-    target_scope: emailData.targetScope || 'all',   // 
-    target_value: emailData.targetValue || null,    //
-    ...attachmentData
-    
+    ...base,
+    target_scope: audience.targetScope,   // 
+    target_value: audience.targetValue,    //
+	is_email_sent: email.isEmailSent  // スネークケースに統一
   };
 }

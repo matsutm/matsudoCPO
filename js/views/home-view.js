@@ -3,7 +3,7 @@
 import { fetchAnnouncements, fetchUserReadIds } from '../services/announcement-service.js';
 import { getCurrentUser } from '../services/auth-service.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
-import { attachAnnouncementClickEvents } from '../components/announcement-card.js';
+import { attachAnnouncementClickEvents, renderAudienceBadge } from '../components/announcement-card.js';
 import { formatDateShort, escapeHtml, formatWeekday } from '../utils.js';
 import { createTooltipText, attachTooltip } from '../components/tooltip.js';
 import { renderPrimaryLibraryLinks, renderNextConcertLink } from '../components/library-links.js';
@@ -120,7 +120,8 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
       <div class="unread-row" data-id="${post.id}" style="cursor: pointer; padding: 8px 0; border-bottom: 1px solid #fef3c7;">
         <div class="unread-row-title">
           <span class="badge-new-text" style="color: #d97706; font-weight: bold;">[NEW]</span>
-          <span class="unread-title-text"> ${escapeHtml(post.title)} </span>
+          ${renderAudienceBadge(post)}
+		  <span class="unread-title-text"> ${escapeHtml(post.title)} </span>
         </div>
         <span class="unread-row-date" style="font-size: 0.8em; color: #78350f;">${formatDateShort(post.created_at)}</span>
       </div>

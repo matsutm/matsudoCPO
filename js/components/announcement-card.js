@@ -4,6 +4,15 @@ import { escapeHtml, formatDateShort } from '../utils.js';
 import { fetchAnnouncementById } from '../services/announcement-service.js';
 
 /**
+ * お知らせ先バッジ（全団員宛ては何も出さない）
+ */
+export function renderAudienceBadge(post) {
+  const scope = post?.target_scope;
+  if ((scope !== 'section' && scope !== 'instrument') || !post.target_value) return '';
+  return `<span class="badge-audience badge-audience-${scope}">${escapeHtml(post.target_value)}宛</span>`;
+}
+
+/**
  * お知らせ行（1件1行）のHTML生成
  * → UI の型だけを担当（モーダルは呼ばない）
  */
@@ -29,6 +38,7 @@ export function createAnnouncementRowHTML(post, isRead, showQuickActionBtn = tru
       <div class="row-main">
         <div class="row-title-line">
           ${badgeHTML}
+		  ${renderAudienceBadge(post)}
           <span class="row-title">${escapeHtml(post.title)}</span>
         </div>
         <div class="row-meta">

@@ -160,8 +160,8 @@ async function syncToAnnouncement(formData, isEdit = false) {
       authorId: currentUser.id,
       title: title,
       content: content,
-      targetscope: 'all',
-      targetValue: null
+      target_scope: 'all',
+      target_value: null
     });
   } catch (err) {
     console.error('お知らせ自動連携エラー：', err);

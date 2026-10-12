@@ -1,5 +1,16 @@
 // js/services/announcement-service.js
 import { deleteAttachmentFile } from './attachment-service.js';
+import { getCurrentUser } from './auth-service.js';
+
+/** 投稿が現在のユーザーに見えるべきか */
+export function isVisibleTo(post, user) {
+  if (post.author_id === user.id) return true; // 投稿者本人には常に表示
+  switch (post.target_scope) {
+    case 'section':    return post.target_value === user.section;
+    case 'instrument': return post.target_value === user.instrument;
+    default:           return true; // 'all' / null（既存データ）
+  }
+}
 
 /**
  * 全掲示の取得
@@ -17,11 +28,14 @@ export async function fetchAnnouncements() {
     console.error('Supabase fetchAnnouncements エラー:', error);
     throw error;
   }
+  const user = getCurrentUser() || {};
   // 取得したデータ整形（author_name プロパティをセットしておく）
-  return (data || []).map(post => ({
-    ...post,
-    author_name: post.members?.name || '不明'
-  }));
+  return (data || [])
+    .filter(post => isVisibleTo(post, user))
+	.map(post => ({
+      ...post,
+      author_name: post.members?.name || '不明'
+    }));
 }
 
 /**
@@ -53,11 +67,12 @@ export async function fetchUserReadIds(memberId) {
 export async function fetchAnnouncementById(id) {
   const { data, error } = await window.supabaseClient
     .from('announcements')
-    .select('*')
+    .select('*, members:author_id ( name )')
     .eq('id', id)
     .single();
 
   if (error) throw error;
+  if (!isVisibleTo(data, getCurrentUser() || {})) return null;
   return { ...data, author_name: data.members?.name || '不明' }; // ★author_nameを追加
 }
 
@@ -85,9 +100,9 @@ export async function createAnnouncement(announcementData) {
     author_id: announcementData.authorId,
     title: announcementData.title,
     content: announcementData.content,
-    is_email_sent: announcementData.isEmailSent || false,
-    target_scope: announcementData.targetScope || 'all',
-    target_value: announcementData.targetValue || null,
+    is_email_sent: announcementData.is_email_sent || false,
+    target_scope: announcementData.target_scope || 'all',
+    target_value: announcementData.target_value || null,
     attachment_url: announcementData.attachment_url || null,
     attachment_name: announcementData.attachment_name || null,
     created_at: new Date().toISOString()
