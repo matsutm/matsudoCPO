@@ -3,9 +3,16 @@
 import { getCurrentUser } from '../services/auth-service.js';
 import { fetchAnnouncements, fetchUserReadIds, markAsRead, markAsUnread } from '../services/announcement-service.js';
 import { createAnnouncementRowHTML, attachAnnouncementClickEvents } from '../components/announcement-card.js';
+import {
+  renderAnnouncementSearchBox, initAnnouncementSearch,
+  filterAnnouncements, updateSearchStatus, updateAudienceOptions, createEmptyFilters
+} from '../components/announcement-search.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
 
 const PAGE_SIZE = 10; // 1回あたりの表示件数
+let filters = createEmptyFilters();   // 検索条件を保持
+let visibleLimit = PAGE_SIZE;         // renderList の外に出す
+let renderToken = 0;                  // 古い描画を破棄する用
 
 export function renderAnnouncementView() {
   return `
@@ -14,6 +21,7 @@ export function renderAnnouncementView() {
         <h2>お知らせ・掲示板</h2>
         <button id="btnNewPost" class="btn-primary">＋ 新規投稿</button>
       </div>
+	  ${renderAnnouncementSearchBox()}
       <section class="announcement-list-section">
         <div id="announcement-list" class="announcement-list"><p class="loading-text">読み込み中...</p></div>
       </section>
@@ -33,9 +41,16 @@ export async function initAnnouncementView(navigateTo) {
     return;
   }
 
+  filters = createEmptyFilters();
+  visibleLimit = page_size;
   await renderList(currentUser);
 
-  // ＋ 新規投稿ボタンのイベント設定
+  initAnnouncementSearch((newfilters) => {
+	filters = newfilters;
+	visibleLimit = PAGE_SIZE;
+	renderlist(currentUser);
+  });
+  
   const btn = document.getElementById('btnNewPost');
   if (btn) {
     btn.onclick = () => {
@@ -50,6 +65,7 @@ export async function initAnnouncementView(navigateTo) {
 }
 
 async function renderList(currentUser) {
+  const token = ++renderToken;
   const listContainer = document.getElementById('announcement-list');
   const moreContainer = document.getElementById('more-container');
   const btnViewMore   = document.getElementById('btnViewMore');
@@ -60,21 +76,30 @@ async function renderList(currentUser) {
     //console.log('--- お知らせデータ取得開始 ---');
     const posts = await fetchAnnouncements();
     const readIds = await fetchUserReadIds(currentUser.id);
-    //console.log('取得されたお知らせデータ:', posts);
-    //console.log('取得された既読ID:', readIds);
-
+    
+	if (token !== renderToken) return;  // 新しい呼び出しがあれば破棄
+	
     if (!posts || posts.length === 0) {
       listContainer.innerHTML = '<p class="empty-text" style="padding: 1rem; text-align: center; color: #64748b;">現在お知らせはありません。</p>';
+	  if (moreContainer) moreContainer.style.display = 'none';
       return;
     }
 
     // キャッシュ保存
     window.__ANNOUNCEMENT_CACHE__ = new Map(posts.map(post => [post.id, post]));
 
-    let visibleLimit = PAGE_SIZE;
+    updateAudienceOptions(posts, filters.audience);
+	const filteredPosts = filterAnnouncements(posts, filters, readIds);
+	updateSearchStatus(filters, filteredPosts.length, posts.length);
+	
+	if (filteredPosts.length === 0) {
+	  listContainer.innerHTML = '<p class="empty-text" style="padding: 1rem; text-align: center; color: #64748b;">該当するお知らせはありません。</p>';
+      if (moreContainer) moreContainer.style.display = 'none';
+	  return;
+	}
 
     const updateListDisplay = () => {
-      const targetPosts = posts.slice(0, visibleLimit);
+      const targetPosts = filteredPosts.slice(0, visibleLimit);
 
       listContainer.innerHTML = targetPosts
         .map(post => createAnnouncementRowHTML(post, readIds.has(post.id), true))
@@ -111,7 +136,7 @@ async function renderList(currentUser) {
 
       // 「もっと見る」ボタン表示制御
       if (moreContainer) {
-        if (posts.length > visibleLimit) {
+        if (filteredPosts.length > visibleLimit) {
           moreContainer.style.display = 'block';
           btnViewMore.onclick = () => {
             visibleLimit += PAGE_SIZE;
