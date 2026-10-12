@@ -45,10 +45,10 @@ export async function initAnnouncementView(navigateTo) {
   visibleLimit = page_size;
   await renderList(currentUser);
 
-  initAnnouncementSearch((newfilters) => {
-	filters = newfilters;
+  initAnnouncementSearch((newFilters) => {
+	filters = newFilters;
 	visibleLimit = PAGE_SIZE;
-	renderlist(currentUser);
+	renderList(currentUser);
   });
   
   const btn = document.getElementById('btnNewPost');
@@ -73,15 +73,13 @@ async function renderList(currentUser) {
   if (!listContainer) return;
 
   try {
-    //console.log('--- お知らせデータ取得開始 ---');
     const posts = await fetchAnnouncements();
     const readIds = await fetchUserReadIds(currentUser.id);
-    
-	if (token !== renderToken) return;  // 新しい呼び出しがあれば破棄
-	
+    if (token !== renderToken) return;   // ★追加：新しい呼び出しがあれば破棄
+
     if (!posts || posts.length === 0) {
       listContainer.innerHTML = '<p class="empty-text" style="padding: 1rem; text-align: center; color: #64748b;">現在お知らせはありません。</p>';
-	  if (moreContainer) moreContainer.style.display = 'none';
+      if (moreContainer) moreContainer.style.display = 'none';   // ★追加
       return;
     }
 
