@@ -10,7 +10,7 @@ export function renderAudienceUI() {
       <select id="audience-scope" class="form-control-sm">
         <option value="all">全団員</option>
         <option value="section">特定のセクション（弦・木管など）</option>
-        <option value="instrument">特定のパート（ファゴットなど）</option>
+        <option value="instrument">特定のパート（Vnなど）</option>
       </select>
       <select id="audience-value" class="form-control-sm" style="display: none; margin-left: 0.3rem;"></select>
     </div>
