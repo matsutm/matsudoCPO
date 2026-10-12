@@ -9,7 +9,7 @@ import { fetchAnnouncementById } from '../services/announcement-service.js';
 export function renderAudienceBadge(post) {
   const scope = post?.target_scope;
   if ((scope !== 'section' && scope !== 'instrument') || !post.target_value) return '';
-  return `<span class="badge-audience badge-audience-${scope}">${escapeHtml(post.target_value)} 宛</span>`;
+  return `<span class="badge-audience badge-audience-${scope}">${escapeHtml(post.target_value)}宛</span>`;
 }
 
 /**
