@@ -209,7 +209,7 @@ function renderFormContent(p, isEdit = false) {
     ${renderAttachmentField(p?.attachment_name)}
     
     <!-- メール送信オプション（新規投稿時） -->
-    ${isEdit ? || : renderEmailOptionUI()}
+    ${isEdit ? '' : renderEmailOptionUI()}
   `;
 }
 
