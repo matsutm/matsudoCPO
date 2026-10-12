@@ -298,3 +298,22 @@
   background-color: #e2e8f0;
   color: #1e293b;
 }
+
+/* お知らせ先バッジ（セクション／パート宛て） */
+.badge-audience {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  flex-shrink: 0;       /* タイトルが長くても潰さない */
+  white-space: nowrap;
+}
+.badge-audience-section {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+.badge-audience-instrument {
+  background-color: #dcfce7;
+  color: #166534;
+}
