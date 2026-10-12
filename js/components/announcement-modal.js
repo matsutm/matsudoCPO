@@ -218,8 +218,8 @@ function renderFormContent(p, isEdit = false) {
  * ------------------------------ */
 async function collectFormData(existingAttachment = {}, isEdit = false) {
   // .value を直接取得し、空の場合は明示的に空文字 '' にする（null を防ぐ）
-  const title = document.getElementById('ann-title')?.value.trim() : '';
-  const content = document.getElementById('ann-body')?.value.trim() : '';
+  const title = document.getElementById('ann-title')?.value.trim() || '';
+  const content = document.getElementById('ann-body')?.value.trim() || '';
   const attachmentData = await collectAttachmentData(existingAttachment); // 共通関数呼び出し
 
   const base = { title, content, ...attachmentData };
