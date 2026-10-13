@@ -87,14 +87,14 @@ async function renderList(currentUser) {
     window.__ANNOUNCEMENT_CACHE__ = new Map(posts.map(post => [post.id, post]));
 
     updateAudienceOptions(posts, filters.audience);
-	const filteredPosts = filterAnnouncements(posts, filters, readIds);
-	updateSearchStatus(filters, filteredPosts.length, posts.length);
+	  const filteredPosts = filterAnnouncements(posts, filters, readIds);
+	  updateSearchStatus(filters, filteredPosts.length, posts.length);
 	
-	if (filteredPosts.length === 0) {
-	  listContainer.innerHTML = '<p class="empty-text" style="padding: 1rem; text-align: center; color: #64748b;">該当するお知らせはありません。</p>';
+	  if (filteredPosts.length === 0) {
+  	  listContainer.innerHTML = '<p class="empty-text" style="padding: 1rem; text-align: center; color: #64748b;">該当するお知らせはありません。</p>';
       if (moreContainer) moreContainer.style.display = 'none';
 	  return;
-	}
+  	}
 
     const updateListDisplay = () => {
       const targetPosts = filteredPosts.slice(0, visibleLimit);
