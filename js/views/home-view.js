@@ -92,6 +92,8 @@ export async function initHomeView(navigateTo) {
 // Supabaseから未読お知らせを取得（最大5件）
 async function loadUnreadAnnouncements(currentUser, navigateTo) {
   const listContainer = document.getElementById('unreadAnnouncementsContainer');
+  const MAX_UNREAD_DISPLAY = 5;
+  const hasMore = unreadPosts.length > MAX_UNREAD_DISPLAY;
   if (!listContainer) return;
 
   try {
