@@ -39,7 +39,7 @@ export async function navigateTo(viewName, isBrowserBack = false) {
 
     case 'calendar':
       appContent.innerHTML = renderCalendarView();
-      await initCalendarView();
+      await initCalendarView(navigateTo);
       break;
 
     case 'announcement':
