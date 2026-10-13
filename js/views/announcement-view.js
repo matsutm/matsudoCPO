@@ -8,6 +8,8 @@ import {
   filterAnnouncements, updateSearchStatus, updateAudienceOptions, createEmptyFilters
 } from '../components/announcement-search.js';
 import { openAnnouncementModal } from '../components/announcement-modal.js';
+import { renderBackToHome, initBackToHome } from '../components/back-to-home.js'; // 追加
+
 
 const PAGE_SIZE = 10; // 1回あたりの表示件数
 let filters = createEmptyFilters();   // 検索条件を保持
@@ -17,6 +19,7 @@ let renderToken = 0;                  // 古い描画を破棄する用
 export function renderAnnouncementView() {
   return `
     <div class="announcement-container">
+      ${renderBackToHome()}
       <div class="header-actions">
         <h2>お知らせ・掲示板</h2>
         <button id="btnNewPost" class="btn-primary">＋ 新規投稿</button>
@@ -40,6 +43,8 @@ export async function initAnnouncementView(navigateTo) {
     navigateTo('auth');
     return;
   }
+
+  initBackToHome(navigateTo);
 
   filters = createEmptyFilters();
   visibleLimit = PAGE_SIZE;
