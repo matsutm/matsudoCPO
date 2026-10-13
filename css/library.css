@@ -40,3 +40,10 @@
   margin-top: 6px;
   line-height: 1.6;
 }
+
+/* 資料庫：見出しの標準余白を消して、他画面と行間をそろえる */
+#view-library .card-header-title h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #1e293b;
+}
