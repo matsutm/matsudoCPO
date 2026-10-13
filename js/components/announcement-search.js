@@ -145,7 +145,7 @@ export function initAnnouncementSearch(onChange) {
 }
 
 /** 件数表示と「条件をクリア」の表示切替 */
-export function updateSearchStatus(filters, hitCount, totalCount) {
+export function updateSearchStatus(filters, hitCount, totalCount, unreadCount) {
   const countEl = document.getElementById('search-count');
   const clearEl = document.getElementById('search-clear');
   if (!countEl || !clearEl) return;
