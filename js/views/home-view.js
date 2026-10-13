@@ -22,7 +22,7 @@ export function renderHomeView() {
         <!-- 1. お知らせ・掲示板カード -->
         <div class="card home-card">
           <div class="card-header-title">
-            <button class="btn-card-title" id="linkGoAnnouncement">📢 お知らせ・掲示板 ➔</button>
+            <button class="btn-card-title" id="linkGoAnnouncement">📢 お知らせ・掲示板<span id="unreadCountLabel"></span> ➔</button>
           </div>
           <div id="unreadAnnouncementsContainer" class="card-body">
             <p class="loading-text">お知らせを読み込み中...</p>
@@ -92,6 +92,8 @@ export async function initHomeView(navigateTo) {
 // Supabaseから未読お知らせを取得（最大4件）
 async function loadUnreadAnnouncements(currentUser, navigateTo) {
   const listContainer = document.getElementById('unreadAnnouncementsContainer');
+  const MAX_UNREAD_DISPLAY = 5;
+  const hasMore = unreadPosts.length > MAX_UNREAD_DISPLAY;
   if (!listContainer) return;
 
   try {
@@ -102,6 +104,7 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
 
     // 未読のみ抽出
     const unreadPosts = posts.filter(p => !readIds.has(p.id));
+    updateUnreadCountLabel(unreadPosts.length); // 0件チェックより前に
 
     // 未読が0件の場合
     if (unreadPosts.length === 0) {
@@ -113,8 +116,8 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
       return;
     }
 
-    // 最大6件表示
-    const displayPosts = unreadPosts.slice(0, 6);
+    // 最大MAX_UNREAD件表示
+    const displayPosts = unreadPosts.slice(0, MAX_UNREAD_DISPLAY);
 
     listContainer.innerHTML = displayPosts.map(post => `
       <div class="unread-row" data-id="${post.id}" style="cursor: pointer; padding: 8px 0; border-bottom: 1px solid #fef3c7;">
@@ -125,7 +128,12 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
         </div>
         <span class="unread-row-date" style="font-size: 0.8em; color: #78350f;">${formatDateShort(post.created_at)}</span>
       </div>
-    `).join('');
+    `).join('') + (hasMore ? `
+      <button type="button" id="unreadMoreLink" class="unread-more-link"  aria-label="未読のお知らせをすべて見る">…</button>
+    ` : '');
+    
+    // 「…」でお知らせ画面へ
+    document.getElementById('unreadMoreLink')?.addEventListener('click', () => navigateTo('announcement'));
 
     // ★共通関数を呼び出すだけ！
     attachAnnouncementClickEvents(listContainer, currentUser.id, (post) => {
@@ -243,4 +251,11 @@ async function loadNextConcert(navigateTo) {
   } catch (err) {
     console.error('直近演奏会取得エラー:', err);
   }
+}
+
+// タイトル横の未読総数ラベルを更新（0件のときは何も出さない）
+function updateUnreadCountLabel(count) {
+  const el = document.getElementById('unreadCountLabel');
+  if (!el) return;
+  el.textContent = count > 0 ? `（未読 ${count}）` : '';
 }
