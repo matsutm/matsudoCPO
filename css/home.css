@@ -51,6 +51,22 @@
   color: #0066cc;
 }
 
+/* 3-1. お知らせ表示エリア */
+.unread-more-link {
+  display: block;
+  width: 100%;
+  padding: 0.4rem 0;
+  background: none;
+  border: none;
+  color: #b45309;
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+}
+.unread-more-link:hover {
+  background-color: rgba(253, 230, 138, 0.25);
+}
+
 /* 4. スケジュール表示エリア */
 .event-item {
   padding: 12px;
