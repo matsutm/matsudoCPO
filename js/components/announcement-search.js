@@ -152,7 +152,7 @@ export function updateSearchStatus(filters, hitCount, totalCount) {
 
   const active = hasActiveFilters(filters);
   countEl.textContent = active 
-    ? `全 ${totalCount}件中 ${hitCount}件ヒット` : '' 
+    ? `全 ${totalCount}件中 ${hitCount}件ヒット` 
     : `全 ${totalCountount}件（未読 ${unreadCount}件）`;
   countEl.style.display = 'inline';　　//常に表示
   clearEl.style.display = active ? 'inline-block' : 'none';
