@@ -70,7 +70,9 @@ export function renderAnnouncementSearchBox() {
         <label style="display:flex; align-items:center; gap:6px; font-size:0.85rem; cursor:pointer; white-space:nowrap;">
           <input id="search-unread-only" type="checkbox"> 未読のみ
         </label>
-        <select id="search-audience" class="form-control" style="flex:1; width:auto; min-width:0;"></select>
+        <select id="search-audience" class="form-control" style="width:auto; font-size:0.85rem;">
+          <option value="">すべての宛先</option>
+        </select>
       </div>
 
       <details id="search-advanced" style="margin-top:8px; font-size:0.85rem;">
@@ -109,7 +111,7 @@ export function initAnnouncementSearch(onChange) {
   const readFilters = () => ({
     keyword: keywordEl.value.trim(),
     unreadOnly: unreadEl.checked,
-	audience: audienceEl.value,
+	  audience: audienceEl.value,
     dateFrom: fromEl.value,
     dateTo: toEl.value
   });
@@ -135,7 +137,7 @@ export function initAnnouncementSearch(onChange) {
   clearEl.addEventListener('click', () => {
     keywordEl.value = '';
     unreadEl.checked = false;
-	audienceEl.value = '';
+	  audienceEl.value = '';
     fromEl.value = '';
     toEl.value = '';
     fireNow();
@@ -149,8 +151,10 @@ export function updateSearchStatus(filters, hitCount, totalCount) {
   if (!countEl || !clearEl) return;
 
   const active = hasActiveFilters(filters);
-  countEl.textContent = active ? `${totalCount}件中 ${hitCount}件ヒット` : '';
-  countEl.style.display = active ? 'inline' : 'none';
+  countEl.textContent = active 
+    ? `全 ${totalCount}件中 ${hitCount}件ヒット` : '' 
+    : `全 ${totalCountount}件（未読 ${unreadCount}件）`;
+  countEl.style.display = 'inline';　　//常に表示
   clearEl.style.display = active ? 'inline-block' : 'none';
 }
 
