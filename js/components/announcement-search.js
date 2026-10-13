@@ -131,6 +131,7 @@ export function initAnnouncementSearch(onChange) {
   keywordEl.addEventListener('input', (e) => { if (!e.isComposing) fireDebounced(); });
   keywordEl.addEventListener('compositionend', fireDebounced);
   unreadEl.addEventListener('change', fireNow);
+  audienceEl.addEventListener('change', fireNow);  
   fromEl.addEventListener('change', fireNow);
   toEl.addEventListener('change', fireNow);
 
