@@ -238,3 +238,28 @@ body {
   width: auto;
   height: 28px;
 }
+
+/* ==========================================
+ * 7. 画面共通：戻るリンク・見出し行
+ * ========================================== */
+.back-to-home {
+  display: inline-block;
+  font-size: 0.85rem;
+  color: #64748b;
+  text-decoration: none;
+  margin-bottom: 8px;
+  padding: 4px 0;
+}
+.back-to-home:hover { color: #0066cc; }
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+.header-actions h2 {
+  font-size: 1.4rem;
+  color: #1e293b;
+  margin: 0;
+}

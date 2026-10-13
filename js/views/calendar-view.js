@@ -4,13 +4,16 @@ import { fetchJapaneseHolidays } from '../components/holidays.js';
 import { createTooltipText, attachTooltip } from '../components/tooltip.js';
 import { openCalendarModal } from '../components/calendar-modal.js';
 import { fetchSchedulesData } from '../services/calendar-service.js';
+import { renderBackToHome, initBackToHome } from '../components/back-to-home.js';
 
 let calendar;
 
 export function renderCalendarView() {
   return `
     <div class="calendar-container">
-      <div style="margin-bottom: 12px; text-align: right;">
+      ${renderBackToHome()}
+      <div class="header-actions">
+        <h2>📅 練習スケジュール</h2>
         <button id="btnOpenCreateModal" class="btn-primary">＋ 予定を追加</button>
       </div>
       <div id="calendar"></div>
@@ -18,7 +21,8 @@ export function renderCalendarView() {
   `;
 }
 
-export async function initCalendarView() {
+export async function initCalendarView(navigateTo) {
+  initBackToHome(navigateTo);
   const calendarEl = document.getElementById('calendar');
   if (!calendarEl) return;
 

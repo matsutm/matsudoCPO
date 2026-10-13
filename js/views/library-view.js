@@ -3,10 +3,12 @@
 import { renderPrimaryLibraryLinks, renderOtherLibraryLinks, renderConcertBlocks } from '../components/library-links.js';
 import { renderSocialLinks } from '../components/social-links.js';
 import { fetchUpcomingConcerts } from '../services/concert-service.js';
+import { renderBackToHome, initBackToHome } from '../components/back-to-home.js'; // 追加
 
 export function renderLibraryView() {
   return `
     <section id="view-library" class="view-section">
+      ${renderBackToHome()}
       <div class="card">
         <div class="card-header-title"><h2>📁 資料庫</h2></div>
         <div class="card-body">
@@ -46,8 +48,9 @@ export function renderLibraryView() {
 }
 
 // 直近演奏会
-export async function initLibraryView() {
-    const container = document.getElementById('concert-list-container');
+export async function initLibraryView(navigateTo) {
+  initBackToHome(navigateTo);
+  const container = document.getElementById('concert-list-container');
   if (!container) return;
 
   try {
