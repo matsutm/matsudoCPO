@@ -79,7 +79,8 @@ async function renderList(currentUser) {
 
     if (!posts || posts.length === 0) {
       listContainer.innerHTML = '<p class="empty-text" style="padding: 1rem; text-align: center; color: #64748b;">現在お知らせはありません。</p>';
-      if (moreContainer) moreContainer.style.display = 'none';   // ★追加
+      updateSearchStatus(filters, 0, 0, 0);
+      if (moreContainer) moreContainer.style.display = 'none'; 
       return;
     }
 
@@ -88,7 +89,8 @@ async function renderList(currentUser) {
 
     updateAudienceOptions(posts, filters.audience);
 	  const filteredPosts = filterAnnouncements(posts, filters, readIds);
-	  updateSearchStatus(filters, filteredPosts.length, posts.length);
+    const unreadCount = posts.filter(p => !readIds.has(p.id)).length;
+	  updateSearchStatus(filters, filteredPosts.length, posts.length, unreadCount);
 	
 	  if (filteredPosts.length === 0) {
   	  listContainer.innerHTML = '<p class="empty-text" style="padding: 1rem; text-align: center; color: #64748b;">該当するお知らせはありません。</p>';
