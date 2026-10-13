@@ -89,7 +89,7 @@ export async function initHomeView(navigateTo) {
   // 例: document.getElementById('linkDolce').href = 'https://drive.google.com/...';
 }
 
-// Supabaseから未読お知らせを取得（最大4件）
+// Supabaseから未読お知らせを取得（最大5件）
 async function loadUnreadAnnouncements(currentUser, navigateTo) {
   const listContainer = document.getElementById('unreadAnnouncementsContainer');
   const MAX_UNREAD_DISPLAY = 5;
@@ -104,6 +104,7 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
 
     // 未読のみ抽出
     const unreadPosts = posts.filter(p => !readIds.has(p.id));
+      
     updateUnreadCountLabel(unreadPosts.length); // 0件チェックより前に
 
     // 未読が0件の場合
@@ -117,7 +118,9 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
     }
 
     // 最大MAX_UNREAD件表示
+    const MAX_UNREAD_DISPLAY = 5;
     const displayPosts = unreadPosts.slice(0, MAX_UNREAD_DISPLAY);
+    const hasMore = unreadPosts.length > MAX_UNREAD_DISPLAY;
 
     listContainer.innerHTML = displayPosts.map(post => `
       <div class="unread-row" data-id="${post.id}" style="cursor: pointer; padding: 8px 0; border-bottom: 1px solid #fef3c7;">
