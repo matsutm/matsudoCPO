@@ -42,7 +42,7 @@ export async function initAnnouncementView(navigateTo) {
   }
 
   filters = createEmptyFilters();
-  visibleLimit = page_size;
+  visibleLimit = PAGE_SIZE;
   await renderList(currentUser);
 
   initAnnouncementSearch((newFilters) => {
