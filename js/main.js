@@ -78,6 +78,10 @@ function updateLoginUserDisplay() {
   const elUser = document.getElementById('loginUserDisplay');
   const btnlogout = document.getElementById('btnLogout');
 
+  document.body.dataset.role = window.ROLE_CONTROL_ENABLED
+    ? (user?.role || 'member')
+    : 'author';
+  
   if (user) {
     if (elUser) elUser.textContent = `${user.name} さん`;
     if (btnlogout) btnlogout.style.display = 'inline-block';
