@@ -197,6 +197,8 @@ body {
   flex-shrink: 0; /* ボタン群は常に画面内に固定表示 */
 }
 
+body[data-role="member"] #btnNewPost,
+body[data-role="member"] #btnOpenCreateModal { display: none; }
 
 /* ==========================================
  * 6. ソーシャルメディア等ロゴ
