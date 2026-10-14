@@ -4,11 +4,7 @@ let programmaticBack = false;
 
 function closeModal(overlay) {
   overlay.remove();
-  /*
-  if (history.state?.modalOpen) {
-    history.replaceState({ ...history.state, modalOpen: false}, '', location.href);
-  }
-  */
+
   // 最後のモーダル閉じたときだけ、積んだエントリを戻す
   if (!document.querySelector('.modal-overlay') && history.state?.modalOpen) {
     programmaticBack = true; //popstate側で「画面遷移しない」判断用
@@ -39,8 +35,6 @@ export function openModal({ title, content, actions }) {
   const actionsEl = document.createElement('div');
   actionsEl.className = 'modal-actions';
 
-  //history.pushState({ ...history.state, modalOpen: true }, '', location.href);
-  
   // 最初のモーダルのときだけ履歴を積む（overlay を append する前に判定）
   if (!document.querySelector('.modal-overlay')) {
     history.pushState(
@@ -50,6 +44,9 @@ export function openModal({ title, content, actions }) {
   }
 
   actions.forEach(action => {
+    const role = document.body.dataset.role;
+    if (role === 'member' && ['編集', '複製', '削除'].includes(action.label)) return;
+    
     const btn = document.createElement('button');
     btn.textContent = action.label;
     btn.className = action.type === 'primary'
@@ -86,13 +83,6 @@ export function closeModalOnBack() {
     return true;
   }
   // 戻るボタン由来：エントリはすでに消えているので、開いているモーダルを全部消す
-  /*
-  const overlay = document.querySelector('.modal-overlay');
-  if (overlay) {
-    overlay.remove();
-    return true;
-  }
-  */
   const overlays = document.querySelectorAll('.modal-overlay');
   if (overlays.length) {
     overlays.forEach(o => o.remove());
