@@ -5,19 +5,19 @@ const PORTAL_PRODUCTION = false; // 本番(true)/開発(false)環境をこれ一
 const ENV = PORTAL_PRODUCTION
   ? {
       // 本番環境。基本的に動かさない
-      EMAIL_NOTIFY_ENABLED = true; //本番では必ず true
-      DEV_AUTO_LOGIN = false; // 本番では必ず false
-      ROLE_CONTROL_ENABLED = true; // 役割で権限分けたいなら、true
-      SUPABASE_URL = 'https://vafuldidcdweedjwrvwh.supabase.co';
-      SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhZnVsZGlkY2R3ZWVkandydndoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMDE4NjUsImV4cCI6MjEwNjY3Nzg2NX0.etLTdndAHaujhjFmqZ_ct1TtdQ45T3lFWdT94KBenxY';
+      EMAIL_NOTIFY_ENABLED = true, //本番では必ず true
+      DEV_AUTO_LOGIN = false, // 本番では必ず false
+      ROLE_CONTROL_ENABLED = true,  // 役割で権限分けたいなら、true
+      SUPABASE_URL = 'https://vafuldidcdweedjwrvwh.supabase.co',
+      SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhZnVsZGlkY2R3ZWVkandydndoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMDE4NjUsImV4cCI6MjEwNjY3Nzg2NX0.etLTdndAHaujhjFmqZ_ct1TtdQ45T3lFWdT94KBenxY'
     }
   : {
       // 開発環境、テスト内容によってbooleanを変更する
-      EMAIL_NOTIFY_ENABLED = false; //本番では必ず true
-      DEV_AUTO_LOGIN = true; // 本番では必ず false
-      ROLE_CONTROL_ENABLED = true; // 役割で権限分けたいなら、true
-      SUPABASE_URL = 'https://dylrgcsrlqvyjjggbrdb.supabase.co';
-      SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHJnY3NybHF2eWpqZ2dicmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MTU3MjEsImV4cCI6MjEwNDM5MTcyMX0.a1wHWtVJYIdihnNqd16AtyB0cczwnH0vtEQctQA98rE';
+      EMAIL_NOTIFY_ENABLED = false, //本番では必ず true
+      DEV_AUTO_LOGIN = true, // 本番では必ず false
+      ROLE_CONTROL_ENABLED = true, // 役割で権限分けたいなら、true
+      SUPABASE_URL = 'https://dylrgcsrlqvyjjggbrdb.supabase.co',
+      SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHJnY3NybHF2eWpqZ2dicmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MTU3MjEsImV4cCI6MjEwNDM5MTcyMX0.a1wHWtVJYIdihnNqd16AtyB0cczwnH0vtEQctQA98rE'
     };
 
 window.EMAIL_NOTIFY_ENABLED = ENV.EMAIL_NOTIFY_ENABLED;
