@@ -7,6 +7,8 @@ import { createAnnouncement } from '../services/announcement-service.js';
 import { getCurrentUser } from '../services/auth-service.js';
 import { formatText, formatDateTime, formatWeekday } from '../utils.js';
 import { createTooltipText } from './tooltip.js';
+import { renderCalendarLinkButtons, initCalendarLinkEvents } from './calendar-link-button.js';
+
 
 export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
   const dateEl = document.getElementById('date');
@@ -65,6 +67,8 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
     content: isView ? renderForm(scheduleData, true, isEdit) : renderForm(scheduleData, false, isEdit),
     actions
   });
+  
+  if (isView) initCalendarLinkEvents(scheduleData);
 }
 
 function renderForm(data = {}, isView = false, isEdit) {
@@ -104,7 +108,8 @@ function renderForm(data = {}, isView = false, isEdit) {
     </div>
 
     ${renderMapButton(data.location || '')}
-
+    ${isView ? renderCalendarLinkButtons(data) : ''}
+	
     <div class="form-group">
       <label for="instructor">指導</label>
       <input id="instructor" type="text" class="form-control" value="${data.instructor || ''}" ${disabled}>
