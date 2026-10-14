@@ -166,7 +166,7 @@ export async function logoutCompletely() {
  */
 export async function loginForDev() {
   const res = await fetch(
-    '${SUPABASE_URL}/functions/v1/dev-login',
+    `${SUPABASE_URL}/functions/v1/dev-login`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
