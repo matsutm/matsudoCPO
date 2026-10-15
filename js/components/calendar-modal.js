@@ -77,7 +77,7 @@ function renderForm(data = {}, isView = false, isEdit) {
   const endTime = data.end_time?.slice(0, 5) || '21:00';
   
   return `
-    <div class="form-group">
+    <div class="form-group inline">
       <label for="date">日付 *</label>
       <div class="date-with-weekday">
         <input id="date" type="date" class="form-control" value="${data.date || ''}" ${disabled}>
@@ -85,20 +85,19 @@ function renderForm(data = {}, isView = false, isEdit) {
       </div>
     </div>
 
-    <div class="form-row">
-      <div class="form-group flex-1">
-        <label for="start_time">開始時間 *</label>
+    <div class="form-group inline">
+      <label for="start_time">時間 *</label>
+      <div class="time-range">
         <input id="start_time" type="time" class="form-control" value="${startTime}" ${disabled}>
-      </div>
-      <div class="form-group flex-1">
-        <label for="end_time">終了時間 *</label>
+        <span>〜</span>
         <input id="end_time" type="time" class="form-control" value="${endTime}" ${disabled}>
       </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group inline">
       <label for="location">場所 *</label>
       <input id="location" type="text" class="form-control" list="location-list" value="${data.location || ''}" ${disabled}>
+      ${renderMapButton(data.location || '')}
       <datalist id="location-list">
         <option value="森のホール21 リハ室">
         <option value="流山エルズ（生涯学習センター）">
@@ -107,10 +106,9 @@ function renderForm(data = {}, isView = false, isEdit) {
       </datalist>
     </div>
 
-    ${renderMapButton(data.location || '')}
     ${isView ? renderCalendarLinkButtons(data) : ''}
 	
-    <div class="form-group">
+    <div class="form-group inline">
       <label for="instructor">指導</label>
       <input id="instructor" type="text" class="form-control" value="${data.instructor || ''}" ${disabled}>
     </div>
