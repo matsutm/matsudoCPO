@@ -7,6 +7,8 @@ import { createAnnouncement } from '../services/announcement-service.js';
 import { getCurrentUser } from '../services/auth-service.js';
 import { formatText, formatDateTime, formatWeekday } from '../utils.js';
 import { createTooltipText } from './tooltip.js';
+import { renderCalendarLinkButtons, initCalendarLinkEvents } from './calendar-link-button.js';
+
 
 export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
   const dateEl = document.getElementById('date');
@@ -65,6 +67,8 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
     content: isView ? renderForm(scheduleData, true, isEdit) : renderForm(scheduleData, false, isEdit),
     actions
   });
+  
+  if (isView) initCalendarLinkEvents(scheduleData);
 }
 
 function renderForm(data = {}, isView = false, isEdit) {
@@ -73,7 +77,7 @@ function renderForm(data = {}, isView = false, isEdit) {
   const endTime = data.end_time?.slice(0, 5) || '21:00';
   
   return `
-    <div class="form-group">
+    <div class="form-group inline">
       <label for="date">日付 *</label>
       <div class="date-with-weekday">
         <input id="date" type="date" class="form-control" value="${data.date || ''}" ${disabled}>
@@ -81,20 +85,19 @@ function renderForm(data = {}, isView = false, isEdit) {
       </div>
     </div>
 
-    <div class="form-row">
-      <div class="form-group flex-1">
-        <label for="start_time">開始時間 *</label>
+    <div class="form-group inline">
+      <label for="start_time">時間 *</label>
+      <div class="time-range">
         <input id="start_time" type="time" class="form-control" value="${startTime}" ${disabled}>
-      </div>
-      <div class="form-group flex-1">
-        <label for="end_time">終了時間 *</label>
+        <span>〜</span>
         <input id="end_time" type="time" class="form-control" value="${endTime}" ${disabled}>
       </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group inline">
       <label for="location">場所 *</label>
       <input id="location" type="text" class="form-control" list="location-list" value="${data.location || ''}" ${disabled}>
+      ${renderMapButton(data.location || '')}
       <datalist id="location-list">
         <option value="森のホール21 リハ室">
         <option value="流山エルズ（生涯学習センター）">
@@ -102,10 +105,8 @@ function renderForm(data = {}, isView = false, isEdit) {
         <option value="けやきプラザ（我孫子市）">
       </datalist>
     </div>
-
-    ${renderMapButton(data.location || '')}
-
-    <div class="form-group">
+	
+    <div class="form-group inline">
       <label for="instructor">指導</label>
       <input id="instructor" type="text" class="form-control" value="${data.instructor || ''}" ${disabled}>
     </div>
@@ -114,6 +115,8 @@ function renderForm(data = {}, isView = false, isEdit) {
       <label for="program_notes">内容・曲目</label>
       <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${data.program_notes || ''}</textarea>
     </div>
+
+    ${isView ? renderCalendarLinkButtons(data) : ''}
 
     ${!isView ? `
       <div class="form-group sync-announcement-group">

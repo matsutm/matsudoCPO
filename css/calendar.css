@@ -108,10 +108,12 @@
   font-size: 0.9rem;
 }
 
+/*
 .map-button-container {
   margin: 8px 0;
   display: block;
 }
+*/
 
 /* 予定登録・編集モーダル：お知らせ同時投稿チェックボックス */
 .sync-announcement-group {
@@ -151,3 +153,72 @@
 }
 .date-weekday .sun { color: #dc2626; }
 .date-weekday .sat { color: #2563eb; }
+
+/* 予定詳細：カレンダー連携ボタン */
+.calendar-link-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.btn-gcal {
+  background-color: #2563eb;
+  color: #ffffff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+.btn-gcal:hover { background-color: #1d4ed8; }
+
+.btn-ics {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.btn-ics:hover { background-color: #e2e8f0; }
+
+/* モーダル：見出しと入力欄を1行に並べる */
+.form-group.inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.form-group.inline > label {
+  flex: 0 0 4.5em;   /* 見出し幅を固定して入力欄の左端をそろえる */
+  margin-bottom: 0;
+}
+.form-group.inline > .form-control,
+.form-group.inline > .date-with-weekday,
+.form-group.inline > .time-range {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 場所行の右端に置く「地図」ボタン */
+.form-group.inline > .btn-map {
+  flex: 0 0 auto;
+  margin-bottom: 0;
+  padding: 0.5rem 0.7rem; /* 入力欄と高さをそろえる */
+  white-space: nowrap;
+}
+
+/* 開始〜終了を1行にまとめる */
+.time-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.time-range .form-control {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.3rem; /* スマホで2つ並べても収まるように */
+}
+
