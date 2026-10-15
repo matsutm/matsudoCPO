@@ -31,12 +31,12 @@ window.APP_CONSTANTS = {
   // 主要資料リスト
   PRIMARY_LIBRARY_LINKS: [
     { label: '📄 Dolce 最新号 (PDF)', url: 'https://drive.google.com/file/d/1MdsqIbn9jNEDx6eE3jxuCcpVy5lfwzd0/view?usp=drive_link' },
-    { label: '📋 練習予定表 (全体版)', url: 'https://drive.google.com/file/d/1mZwt0_LkNKzkx1_nlkeRz6ynw5t07KjA/view?usp=drive_link' }
+    { label: '📋 練習予定表 (全体版)', url: 'https://drive.google.com/file/d/1P1raxnIsQnzqC0NKK6YxwcmMbUOgEHpi/view?usp=sharing' },
+    { label: '🎵 練習録音', url: 'https://drive.google.com/drive/folders/1kr8D0ddeT-WVKzbKHPhH9f1vzGeSuNhd' }
   ],
 
   // その他資料・名簿リスト・・・可変。必要に応じて増減。いつでも可
   OTHER_LIBRARY_LINKS: [
-    { label: '練習録音', url: 'https://drive.google.com/drive/folders/1kr8D0ddeT-WVKzbKHPhH9f1vzGeSuNhd' },
     { label: '👥 団員名簿 (閲覧専用)（工事中）', url: 'https://docs.google.com/...' },
     { label: '📜 団則・規約 (PDF)', url: 'https://matsudo-cpo.info/member/pdf/mcpo_agreement_20230429.pdf' },
     { label: '📝 休団・退団届フォーム（工事中）', url: 'https://forms.google.com/...' }
