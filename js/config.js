@@ -5,7 +5,7 @@ const PORTAL_PRODUCTION = false; // 本番(true)/開発(false)環境をこれ一
 const ENV = PORTAL_PRODUCTION
   ? {
       // 本番環境。基本的に動かさない
-      EMAIL_NOTIFY_ENABLED: false, //本番では必ず true
+      EMAIL_NOTIFY_ENABLED: true, //本番では必ず true
       DEV_AUTO_LOGIN: false, // 本番では必ず false
       ROLE_CONTROL_ENABLED: true,  // 役割で権限分けたいなら、true
       SUPABASE_URL: 'https://vafuldidcdweedjwrvwh.supabase.co',
@@ -13,7 +13,7 @@ const ENV = PORTAL_PRODUCTION
     }
   : {
       // 開発環境、テスト内容によってbooleanを変更する
-      EMAIL_NOTIFY_ENABLED: true, //本番では必ず true
+      EMAIL_NOTIFY_ENABLED: false, //本番では必ず true
       DEV_AUTO_LOGIN: false, // 本番では必ず false
       ROLE_CONTROL_ENABLED: true, // 役割で権限分けたいなら、true
       SUPABASE_URL: 'https://dylrgcsrlqvyjjggbrdb.supabase.co',
