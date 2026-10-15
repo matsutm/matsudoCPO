@@ -105,8 +105,6 @@ function renderForm(data = {}, isView = false, isEdit) {
         <option value="けやきプラザ（我孫子市）">
       </datalist>
     </div>
-
-    ${isView ? renderCalendarLinkButtons(data) : ''}
 	
     <div class="form-group inline">
       <label for="instructor">指導</label>
@@ -117,6 +115,8 @@ function renderForm(data = {}, isView = false, isEdit) {
       <label for="program_notes">内容・曲目</label>
       <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${data.program_notes || ''}</textarea>
     </div>
+
+    ${isView ? renderCalendarLinkButtons(data) : ''}
 
     ${!isView ? `
       <div class="form-group sync-announcement-group">
