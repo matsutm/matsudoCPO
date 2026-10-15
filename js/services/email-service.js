@@ -36,14 +36,7 @@ export async function sendBulletinEmail({ title, content, targetScope, targetVal
       }
     });
 
-    //if (funcError) throw funcError;
-    if (funcError) {
-      try {
-        const body = await funcError.context.json();
-        console.error('resend-email 詳細:', body);
-      } catch (_) { /* 本文なし */ }
-      throw funcError;
-    }
+    if (funcError) throw funcError;
     console.log('Resendメール送信成功:', data);
 
   } catch (err) {
