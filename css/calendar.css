@@ -108,10 +108,12 @@
   font-size: 0.9rem;
 }
 
+/*
 .map-button-container {
   margin: 8px 0;
   display: block;
 }
+*/
 
 /* 予定登録・編集モーダル：お知らせ同時投稿チェックボックス */
 .sync-announcement-group {
@@ -182,3 +184,41 @@
   cursor: pointer;
 }
 .btn-ics:hover { background-color: #e2e8f0; }
+
+/* モーダル：見出しと入力欄を1行に並べる */
+.form-group.inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.form-group.inline > label {
+  flex: 0 0 4.5em;   /* 見出し幅を固定して入力欄の左端をそろえる */
+  margin-bottom: 0;
+}
+.form-group.inline > .form-control,
+.form-group.inline > .date-with-weekday,
+.form-group.inline > .time-range {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 場所行の右端に置く「地図」ボタン */
+.form-group.inline > .btn-map {
+  flex: 0 0 auto;
+  margin-bottom: 0;
+  padding: 0.5rem 0.7rem; /* 入力欄と高さをそろえる */
+  white-space: nowrap;
+}
+
+/* 開始〜終了を1行にまとめる */
+.time-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.time-range .form-control {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.3rem; /* スマホで2つ並べても収まるように */
+}
+
