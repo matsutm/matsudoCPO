@@ -7,7 +7,7 @@ const ENV = PORTAL_PRODUCTION
       // 本番環境。基本的に動かさない
       EMAIL_NOTIFY_ENABLED: true, //本番では必ず true
       DEV_AUTO_LOGIN: false, // 本番では必ず false
-      ROLE_CONTROL_ENABLED: true,  // 役割で権限分けたいなら、true
+      ROLE_CONTROL_ENABLED: false,  // 役割で権限分けたいなら、true
       SUPABASE_URL: 'https://vafuldidcdweedjwrvwh.supabase.co',
       SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhZnVsZGlkY2R3ZWVkandydndoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMDE4NjUsImV4cCI6MjEwNjY3Nzg2NX0.etLTdndAHaujhjFmqZ_ct1TtdQ45T3lFWdT94KBenxY'
     }
@@ -15,7 +15,7 @@ const ENV = PORTAL_PRODUCTION
       // 開発環境、テスト内容によってbooleanを変更する
       EMAIL_NOTIFY_ENABLED: false, //本番では必ず true
       DEV_AUTO_LOGIN: true, // 本番では必ず false
-      ROLE_CONTROL_ENABLED: true, // 役割で権限分けたいなら、true
+      ROLE_CONTROL_ENABLED: false, // 役割で権限分けたいなら、true
       SUPABASE_URL: 'https://dylrgcsrlqvyjjggbrdb.supabase.co',
       SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHJnY3NybHF2eWpqZ2dicmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MTU3MjEsImV4cCI6MjEwNDM5MTcyMX0.a1wHWtVJYIdihnNqd16AtyB0cczwnH0vtEQctQA98rE'
     };
@@ -31,12 +31,12 @@ window.APP_CONSTANTS = {
   // 主要資料リスト
   PRIMARY_LIBRARY_LINKS: [
     { label: '📄 Dolce 最新号 (PDF)', url: 'https://drive.google.com/file/d/1MdsqIbn9jNEDx6eE3jxuCcpVy5lfwzd0/view?usp=drive_link' },
-    { label: '📋 練習予定表 (全体版)', url: 'https://drive.google.com/file/d/1P1raxnIsQnzqC0NKK6YxwcmMbUOgEHpi/view?usp=sharing' }
+    { label: '📋 練習予定表 (全体版)', url: 'https://drive.google.com/file/d/1P1raxnIsQnzqC0NKK6YxwcmMbUOgEHpi/view?usp=sharing' },
+    { label: '🎵 練習録音', url: 'https://drive.google.com/drive/folders/1kr8D0ddeT-WVKzbKHPhH9f1vzGeSuNhd' }
   ],
 
   // その他資料・名簿リスト・・・可変。必要に応じて増減。いつでも可
   OTHER_LIBRARY_LINKS: [
-    { label: '練習録音', url: 'https://drive.google.com/drive/folders/1kr8D0ddeT-WVKzbKHPhH9f1vzGeSuNhd' },
     { label: '👥 団員名簿 (閲覧専用)（工事中）', url: 'https://docs.google.com/...' },
     { label: '📜 団則・規約 (PDF)', url: 'https://matsudo-cpo.info/member/pdf/mcpo_agreement_20230429.pdf' },
     { label: '📝 休団・退団届フォーム（工事中）', url: 'https://forms.google.com/...' }
