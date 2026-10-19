@@ -6,13 +6,33 @@ import { escapeHtml, formatText, formatDateShort } from '../utils.js';
 function renderLinkList(items) {
   if (!items || items.length === 0) return '';
   
-  return items.map(item => `
-    <li>
-      <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener" class="library-link-item">
-        <span>${escapeHtml(item.label)}</span> ➔
-      </a>
-    </li>
-  `).join('');
+  return items.map(item => {
+    // フォルダ（children あり）
+    if (Array.isArray(item.children)) {
+      return `
+        <li>
+          <details class="library-folder">
+            <summary class="library-link-item library-folder-summary">
+              <span>${escapeHtml(item.label)}</span>
+              <span class="library-folder-arrow">▶</span>
+            </summary>
+            <ul class="library-quick-links library-sub-links">
+              ${renderLinkList(item.children)}
+            </ul>
+          </details>
+        </li>
+      `;
+    }
+
+    // normal link
+	return `
+	  <li>
+        <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener" class="library-link-item">
+          <span>${escapeHtml(item.label)}</span> ➔
+        </a>
+      </li>
+	`;
+  }).join('');
 }
 
 /**
