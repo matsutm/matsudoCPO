@@ -47,3 +47,23 @@
   font-size: 1.4rem;
   color: #1e293b;
 }
+
+/* 資料庫：フォルダ（入れ子）表示 */
+.library-folder-summary {
+  list-style: none;            /* 標準の三角を消す */
+}
+.library-folder-summary::-webkit-details-marker {
+  display: none;               /* Safari対策 */
+}
+.library-folder-arrow {
+  font-size: 0.7rem;
+  transition: transform 0.2s;
+}
+.library-folder[open] > .library-folder-summary .library-folder-arrow {
+  transform: rotate(90deg);    /* 開いたら ▼ 向きに */
+}
+.library-sub-links {
+  margin: 8px 0 0 12px;
+  padding-left: 12px;
+  border-left: 2px solid #e2e8f0;  /* 階層が分かるガイド線 */
+}
