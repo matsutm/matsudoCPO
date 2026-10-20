@@ -57,6 +57,9 @@ export async function navigateTo(viewName, isBrowserBack = false) {
       await initHomeView(navigateTo);
       break;
   }
+  
+  // 画面切り替え後は常に最上部へ
+  window.scrollTo(0, 0);
 
   if (!isBrowserBack) {
     // ★ 直前の履歴と違う画面名のときだけ、積む
