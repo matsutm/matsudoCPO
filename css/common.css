@@ -22,21 +22,19 @@ body {
  * 2. ヘッダー領域
  * ========================================== */
 .app-header {
-  position: sticky;         /* ★追加 */
-  top: 0;
-  z-index: 100;             /* モーダル(1000)より下、画面内容より上 */
   padding-top: calc(10px + env(safe-area-inset-top, 0px));
   padding-bottom: 10px;
-  transition: padding 0.2s ease, box-shadow 0.2s ease;
-  padding-left: 16px;
-  padding-right: 16px;
-  /*display: flex;
+  display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 16px;
   background-color: #ffffff;
   border-bottom: 1px solid #e0e0e0;
-  padding-top: env(safe-area-inset-top, 0px);*/
+  /*padding-top: env(safe-area-inset-top, 0px);*/
+  position: sticky;         /* ★追加 */
+  top: 0;
+  z-index: 100;             /* モーダル(1000)より下、画面内容より上 */
+  transition: padding 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* 左側：ロゴ＆タイトル */
@@ -56,10 +54,7 @@ body {
   color: inherit;            /* 文字色を継承 */
 }
 
-.app-logo { transition: height 0.2s ease; }
-.app-header h1 { transition: font-size 0.2s ease; }
-
-/*.app-logo {
+.app-logo {
   height: 38px;
   width: auto;
   flex-shrink: 0;
@@ -69,7 +64,7 @@ body {
   font-size: 1.05rem;
   margin: 0;
   line-height: 1.2;
-}*/
+}
 
 /* 右側：ユーザー名（上）＆ログアウトボタン（下） */
 .app-header-right {
@@ -103,6 +98,9 @@ body {
   .app-logo { height: 32px; }
   .app-header h1 { font-size: 0.95rem; }
 }
+
+.app-logo { transition: height 0.2s ease; }
+.app-header h1 { transition: font-size 0.2s ease; }
 
 /* スクロール時：少し小さく＋影 */
 .app-header.is-scrolled {
