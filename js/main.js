@@ -192,6 +192,16 @@ function goHomeAndReset() {
 
 // アプリ起動時の初期化
 document.addEventListener('DOMContentLoaded', () => {
+  // スクロールでヘッダーを縮める
+  const header = document.querySelector('.app-header');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    // 縮む/戻るしきい値をずらす（ヒステリシス）。ヘッダー高さが変わって
+    // スクロール位置が揺れ、ちらつくのを防ぐ
+    if (y > 40) header.classList.add('is-scrolled');
+    else if (y < 10) header.classList.remove('is-scrolled');
+  }, { passive: true });
+  
   document.getElementById('navHome')?.addEventListener('click', (e) => { //navigateTo('home'));
     e.preventDefault();
     goHomeAndReset();
