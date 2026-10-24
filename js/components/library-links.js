@@ -110,7 +110,7 @@ document.addEventListener('click', async (e) => {
     if (!session) throw new Error('no session');
 
     const res = await fetch(
-      `${ }/functions/v1/member-proxy?path=${encodeURIComponent(btn.dataset.path)}`,
+      `${SUPABASE_URL}/functions/v1/member-proxy?path=${encodeURIComponent(btn.dataset.path)}`,
       { headers: { Authorization: `Bearer ${session.access_token}`, apikey: SUPABASE_ANON_KEY } }
     );
     if (!res.ok) throw new Error(res.status);
