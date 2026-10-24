@@ -23,15 +23,27 @@ function renderLinkList(items) {
         </li>
       `;
     }
+    
+    // 認証付きリンク（Edge Function経由で開く）
+    if (item.protectedPath) {
+      return `
+        <li>
+          <button type="button" class="library-link-button js-protected-link"
+                  data-path="${escapeHtml(item.protectedPath)}">
+            <span>${escapeHtml(item.label)}</span> ➔
+          </button>
+        </li>
+      `;
+    }
 
     // normal link
-	return `
-	  <li>
+	  return `
+	    <li>
         <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener" class="library-link-item">
           <span>${escapeHtml(item.label)}</span> ➔
         </a>
       </li>
-	`;
+	  `;
   }).join('');
 }
 
@@ -86,3 +98,28 @@ export function renderConcertBlocks(concerts) {
   return `<div class="concert-grid">${items}</div>`; //
   
 }
+
+// 認証付きリンクのクリック処理（document全体で1回だけ登録）
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.js-protected-link');
+  if (!btn) return;
+
+  const win = window.open('', '_blank'); // クリック直後に開く（スマホのブロック対策）
+  try {
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    if (!session) throw new Error('no session');
+
+    const res = await fetch(
+      `${SUPABASE_URL}/functions/v1/member-proxy?path=${encodeURIComponent(btn.dataset.path)}`,
+      { headers: { Authorization: `Bearer ${session.access_token}`, apikey: SUPABASE_ANON_KEY } }
+    );
+    if (!res.ok) throw new Error(res.status);
+
+    const blob = await res.blob();
+    if (win) win.location = URL.createObjectURL(blob);
+  } catch (err) {
+    console.error('認証付き資料の取得エラー:', err);
+    win?.close();
+    alert('資料を開けませんでした。時間を置いて再度お試しください。');
+  }
+});
