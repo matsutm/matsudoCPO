@@ -44,7 +44,7 @@ window.APP_CONSTANTS = {
   OTHER_LIBRARY_LINKS: [
     { label: '室内楽演奏会関係',
       children: [
-        { label: '2022年度室内楽演奏会特設サイト', protectedPath: '/member/chamber_music_concert/index.html' },
+        { label: '2022年度室内楽演奏会特設サイト', url: 'https://matsudo-cpo.info/member/chamber_music_concert/index.html' },
         { label: '2023年度室内楽演奏会演奏動画', url: 'https://youtu.be/DC3tJMQu7gc' },
         { label: '2024年度団内演奏会演奏動画', url: 'https://www.youtube.com/watch?v=5la3z0lEjNQ' },
         { label: '2024年度室内楽演奏会演奏動画', url: 'https://youtu.be/rqb9EQJJtzI' }
