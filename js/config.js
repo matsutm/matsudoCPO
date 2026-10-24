@@ -44,7 +44,7 @@ window.APP_CONSTANTS = {
   OTHER_LIBRARY_LINKS: [
     { label: '室内楽演奏会関係',
       children: [
-        { label: '2022年度室内楽演奏会特設サイト', url: 'https://matsudo-cpo.info/member/chamber_music_concert/index.html' },
+        { label: '2022年度室内楽演奏会特設サイト', protectedPath: '/member/chamber_music_concert/index.html' },
         { label: '2023年度室内楽演奏会演奏動画', url: 'https://youtu.be/DC3tJMQu7gc' },
         { label: '2024年度団内演奏会演奏動画', url: 'https://www.youtube.com/watch?v=5la3z0lEjNQ' },
         { label: '2024年度室内楽演奏会演奏動画', url: 'https://youtu.be/rqb9EQJJtzI' }
@@ -52,16 +52,16 @@ window.APP_CONSTANTS = {
 	},
     { label: 'アンケート（工事中）',
       children: [
-        { label: '第46回定期演奏会 アンケート集計結果', url: 'https://matsudo-cpo.info/member/pdf/survey/20240526_survey.pdf' },
-        { label: 'ファミリーコンサート2024 アンケート集計結果', url: 'https://matsudo-cpo.info/member/pdf/survey/20240929_survey.pdf' },
-        { label: 'ファミリーコンサート2025 アンケート集計結果', url: 'https://matsudo-cpo.info/member/pdf/survey/20250429_survey.pdf' },
-        { label: '第47回定期演奏会 アンケート集計結果', url: 'https://matsudo-cpo.info/member/pdf/survey/20250914_survey.pdf' },
-        { label: '第48回定期演奏会 アンケート集計結果', url: 'https://matsudo-cpo.info/member/pdf/survey/20260517_survey.pdf' },
-        { label: 'ファミリーコンサート2026 アンケート集計結果', url: 'https://matsudo-cpo.info/member/pdf/survey/20260913_survey.pdf' }
+        { label: '第46回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20240526_survey.pdf' },
+        { label: 'ファミリーコンサート2024 アンケート集計結果', protectedPath: '/member/pdf/survey/20240929_survey.pdf' },
+        { label: 'ファミリーコンサート2025 アンケート集計結果', protectedPath: '/member/pdf/pdf/survey/20250429_survey.pdf' },
+        { label: '第47回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20250914_survey.pdf' },
+        { label: '第48回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20260517_survey.pdf' },
+        { label: 'ファミリーコンサート2026 アンケート集計結果', protectedPath: '/member/pdf/survey/20260913_survey.pdf' }
 	  ]
 	},
     { label: '👥 団員名簿 (閲覧専用)（工事中）', url: 'https://docs.google.com/...' },
-    { label: '📜 団則・規約 (PDF)', url: 'https://matsudo-cpo.info/member/pdf/mcpo_agreement_20230429.pdf' },
+    { label: '📜 団則・規約 (PDF)', protectedPath: '/member/pdf/mcpo_agreement_20230429.pdf' },
     { label: '📝 休団・退団届フォーム（工事中）', url: 'https://forms.google.com/...' }
   ],
 
