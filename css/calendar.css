@@ -6,6 +6,20 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* カレンダー上部の固定案内 */
+.calendar-notice {
+  background: #f8fafc;
+  border-left: 4px solid #2563eb;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: #334155;
+}
+.calendar-notice p {
+  margin: 2px 0;
+}
+
 /* カレンダー内のイベント要素 */
 .fc-event {
   cursor: pointer;
