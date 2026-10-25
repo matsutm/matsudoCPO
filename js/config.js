@@ -40,7 +40,9 @@ window.APP_CONSTANTS = {
 	}
   ],
 
-  // その他資料・名簿リスト・・・可変。必要に応じて増減。いつでも可
+  //
+  // →→→その他資料・名簿リスト・・・可変。必要に応じて増減。いつでも可←←←
+  //
   OTHER_LIBRARY_LINKS: [
     { label: '室内楽演奏会関係',
       children: [
@@ -50,19 +52,25 @@ window.APP_CONSTANTS = {
         { label: '2024年度室内楽演奏会演奏動画', url: 'https://youtu.be/rqb9EQJJtzI' }
 	  ]
 	},
-    { label: 'アンケート（工事中）',
+    { label: 'アンケート',
       children: [
         { label: '第46回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20240526_survey.pdf' },
         { label: 'ファミリーコンサート2024 アンケート集計結果', protectedPath: '/member/pdf/survey/20240929_survey.pdf' },
-        { label: 'ファミリーコンサート2025 アンケート集計結果', protectedPath: '/member/pdf/pdf/survey/20250429_survey.pdf' },
+        { label: 'ファミリーコンサート2025 アンケート集計結果', protectedPath: '/member/pdf/survey/20250429_survey.pdf' },
         { label: '第47回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20250914_survey.pdf' },
         { label: '第48回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20260517_survey.pdf' },
         { label: 'ファミリーコンサート2026 アンケート集計結果', protectedPath: '/member/pdf/survey/20260913_survey.pdf' }
 	  ]
 	},
-    { label: '👥 団員名簿 (閲覧専用)（工事中）', url: 'https://docs.google.com/...' },
+    { label: '👥 団員名簿PDF', protectedPath: '/member/pdf/memberlist/memberlist_20260418.pdf' },
+	{ label: '😊 団員募集チラシPDF', protectedPath: '/member/pdf/other/member_recruiting_202307.pdf' },
     { label: '📜 団則・規約 (PDF)', protectedPath: '/member/pdf/mcpo_agreement_20230429.pdf' },
     { label: '📝 休団・退団届フォーム（工事中）', url: 'https://forms.google.com/...' }
+  ],
+  
+  CALENDAR_NOTICES: [
+    '原則：17:50集合、18:30音出し',
+    '欠席・遅刻の場合は必ずパートリーダーに連絡すること。'
   ],
 
   // SNS・チケットロゴリスト（配列化して一括管理）
