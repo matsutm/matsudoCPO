@@ -30,8 +30,8 @@ const SUPABASE_ANON_KEY = ENV.SUPABASE_ANON_KEY;
 window.APP_CONSTANTS = {
   // 主要資料リスト
   PRIMARY_LIBRARY_LINKS: [
-    { label: '📄 Dolce 最新号 (PDF)', url: 'https://drive.google.com/file/d/1MdsqIbn9jNEDx6eE3jxuCcpVy5lfwzd0/view?usp=drive_link' },
-    { label: '📋 練習予定表 (全体版)', url: 'https://drive.google.com/file/d/1P1raxnIsQnzqC0NKK6YxwcmMbUOgEHpi/view?usp=sharing' },
+    { label: '📄 Dolce 最新号 (PDF)', protectedPath: '/member/pdf/dolce/dolce.pdf' },
+    { label: '📋 練習予定表 (全体版)', protectedPath: '/member/pdf/schedule/schedule.pdf' },
     { label: '🎵 練習録音',
 	  children: [
 	    { label: '市民コンサート', url: 'https://drive.google.com/drive/folders/1kr8D0ddeT-WVKzbKHPhH9f1vzGeSuNhd' },
@@ -70,7 +70,7 @@ window.APP_CONSTANTS = {
   
   CALENDAR_NOTICES: [
     '原則：17:50集合、18:30音出し',
-    '欠席・遅刻の場合は必ずパートリーダーに連絡すること。'
+    '欠席・遅刻は必ずパートリーダーに連絡。'
   ],
 
   // SNS・チケットロゴリスト（配列化して一括管理）
