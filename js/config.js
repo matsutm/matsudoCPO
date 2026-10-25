@@ -40,7 +40,9 @@ window.APP_CONSTANTS = {
 	}
   ],
 
-  // その他資料・名簿リスト・・・可変。必要に応じて増減。いつでも可
+  //
+  // →→→その他資料・名簿リスト・・・可変。必要に応じて増減。いつでも可←←←
+  //
   OTHER_LIBRARY_LINKS: [
     { label: '室内楽演奏会関係',
       children: [
@@ -50,11 +52,11 @@ window.APP_CONSTANTS = {
         { label: '2024年度室内楽演奏会演奏動画', url: 'https://youtu.be/rqb9EQJJtzI' }
 	  ]
 	},
-    { label: 'アンケート（工事中）',
+    { label: 'アンケート',
       children: [
         { label: '第46回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20240526_survey.pdf' },
         { label: 'ファミリーコンサート2024 アンケート集計結果', protectedPath: '/member/pdf/survey/20240929_survey.pdf' },
-        { label: 'ファミリーコンサート2025 アンケート集計結果', protectedPath: '/member/pdf/pdf/survey/20250429_survey.pdf' },
+        { label: 'ファミリーコンサート2025 アンケート集計結果', protectedPath: '/member/pdf/survey/20250429_survey.pdf' },
         { label: '第47回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20250914_survey.pdf' },
         { label: '第48回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20260517_survey.pdf' },
         { label: 'ファミリーコンサート2026 アンケート集計結果', protectedPath: '/member/pdf/survey/20260913_survey.pdf' }
