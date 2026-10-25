@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: 1fr; /* スマホ：1列 */
   gap: 16px;
-  padding: 16px;
+  /*padding: 16px;*/
 }
 
 @media (min-width: 768px) {
