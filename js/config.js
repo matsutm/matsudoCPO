@@ -63,7 +63,7 @@ window.APP_CONSTANTS = {
 	  ]
 	},
     { label: '👥 団員名簿PDF', protectedPath: '/member/pdf/memberlist/memberlist_20260418.pdf' },
-	{ label: '😊 団員募集チラシPDF', protectedPath: 'member/pdf/other/member_recruiting_202307.pdf' },
+	{ label: '😊 団員募集チラシPDF', protectedPath: '/member/pdf/other/member_recruiting_202307.pdf' },
     { label: '📜 団則・規約 (PDF)', protectedPath: '/member/pdf/mcpo_agreement_20230429.pdf' },
     { label: '📝 休団・退団届フォーム（工事中）', url: 'https://forms.google.com/...' }
   ],
