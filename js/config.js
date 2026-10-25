@@ -67,6 +67,11 @@ window.APP_CONSTANTS = {
     { label: '📜 団則・規約 (PDF)', protectedPath: '/member/pdf/mcpo_agreement_20230429.pdf' },
     { label: '📝 休団・退団届フォーム（工事中）', url: 'https://forms.google.com/...' }
   ],
+  
+  CALENDAR_NOTICES: [
+    '原則：17:50集合、18:30音出し',
+    '欠席・遅刻の場合は必ずパートリーダーに連絡すること。'
+  ],
 
   // SNS・チケットロゴリスト（配列化して一括管理）
   SOCIAL_LINKS: [
