@@ -8,10 +8,10 @@
 
 /* カレンダー上部の固定案内 */
 .calendar-notice {
-  margin: 0 0 8px;
+  margin: 0 0 4px;
   font-size: 0.9rem;
   color: #334155;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 .calendar-notice p {
   margin: 0;
