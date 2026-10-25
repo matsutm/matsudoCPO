@@ -5,10 +5,19 @@ import { createTooltipText, attachTooltip } from '../components/tooltip.js';
 import { openCalendarModal } from '../components/calendar-modal.js';
 import { fetchSchedulesData } from '../services/calendar-service.js';
 import { renderBackToHome, initBackToHome } from '../components/back-to-home.js';
+import { escapeHtml } from '../utils.js';
+
 
 let calendar;
 
 export function renderCalendarView() {
+  const notices = window.APP_CONSTANTS?.CALENDAR_NOTICES || [];
+  const noticeHTML = notices.length
+    ? `<div class="calendar-notice">
+         ${notices.map(t => `<p>${escapeHtml(t)}</p>`).join('')}
+       </div>`
+    : '';
+
   return `
     <div class="calendar-container">
       ${renderBackToHome()}
@@ -31,6 +40,7 @@ export async function initCalendarView(navigateTo) {
   calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth',
     locale: 'ja',
+    stickyHeaderDates: false,
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
