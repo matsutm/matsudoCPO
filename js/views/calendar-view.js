@@ -25,6 +25,7 @@ export function renderCalendarView() {
         <h2>📅 練習スケジュール</h2>
         <button id="btnOpenCreateModal" class="btn-primary">＋ 予定を追加</button>
       </div>
+	  ${noticeHTML}
       <div id="calendar"></div>
     </div>
   `;
