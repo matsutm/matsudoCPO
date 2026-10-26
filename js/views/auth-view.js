@@ -107,7 +107,7 @@ export function initAuthView(onSuccess) {
 
     // ★ パターンB：端末にセッションがない、または初回アクセスの場合
     try {
-      const member = await fetchMemberByEmail(inputEmail);
+      const cleanEmail = await fetchMemberByEmail(inputEmail);
       
       // ② DEV_AUTO_LOGINが有効な場合
       if (window.DEV_AUTO_LOGIN) {
