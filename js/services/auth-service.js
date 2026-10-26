@@ -185,3 +185,22 @@ export async function loginForDev() {
 
   if (verifyError) throw verifyError
 }
+
+/**
+ * ログイン前の名簿チェック(DB関数 member_email_exists を利用)
+ * @returns {Promise<string>} 正規化したメールアドレス
+ */
+export async function checkMemberEmail(email) {
+  if (!email) throw new Error('メールアドレスを入力してください。');
+  const cleanEmail = email.trim().toLowerCase();
+
+  const { data, error } = await window.supabaseClient
+    .rpc('member_email_exists', { p_email: cleanEmail });
+
+  if (error) {
+    console.error('名簿チェックエラー:', error);
+    throw new Error('データベース接続エラーが発生しました。');
+  }
+  if (!data) throw new Error('名簿に登録されていないメールアドレスです。');
+  return cleanEmail;
+}
