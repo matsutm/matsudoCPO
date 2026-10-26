@@ -8,7 +8,8 @@ import {
   saveCurrentUser, 
   verifyOtpCode,
   logoutCompletely,
-  loginForDev
+  loginForDev,
+  checkMemberEmail
 } from '../services/auth-service.js';
 
 
@@ -112,7 +113,7 @@ export function initAuthView(onSuccess) {
       if (window.DEV_AUTO_LOGIN) {
         // ★ Supabase Auth 側にも正規セッションを生成する
         await loginForDev();
-        
+        const member = await fetchMemberByEmail(cleanEmail);
         const user = saveCurrentUser(member);
         alert(`認証が完了しました。ようこそ、${user.name} さん！`);
         onSuccess?.(user);
@@ -120,18 +121,18 @@ export function initAuthView(onSuccess) {
       }
 
       // ★追加：初回ログインの確認（キャンセル可）
-      const ok = confirm(`初回ログインです。\n${member.email} 宛に認証コードを送信します。`);
+      const ok = confirm(`初回ログインです。\n${cleanEmail} 宛に認証コードを送信します。`);
       if (!ok) return;
 
       btn.disabled = true;
       btn.textContent = '送信中...';
 
       // ③ OTP送信
-      await sendOtpEmail(member.email);
-      targetEmail = member.email;
+      await sendOtpEmail(cleanEmail);
+      targetEmail = cleanEmail;
       emailForm.style.display = 'none';
       otpForm.style.display = 'block';
-      document.getElementById('sent-email-label').textContent = member.email;
+      document.getElementById('sent-email-label').textContent = cleanEmail;
     } catch (err) {
       toggleError(err.message);
     } finally {
