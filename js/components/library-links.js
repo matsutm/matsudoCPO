@@ -40,7 +40,7 @@ function renderLinkList(items) {
 	  return `
 	    <li>
         <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener" class="library-link-item">
-          <span>${escapeHtml(item.label)}</span> ➔
+          <span>${escapeHtml(item.label)}</span><span class="library-arrow">➔</span>
         </a>
       </li>
 	  `;
@@ -73,7 +73,7 @@ export function renderNextConcertLink(concert) {
   return `
     <li>
       <a href="#library" class="library-link-item" id="next-concert-link">
-        <span>${escapeHtml(label)}</span> ➔
+        <span>${escapeHtml(label)}</span><span class="library-arrow">➔</span>
       </a>
     </li>
   `;
