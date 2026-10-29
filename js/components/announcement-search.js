@@ -3,13 +3,12 @@ import { escapeHtml } from '../utils.js';
 
 /** 検索条件の初期値 */
 export function createEmptyFilters() {
-  return { keyword: '', unreadOnly: false, audience: '', dateFrom: '', dateTo: '' };
+  return { keyword: '', unreadOnly: false, hasAttachment: false, audience: '', dateFrom: '', dateTo: '' };
 }
-
 
 /** 条件が1つでも有効か */
 export function hasActiveFilters(f) {
-  return !!(f.keyword || f.unreadOnly || f.audience || f.dateFrom || f.dateTo);
+  return !!(f.keyword || f.unreadOnly || f.hasAttachment || f.audience || f.dateFrom || f.dateTo);
 }
 
 /** 検索用に正規化（全角/半角・大文字小文字の揺れを吸収） */
@@ -29,7 +28,7 @@ function audienceKey(post) {
 /**
  * お知らせの絞り込み
  * @param {Array} posts
- * @param {{keyword:string, unreadOnly:boolean, dateFrom:string, dateTo:string}} filters
+ * @param {{keyword:string, unreadOnly:boolean, hasAttachment:boolean, audience:string, dateFrom:string, dateTo:string}} filters
  * @param {Set<number>} readIds
  */
 export function filterAnnouncements(posts, filters, readIds = new Set()) {
@@ -40,6 +39,7 @@ export function filterAnnouncements(posts, filters, readIds = new Set()) {
 
   return posts.filter(post => {
     if (filters.unreadOnly && readIds.has(post.id)) return false;
+    if (filters.hasAttachment && !post.attachment_url) return false;
     if (filters.audience && audienceKey(post) !== filters.audience) return false;
 
     if (from || to) {
@@ -60,19 +60,25 @@ export function filterAnnouncements(posts, filters, readIds = new Set()) {
 
 /** 検索UIのHTML */
 export function renderAnnouncementSearchBox() {
+  const checkLabelStyle =
+    'display:flex; align-items:center; gap:6px; font-size:0.85rem; cursor:pointer; white-space:nowrap;';
+
   return `
     <div class="announcement-search" style="margin-bottom:12px;">
       <input id="search-keyword" type="search" class="form-control"
-             placeholder="🔍 タイトル・本文・投稿者で検索（スペースでAND）"
+             placeholder="🔍 タイトル・本文・投稿者・添付ファイル名で検索（スペースでAND）"
              autocomplete="off">
 
-      <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
-        <label style="display:flex; align-items:center; gap:6px; font-size:0.85rem; cursor:pointer; white-space:nowrap;">
-          <input id="search-unread-only" type="checkbox"> 未読のみ
-        </label>
+      <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; margin-top:8px;">
         <select id="search-audience" class="form-control" style="width:auto; font-size:0.85rem;">
           <option value="">すべての宛先</option>
         </select>
+        <label style="${checkLabelStyle}">
+          <input id="search-unread-only" type="checkbox"> 未読のみ
+        </label>
+        <label style="${checkLabelStyle}">
+          <input id="search-has-attachment" type="checkbox"> 添付あり
+        </label>
       </div>
 
       <details id="search-advanced" style="margin-top:8px; font-size:0.85rem;">
@@ -99,19 +105,21 @@ export function renderAnnouncementSearchBox() {
  */
 export function initAnnouncementSearch(onChange) {
   const $ = (id) => document.getElementById(id);
-  const keywordEl = $('search-keyword');
-  const unreadEl  = $('search-unread-only');
-  const fromEl    = $('search-date-from');
-  const toEl      = $('search-date-to');
-  const clearEl   = $('search-clear');
+  const keywordEl  = $('search-keyword');
+  const unreadEl   = $('search-unread-only');
+  const attachEl   = $('search-has-attachment');
+  const fromEl     = $('search-date-from');
+  const toEl       = $('search-date-to');
+  const clearEl    = $('search-clear');
   const audienceEl = $('search-audience');
-  
+
   if (!keywordEl) return;
 
   const readFilters = () => ({
     keyword: keywordEl.value.trim(),
     unreadOnly: unreadEl.checked,
-	  audience: audienceEl.value,
+    hasAttachment: attachEl.checked,
+    audience: audienceEl.value,
     dateFrom: fromEl.value,
     dateTo: toEl.value
   });
@@ -131,14 +139,16 @@ export function initAnnouncementSearch(onChange) {
   keywordEl.addEventListener('input', (e) => { if (!e.isComposing) fireDebounced(); });
   keywordEl.addEventListener('compositionend', fireDebounced);
   unreadEl.addEventListener('change', fireNow);
-  audienceEl.addEventListener('change', fireNow);  
+  attachEl.addEventListener('change', fireNow);
+  audienceEl.addEventListener('change', fireNow);
   fromEl.addEventListener('change', fireNow);
   toEl.addEventListener('change', fireNow);
 
   clearEl.addEventListener('click', () => {
     keywordEl.value = '';
     unreadEl.checked = false;
-	  audienceEl.value = '';
+    attachEl.checked = false;
+    audienceEl.value = '';
     fromEl.value = '';
     toEl.value = '';
     fireNow();
@@ -152,10 +162,10 @@ export function updateSearchStatus(filters, hitCount, totalCount, unreadCount) {
   if (!countEl || !clearEl) return;
 
   const active = hasActiveFilters(filters);
-  countEl.textContent = active 
-    ? `全 ${totalCount}件中 ${hitCount}件ヒット` 
+  countEl.textContent = active
+    ? `全 ${totalCount}件中 ${hitCount}件ヒット`
     : `全 ${totalCount}件（未読 ${unreadCount}件）`;
-  countEl.style.display = 'inline';　　//常に表示
+  countEl.style.display = 'inline'; // 常に表示
   clearEl.style.display = active ? 'inline-block' : 'none';
 }
 
