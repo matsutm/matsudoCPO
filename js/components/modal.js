@@ -70,6 +70,7 @@ export function openModal({ title, content, actions }) {
   box.appendChild(actionsEl);
   overlay.appendChild(box);
   document.body.appendChild(overlay);
+  return overlay;
 }
 
 /**

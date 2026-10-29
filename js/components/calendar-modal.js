@@ -55,7 +55,7 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
   ];
 
   // 3. 描画
-  openModal({
+  const overlay = openModal({
     title: { CREATE: '予定の新規追加', EDIT: '予定の編集', DUPLICATE: '予定の複製追加', VIEW: '予定の詳細' }[mode],
     content: isView ? renderForm(scheduleData, true, isEdit) : renderForm(scheduleData, false, isEdit),
     actions
@@ -64,7 +64,7 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
   if (isView) initCalendarLinkEvents(scheduleData);
   
   // 日付変更時に曜日を即時更新（モーダル描画後に登録する）
-  if (!isView) initWeekdayUpdate();
+  if (!isView) initWeekdayUpdate(overlay);
 }
 
 function renderForm(data = {}, isView = false, isEdit) {
@@ -177,9 +177,9 @@ function weekdayHTML(dateString) {
 }
 
 // 日付入力を変えたら、隣の曜日表示をすぐ更新する
-function initWeekdayUpdate() {
-  const dateEl = document.getElementById('date');
-  const weekdayEl = document.getElementById('date-weekday');
+function initWeekdayUpdate(root) {
+  const dateEl = root.querySelector('#date');
+  const weekdayEl = root.querySelector('#date-weekday');
   if (!dateEl || !weekdayEl) return;
   
   const update = () => { weekdayEl.innerHTML = weekdayHTML(dateEl.value); };
