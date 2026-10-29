@@ -70,12 +70,12 @@
 
 .library-link-item {
   text-align: left;
-  text-wrap: balance;
+  text-wrap: pretty;
 }
 
 .library-link-button {
   text-align: left;
-  text-wrap: balance;
+  text-wrap: pretty;
 }
 
 .library-link-item > span:first-child {
