@@ -1,0 +1,188 @@
+// js/components/calendar-modal.js
+import { fetchScheduleById, createSchedule, updateSchedule, deleteSchedule } from '../services/calendar-service.js';
+import { openModal } from './modal.js';
+import { renderMapButton } from './map-button.js';
+import { confirmAndRun } from '../utils/action-utils.js';
+import { createAnnouncement } from '../services/announcement-service.js';
+import { getCurrentUser } from '../services/auth-service.js';
+import { formatText, formatDateTime, formatWeekday } from '../utils.js';
+import { createTooltipText } from './tooltip.js';
+import { renderCalendarLinkButtons, initCalendarLinkEvents } from './calendar-link-button.js';
+
+
+export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
+  // 1. データ取得（CREATE以外はIDから一括取得に一本化）
+  const scheduleData = (mode !== 'CREATE' && scheduleId) 
+    ? await fetchScheduleById(scheduleId) 
+    : {};
+
+  const isEdit = mode === 'EDIT';
+  const isView = mode === 'VIEW';
+
+  // 2. アクション定義
+  const actions = isView ? [
+    { label: '編集', type: 'primary', onClick: () => openCalendarModal({ mode: 'EDIT', scheduleId, onSaved }) },
+    { label: '複製', type: 'secondary', onClick: () => openCalendarModal({ mode: 'DUPLICATE', scheduleId, onSaved }) },
+    { label: '削除', type: 'danger', onClick: async () => {
+        const result = await confirmAndRun('この予定を削除しますか？', () => deleteSchedule(scheduleId), '削除しました');
+        if (result === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
+        onSaved?.();
+      }
+    },
+    { label: '閉じる', type: 'secondary' }
+  ] : [
+    { label: isEdit ? '保存' : '追加', type: 'primary', onClick: async () => {
+        const data = collectFormData();
+        //const action = isEdit ? () => updateSchedule(scheduleId, data) : () => createSchedule(data);
+        
+        const isPostToAnnouncement = document.getElementById('sync_announcement')?.checked;
+        const action = async () => {
+          // カレンダー予定の登録更新
+          const savedData = isEdit ? await updateSchedule(scheduleId, data) : await createSchedule(data);
+          // チェックボックス有効ならお知らせに登録
+          if (isPostToAnnouncement) {
+            await syncToAnnouncement(data, isEdit);
+          }
+          return savedData;
+        };
+
+        const result = await confirmAndRun(isEdit ? '保存しますか？' : '追加しますか？', action, isEdit ? '保存しました' : '追加しました');
+        if (result === false) return false; // ユーザーがキャンセルした場合はモーダルを閉じない
+        onSaved?.();
+      }
+    },
+    { label: 'キャンセル', type: 'secondary' }
+  ];
+
+  // 3. 描画
+  const overlay = openModal({
+    title: { CREATE: '予定の新規追加', EDIT: '予定の編集', DUPLICATE: '予定の複製追加', VIEW: '予定の詳細' }[mode],
+    content: isView ? renderForm(scheduleData, true, isEdit) : renderForm(scheduleData, false, isEdit),
+    actions
+  });
+  
+  if (isView) initCalendarLinkEvents(scheduleData);
+  
+  // 日付変更時に曜日を即時更新（モーダル描画後に登録する）
+  if (!isView) initWeekdayUpdate(overlay);
+}
+
+function renderForm(data = {}, isView = false, isEdit) {
+  const disabled = isView ? 'disabled' : '';
+  const startTime = data.start_time?.slice(0, 5) || '18:00';
+  const endTime = data.end_time?.slice(0, 5) || '21:00';
+  
+  return `
+    <div class="form-group inline">
+      <label for="date">日付 *</label>
+      <div class="date-with-weekday">
+        <input id="date" type="date" class="form-control" value="${data.date || ''}" ${disabled}>
+        <span id="date-weekday" class="date-weekday">${weekdayHTML(data.date)}</span>
+      </div>
+    </div>
+
+    <div class="form-group inline">
+      <label for="start_time">時間 *</label>
+      <div class="time-range">
+        <input id="start_time" type="time" class="form-control" value="${startTime}" ${disabled}>
+        <span>〜</span>
+        <input id="end_time" type="time" class="form-control" value="${endTime}" ${disabled}>
+      </div>
+    </div>
+
+    <div class="form-group inline">
+      <label for="location">場所 *</label>
+      <input id="location" type="text" class="form-control" list="location-list" value="${data.location || ''}" ${disabled}>
+      ${renderMapButton(data.location || '')}
+      <datalist id="location-list">
+        <option value="森のホール21 リハ室">
+        <option value="流山エルズ（生涯学習センター）">
+        <option value="きらりホール">
+        <option value="けやきプラザ（我孫子市）">
+      </datalist>
+    </div>
+	
+    <div class="form-group inline">
+      <label for="instructor">指導</label>
+      <input id="instructor" type="text" class="form-control" value="${data.instructor || ''}" ${disabled}>
+    </div>
+
+    <div class="form-group">
+      <label for="program_notes">内容・曲目</label>
+      <textarea id="program_notes" class="form-control" rows="3" ${disabled}>${data.program_notes || ''}</textarea>
+    </div>
+
+    ${isView ? renderCalendarLinkButtons(data) : ''}
+
+    ${!isView ? `
+      <div class="form-group sync-announcement-group">
+        <label class="sync-announcement-label">
+          <input type="checkbox" id="sync_announcement" ${!isEdit ? 'checked' : ''} class="sync-announcement-checkbox" />
+          掲示板・お知らせにも投稿する
+        </label>
+      </div>
+    ` : ''}
+  `;
+}
+
+function collectFormData() {
+  
+  return {
+    date: document.getElementById('date').value,
+    start_time: document.getElementById('start_time').value,
+    end_time: document.getElementById('end_time').value,
+    location: document.getElementById('location').value,
+    instructor: document.getElementById('instructor').value,
+    //program_notes: formatText(document.getElementById('program_notes').value)
+    program_notes: document.getElementById('program_notes').value
+  };
+}
+
+/**
+ * 独立関数：カレンダー予定をお知らせ（掲示板）へ連携投稿する
+ * @param {Object} formData - フォームから取得した予定データ
+ * @param {boolean} isEdit - 編集による更新かどうか（文言の出し分けに使用）
+ */
+async function syncToAnnouncement(formData, isEdit = false) {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return;
+
+  const actionLabel = isEdit ? '更新' : '追加';
+  const title = `【スケジュール${actionLabel}】${formData.date} ${formData.location || ''}`.trim();
+  
+  // カレンダーのホバー表示（tooltip.js）と同じ内容を使い、日付だけ先頭に追加
+  const tooltipText = createTooltipText(formData);
+  const content = `練習スケジュールが${actionLabel}されました。\n\n【日付】${formData.date}\n${tooltipText}`;
+
+  try {
+    await createAnnouncement({
+      authorId: currentUser.id,
+      title: title,
+      content: content,
+      target_scope: 'all',
+      target_value: null
+    });
+  } catch (err) {
+    console.error('お知らせ自動連携エラー：', err);
+    // カレンダー登録自体は完了しているため、エラーログのみ出力して処理を通す
+  }
+}
+
+// 曜日ラベル（例: 「(月)」）。日曜は赤、土曜は青にするためクラスを付ける
+function weekdayHTML(dateString) {
+  const w = formatWeekday(dateString);
+  if (!w) return '';
+  const cls = w === '日' ? 'sun' : w === '土' ? 'sat' : '';
+  return `<span class="${cls}">(${w})</span>`;
+}
+
+// 日付入力を変えたら、隣の曜日表示をすぐ更新する
+function initWeekdayUpdate(root) {
+  const dateEl = root.querySelector('#date');
+  const weekdayEl = root.querySelector('#date-weekday');
+  if (!dateEl || !weekdayEl) return;
+  
+  const update = () => { weekdayEl.innerHTML = weekdayHTML(dateEl.value); };
+  dateEl.addEventListener('input', update);
+  dateEl.addEventListener('change', update);
+}
