@@ -1,9 +1,11 @@
 // js/services/email-service.js
+import { buildDeepLink } from '../utils/deep-link.js';
+import { escapeHtml } from '../utils.js';
 
 /**
  * 掲示板投稿時の同時メール通知送信
  */
-export async function sendBulletinEmail({ title, content, targetScope, targetValue }) {
+export async function sendBulletinEmail({ announcementId, title, content, targetScope, targetValue }) {
   try {
     // 1. 送信対象の団員メールアドレスを取得
     let query = window.supabaseClient.from('members').select('email');
@@ -21,17 +23,24 @@ export async function sendBulletinEmail({ title, content, targetScope, targetVal
     }
 
     const recipientEmails = members.map(m => m.email).filter(Boolean);
+    
+    // 2. リンク生成
+    const link = announcementId ? buildDeepLink('announcement', annoucementId) : null;
 
-    // 2. Supabase Edge Function (resend-email) を呼び出す
+    // 3. Supabase Edge Function (resend-email) を呼び出す
     const { data, error: funcError } = await window.supabaseClient.functions.invoke('resend-email', {
       body: {
         to: recipientEmails,
-        subject: `【楽団連絡】${title}`,
+        subject: `【MCPO連絡】${title}`,
         html: `
-          <h3>${title}</h3>
-          <p style="white-space: pre-wrap;">${content}</p>
+          <h3>${escapeHtml(title)}</h3>
+          <p style="white-space: pre-wrap;">${escapeHtml(content)}</p>
+          ${link ? `<p><a href="${link}">▶ ポータルで開く</a></p>` : ''}
           <hr>
-          <p><small>※このメールは松戸シティフィル ポータルより自動送信されています。</small></p>
+          <p><small>
+            ※このメールは松戸シティフィル ポータルより自動送信されています。<br>
+            ※iPhoneでは、このリンクはSafariで開かれるため、初回のみ認証コードの入力が必要です。
+          </small></p>
         `
       }
     });

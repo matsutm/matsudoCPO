@@ -8,6 +8,7 @@ import { confirmAndRun } from '../utils/action-utils.js';
 import { formatText, formatDateTime, escapeHtml } from '../utils.js'; // ★ utils.jsからimport
 import { sendBulletinEmail } from '../services/email-service.js';
 import { renderAudienceBadge } from './announcement-card.js';
+import { buildDeepLink, copyLink } from '../utils/deep-link.js';
 
 export function openAnnouncementModal({
   mode,          // 'CREATE' | 'VIEW' | 'EDIT'
@@ -65,6 +66,14 @@ export function openAnnouncementModal({
         }
       },
       {
+        label: 'URL取得',
+        type: 'secondary',
+        onClick: async () => {
+          await copyLink(buildDeepLink('announcement', id));
+          return false; // モーダルを閉じない
+        }
+      },
+      {
         label: '閉じる',
         type: 'secondary',
         onClick: () => onClosed?.()
@@ -113,6 +122,7 @@ export function openAnnouncementModal({
             if (!isEdit && data.is_email_sent) {
               try {
                 await sendBulletinEmail({
+                  announcementId: saved.id,
                   title: data.title,
                   content: data.content,
                   targetScope: data.target_scope,
@@ -205,7 +215,7 @@ function renderFormContent(p, isEdit = false) {
       <label for="ann-body">本文 *</label>
       <textarea id="ann-body" class="form-control" rows="6">${escapeHtml(body)}</textarea>
     </div>
-	${isEdit ? renderAudienceLabel(p) : renderAudienceUI()}
+	  ${isEdit ? renderAudienceLabel(p) : renderAudienceUI()}
 
     <!-- ファイル添付 -->
     ${renderAttachmentField(p?.attachment_name)}
@@ -235,6 +245,6 @@ async function collectFormData(existingAttachment = {}, isEdit = false) {
     ...base,
     target_scope: audience.targetScope,   // 
     target_value: audience.targetValue,    //
-	is_email_sent: email.isEmailSent  // スネークケースに統一
+	  is_email_sent: email.isEmailSent  // スネークケースに統一
   };
 }

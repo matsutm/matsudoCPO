@@ -11,13 +11,6 @@ import { renderCalendarLinkButtons, initCalendarLinkEvents } from './calendar-li
 
 
 export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
-  const dateEl = document.getElementById('date');
-  const weekdayEl = document.getElementById('date-weekday');
-  if (dateEl && weekdayEl) {
-    const update = () => { weekdayEl.innerHTML = weekdayHTML(dateEl.value); };
-    dateEl.addEventListener('input', update);
-    dateEl.addEventListener('change', update);
-  }
   // 1. データ取得（CREATE以外はIDから一括取得に一本化）
   const scheduleData = (mode !== 'CREATE' && scheduleId) 
     ? await fetchScheduleById(scheduleId) 
@@ -62,13 +55,16 @@ export async function openCalendarModal({ mode, scheduleId = null, onSaved }) {
   ];
 
   // 3. 描画
-  openModal({
+  const overlay = openModal({
     title: { CREATE: '予定の新規追加', EDIT: '予定の編集', DUPLICATE: '予定の複製追加', VIEW: '予定の詳細' }[mode],
     content: isView ? renderForm(scheduleData, true, isEdit) : renderForm(scheduleData, false, isEdit),
     actions
   });
   
   if (isView) initCalendarLinkEvents(scheduleData);
+  
+  // 日付変更時に曜日を即時更新（モーダル描画後に登録する）
+  if (!isView) initWeekdayUpdate(overlay);
 }
 
 function renderForm(data = {}, isView = false, isEdit) {
@@ -180,3 +176,13 @@ function weekdayHTML(dateString) {
   return `<span class="${cls}">(${w})</span>`;
 }
 
+// 日付入力を変えたら、隣の曜日表示をすぐ更新する
+function initWeekdayUpdate(root) {
+  const dateEl = root.querySelector('#date');
+  const weekdayEl = root.querySelector('#date-weekday');
+  if (!dateEl || !weekdayEl) return;
+  
+  const update = () => { weekdayEl.innerHTML = weekdayHTML(dateEl.value); };
+  dateEl.addEventListener('input', update);
+  dateEl.addEventListener('change', update);
+}

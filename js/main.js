@@ -5,24 +5,44 @@ import { renderHomeView, initHomeView } from './views/home-view.js';
 import { renderCalendarView, initCalendarView } from './views/calendar-view.js';
 import { renderAnnouncementView, initAnnouncementView } from './views/announcement-view.js';
 import { renderLibraryView, initLibraryView } from './views/library-view.js';
-import { openModal, closeModalOnBack, resetModalState } from './components/modal.js'; // ★ openModal をインポート
+import { openModal, closeModalOnBack, resetModalState } from './components/modal.js'; // openModal をインポート
+import { fetchAnnouncementById } from './services/announcement-service.js';
+import { openAnnouncementModal } from './components/announcement-modal.js';
+import { openCalendarModal } from './components/calendar-modal.js';
 
 const appContent = document.getElementById('app-content');
+
+// "#announcement/123" → { view: 'announcement', param: '123' }
+function parseHash() {
+  const [view, param] = location.hash.replace('#', '').split('/');
+  return { view: view || 'home', param: param || null };
+}
+
+// 起動時に踏まれたリンク先。ログイン後に1回だけ使う
+let pendingEntry = null;
 
 // ホームボタンで履歴を一番底まで巻き戻している最中かどうか
 let resettingToHome = false;
 
 // 画面切り替えの司令塔
-export async function navigateTo(viewName, isBrowserBack = false) {
+export async function navigateTo(viewName, isBrowserBack = false, param = null) {
   //一旦退避　updateLoginUserDisplay();
   const user = getCurrentUser();
 
-  // 未認証の場合は強制的にログイン画面へ
+  // 未認証の場合はリンク先を保持しつつログイン画面へ
   if (!user) {
+    // 初回だけ保持（認証画面の再描画で上書きしない）
+    // 'auth' は保持対象から外す（ログアウト後の navigateTo('auth') を除く）
+    if (!pendingEntry && (param || (viewName !== 'home' && viewName !== 'auth'))) {
+      pendingEntry = { view: viewName, param };
+    }
+    
     appContent.innerHTML = renderAuthView();
     initAuthView(() => {
       updateLoginUserDisplay();
-      navigateTo('home'); 
+      const entry = pendingEntry;
+      pendingEntry = null; // ★使い切る
+      navigateTo(entry?.view || 'home', true, entry?.param || null);
     });
     updateLoginUserDisplay();
     return; // ここで処理を終了して、以降の画面切り替え処理をスキップ
@@ -70,10 +90,43 @@ export async function navigateTo(viewName, isBrowserBack = false) {
         '', `#${viewName}`
       );
     }
-    
   }
+  
+  // 画面描画のあと、IDがあれば該当モーダルを開く
+  if (param) await openDeepLink(viewName, param);
 }
 
+/*
+ * URLから該当リンクを開く
+ */
+async function openDeepLink(viewName, id) {
+  const user = getCurrentUser();
+
+  // 先にURLからIDを消す（再読込・戻るでモーダルが再度開くのを防ぐ）
+  history.replaceState({ ...history.state, view: viewName }, '', `#${viewName}`);
+
+  try {
+    if (viewName === 'announcement') {
+      const post = await fetchAnnouncementById(Number(id));
+      if (!post) {
+        alert('このお知らせは見つからないか、閲覧できません。');
+        return;
+      }
+      openAnnouncementModal({
+        mode: 'VIEW',
+        post,
+        currentUserId: user.id,
+        onUpdated: () => navigateTo('announcement', true),
+        onClosed: () => navigateTo('announcement', true)
+      });
+    } else if (viewName === 'calendar') {
+      openCalendarModal({ mode: 'VIEW', scheduleId: id });
+    }
+  } catch (err) {
+    console.error('リンク先を開けませんでした:', err);
+    alert('リンク先を開けませんでした。');
+  }
+}
 
 //ユーザ名を表示する
 function updateLoginUserDisplay() {
@@ -117,6 +170,7 @@ export function handleLogout() {
           showConfirmModal(
             '端末に記憶を残してログアウトします。',
             () => {
+              pendingEntry = null;
               logoutSession();
               navigateTo('auth');
             }
@@ -130,6 +184,7 @@ export function handleLogout() {
           showConfirmModal(
             '端末の記憶を消去してログアウトします。',
             async () => {
+              pendingEntry = null;
               await logoutCompletely();
               navigateTo('auth');
             }
@@ -227,10 +282,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // URLのハッシュ（例: #announcement）を取得（無ければ 'home'）
-  const initialView = location.hash.replace('#', '') || 'home';
+  const { view: initialView, param: initialParam } = parseHash();
   // 履歴の状態を初期セット
-  //history.replaceState({ view: initialView }, '', `#${initialView}`);
   history.replaceState({ view: initialView, depth: 0 }, '', `#${initialView}`);
   // URLのハッシュから判定した画面へ遷移させる
-  navigateTo(initialView, true);
+  navigateTo(initialView, true, initialParam);
+
 });
