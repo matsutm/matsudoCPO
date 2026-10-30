@@ -25,7 +25,7 @@ export async function sendBulletinEmail({ announcementId, title, content, target
     const recipientEmails = members.map(m => m.email).filter(Boolean);
     
     // 2. リンク生成
-    const link = announcementId ? buildDeepLink('announcement', annoucementId) : null;
+    const link = announcementId ? buildDeepLink('announcement', announcementId) : null;
 
     // 3. Supabase Edge Function (resend-email) を呼び出す
     const { data, error: funcError } = await window.supabaseClient.functions.invoke('resend-email', {
