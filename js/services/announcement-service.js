@@ -2,12 +2,21 @@
 import { deleteAttachmentFile } from './attachment-service.js';
 import { getCurrentUser } from './auth-service.js';
 
+// ★追加:宛先の種類を一元管理
+export const AUDIENCE_SCOPES = ['section', 'instrument', 'position'];
+
+/** 特定の宛先(セクション/パート/役職)が指定された投稿か */
+export function isTargeted(post) {
+  return AUDIENCE_SCOPES.includes(post?.target_scope) && !!post.target_value;
+}
+
 /** 投稿が現在のユーザーに見えるべきか */
 export function isVisibleTo(post, user) {
   if (post.author_id === user.id) return true; // 投稿者本人には常に表示
   switch (post.target_scope) {
     case 'section':    return post.target_value === user.section;
     case 'instrument': return post.target_value === user.instrument;
+    case 'position':   return (user.positions || []).includes(post.target_value); // ★追加
     default:           return true; // 'all' / null（既存データ）
   }
 }
@@ -161,6 +170,9 @@ export async function deleteAnnouncement(id) {
  * 送信対象（セクション・パート）の選択肢一覧を取得
  */
 export async function fetchTargetScopeOptions(scope) {
+  // ★追加:役職は固定リストから返す
+  if (scope === 'position') return window.APP_CONSTANTS?.POSITIONS || [];
+
   const columnName = scope === 'section' ? 'section' : 'instrument';
   const { data, error } = await window.supabaseClient
     .from('members')

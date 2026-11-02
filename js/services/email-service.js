@@ -14,6 +14,8 @@ export async function sendBulletinEmail({ announcementId, title, content, target
       query = query.eq('section', targetValue);
     } else if (targetScope === 'instrument' && targetValue) {
       query = query.eq('instrument', targetValue);
+    } else if (targetScope === 'position' && targetValue) {
+      query = query.contains('positions', [targetValue]);   // ★追加
     }
 
     const { data: members, error } = await query;
