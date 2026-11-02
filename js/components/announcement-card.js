@@ -1,15 +1,15 @@
 // js/components/announcement-card.js
 
 import { escapeHtml, formatDateShort } from '../utils.js';
-import { fetchAnnouncementById } from '../services/announcement-service.js';
+import { fetchAnnouncementById, isTargeted } from '../services/announcement-service.js';
 
 /**
  * お知らせ先バッジ（全団員宛ては何も出さない）
  */
 export function renderAudienceBadge(post) {
-  const scope = post?.target_scope;
-  if ((scope !== 'section' && scope !== 'instrument') || !post.target_value) return '';
-  return `<span class="badge-audience badge-audience-${scope}">${escapeHtml(post.target_value)}宛</span>`;
+  if (!isTargeted(post)) return '';
+  return `<span class="badge-audience badge-audience-${post.target_scope}">${escapeHtml(post.target_value)}宛</span>`;
+
 }
 
 /**

@@ -1,7 +1,7 @@
 // js/components/announcement-modal.js
 
 import { openModal } from './modal.js';
-import { createAnnouncement, updateAnnouncement, deleteAnnouncement, markAsRead } from '../services/announcement-service.js';
+import { createAnnouncement, updateAnnouncement, deleteAnnouncement, markAsRead, isTargeted } from '../services/announcement-service.js'; 
 import { renderAudienceUI, initAudienceEvents, getAudienceData, renderEmailOptionUI, getEmailOptionData } from './announcement-email-option.js';
 import { renderAttachmentField, initAttachmentFieldEvents, collectAttachmentData, renderAttachmentLink } from './attachment-field.js'; // ★追加
 import { confirmAndRun } from '../utils/action-utils.js';
@@ -191,8 +191,7 @@ function renderViewContent(p) {
 }
 
 function renderAudienceLabel(p) {
-  const label = (p?.target_scope === 'section' || p?.target_scope === 'instrument')
-    ? p.target_value : '全団員';
+  const label = isTargeted(p) ? p.target_value : '全団員';
   return `
     <div class="form-group">
       <label>お知らせ先</label>
@@ -215,7 +214,7 @@ function renderFormContent(p, isEdit = false) {
       <label for="ann-body">本文 *</label>
       <textarea id="ann-body" class="form-control" rows="6">${escapeHtml(body)}</textarea>
     </div>
-	  ${isEdit ? renderAudienceLabel(p) : renderAudienceUI()}
+    ${isEdit ? renderAudienceLabel(p) : renderAudienceUI()}
 
     <!-- ファイル添付 -->
     ${renderAttachmentField(p?.attachment_name)}
@@ -245,6 +244,6 @@ async function collectFormData(existingAttachment = {}, isEdit = false) {
     ...base,
     target_scope: audience.targetScope,   // 
     target_value: audience.targetValue,    //
-	  is_email_sent: email.isEmailSent  // スネークケースに統一
+    is_email_sent: email.isEmailSent  // スネークケースに統一
   };
 }

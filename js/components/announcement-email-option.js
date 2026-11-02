@@ -11,6 +11,7 @@ export function renderAudienceUI() {
         <option value="all">全団員</option>
         <option value="section">特定のセクション（弦・木管など）</option>
         <option value="instrument">特定のパート（Vnなど）</option>
+        <option value="position">役職（運営委員・パートリーダーなど）</option>
       </select>
       <select id="audience-value" class="form-control-sm" style="display: none; margin-left: 0.3rem;"></select>
     </div>

@@ -48,7 +48,8 @@ export function saveCurrentUser(member) {
     email: member.email,
     role: member.role || 'member',
     section: member.section,
-    instrument: member.instrument
+    instrument: member.instrument,
+    positions: member.positions || []
   };
   sessionStorage.setItem('currentUser', JSON.stringify(currentUserData));
   localStorage.setItem('rememberedUser', JSON.stringify(currentUserData));

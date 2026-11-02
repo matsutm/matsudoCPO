@@ -1,5 +1,6 @@
 // js/components/announcement-search.js
 import { escapeHtml } from '../utils.js';
+import { isTargeted } from '../services/announcement-service.js';
 
 /** 検索条件の初期値 */
 export function createEmptyFilters() {
@@ -18,11 +19,7 @@ function normalize(str) {
 
 /** 投稿の宛先を 'all' / 'section:弦' / 'instrument:Vn' の形にする */
 function audienceKey(post) {
-  const scope = post.target_scope;
-  if ((scope === 'section' || scope === 'instrument') && post.target_value) {
-    return `${scope}:${post.target_value}`;
-  }
-  return 'all';
+  return isTargeted(post) ? `${post.target_scope}:${post.target_value}` : 'all';
 }
 
 /**
