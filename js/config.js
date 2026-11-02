@@ -68,6 +68,9 @@ window.APP_CONSTANTS = {
     { label: '📝 休団・退団届フォーム（工事中）', url: 'https://forms.google.com/...' }
   ],
   
+  // 役職の選択肢(増やすときはここに足す。members.positions と表記を完全一致させる)
+  POSITIONS: ['運営委員', 'パートリーダー'],
+  
   CALENDAR_NOTICES: [
     '原則：17:50集合、18:30音出し',
     '欠席・遅刻は必ずパートリーダーに連絡。'
