@@ -5,26 +5,49 @@ import { escapeHtml } from '../utils.js';
 /**
  * 掲示板投稿時の同時メール通知送信
  */
-export async function sendBulletinEmail({ announcementId, title, content, targetScope, targetValue }) {
+export async function sendBulletinEmail({ announcementId, title, content, targetScope, targetValue, replyToAuthorId = null }) {
   try {
     // 1. 送信対象の団員メールアドレスを取得
     let query = window.supabaseClient.from('members').select('email').eq('active', true);
-
-    if (targetScope === 'section' && targetValue) {
-      query = query.eq('section', targetValue);
-    } else if (targetScope === 'instrument' && targetValue) {
-      query = query.eq('instrument', targetValue);
-    } else if (targetScope === 'position' && targetValue) {
-      query = query.contains('positions', [targetValue]);   // ★追加
-    }
-
-    const { data: members, error } = await query;
-    if (error || !members || members.length === 0) {
-      console.warn('送信対象の宛先が見つかりませんでした。');
+    
+    // 宛先指定があるのに値が空なら事故防止のため中止
+    if (targetScope && targetScope !== 'all' && !targetValue) {
+      console.warn('宛先の指定が不完全なため、メールを送信しませんでした。');
       return;
     }
 
-    const recipientEmails = members.map(m => m.email).filter(Boolean);
+    if (targetScope === 'section') {
+      query = query.eq('section', targetValue);
+    } else if (targetScope === 'instrument') {
+      query = query.eq('instrument', targetValue);
+    } else if (targetScope === 'position') {
+      query = query.contains('positions', [targetValue]);
+    } else if (targetScope === 'member') {
+      query = query.eq('id', targetValue);
+    }
+
+    const { data: members, error } = await query;
+    if (error) {
+      console.warn('宛先の取得に失敗しました：', error);
+      return;
+    }
+
+    const recipients = new Set((members || []).map(m => m.email).filter(Boolean));
+    
+    // 返信なら、発信者には必ず送る
+    if (replyToAuthorId) {
+      const { data: sender } = await window.supabaseClient
+        .from ('members').select('email')
+        .eq('id', replyToAuthorId).eq('active', true).maybeSingle();
+      if (sender?.email) recipients.add(sender.email);
+    }
+    
+    if (recipients.size === 0) {
+      console.warn('送信対象の宛先が見つかりませんでした。');
+      return;
+    }
+    
+    const recipientEmails = [...recipients];
     
     // 2. リンク生成
     const link = announcementId ? buildDeepLink('announcement', announcementId) : null;
