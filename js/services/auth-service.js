@@ -70,6 +70,7 @@ export async function fetchMemberByEmail(email) {
   const { data: member, error } = await window.supabaseClient
     .from('members')
     .select('*')
+    .eq('active', true) 
     .ilike('email', cleanEmail)
     .maybeSingle();
 
