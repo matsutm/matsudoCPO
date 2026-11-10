@@ -8,7 +8,7 @@ import { escapeHtml } from '../utils.js';
 export async function sendBulletinEmail({ announcementId, title, content, targetScope, targetValue }) {
   try {
     // 1. 送信対象の団員メールアドレスを取得
-    let query = window.supabaseClient.from('members').select('email');
+    let query = window.supabaseClient.from('members').select('email').eq('active', true);
 
     if (targetScope === 'section' && targetValue) {
       query = query.eq('section', targetValue);

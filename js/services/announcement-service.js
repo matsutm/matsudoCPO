@@ -177,6 +177,7 @@ export async function fetchTargetScopeOptions(scope) {
   const { data, error } = await window.supabaseClient
     .from('members')
     .select(columnName);
+    .eq('active', true)
 
   if (error || !data) return [];
   return [...new Set(data.map(item => item[columnName]))].filter(Boolean);
