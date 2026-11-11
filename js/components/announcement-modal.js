@@ -64,17 +64,8 @@ export function openAnnouncementModal({
           onClick: () => openAnnouncementModal({
             mode: 'EDIT', post, authorId, currentUserId, onUpdated, onDeleted, onClosed
           })
-        },
-        {
-          label: '削除',
-          type: 'danger',
-          onClick: async () => {
-            const result = await confirmAndRun('この投稿を削除しますか？', () => deleteAnnouncement(id), '削除しました');
-            if (result === false) return false; // キャンセル時はモーダルを閉じない
-            onUpdated?.();
-          }
         }
-      ] : []),
+       ] : []),
       {
         label: 'URL取得',
         type: 'secondary',
@@ -151,7 +142,16 @@ export function openAnnouncementModal({
           (isEdit ? onUpdated : onSaved)?.();
         }
       },
-      { label: 'キャンセル', type: 'secondary' }
+      { label: 'キャンセル', type: 'secondary' },
+      ...(isEdit ? [{
+        label: '削除',
+        type: 'danger',
+        onClick: async () => {
+          const result = await confirmAndRun('この投稿を削除しますか？', () => deleteAnnouncement(id), '削除しました');
+          if (result === false) return false; // キャンセル時はモーダルを閉じない
+          onUpdated?.();
+        }
+      }] : [])
     ];
   }
 
