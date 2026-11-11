@@ -81,7 +81,7 @@
   margin-top: 0.5rem;
 }
 
-.btn-link {
+.auth-form .btn-link {
   background: none;
   border: none;
   color: #64748b;
@@ -92,7 +92,7 @@
   cursor: pointer;
 }
 
-.btn-link:hover {
+.auth-form .btn-link:hover {
   color: #1e293b;
 }
 
