@@ -232,6 +232,17 @@ body {
   flex-wrap: wrap;
 }
 
+/* 左端に置くボタン（削除など）。残りは右寄せのまま */
+.modal-action-left {
+  margin-right: auto;
+}
+
+@media (max-width: 480px) {
+  .modal-action-left {
+    margin-right: 0;   /* スマホはグリッド配置なので、自動余白は使わない */
+  }
+}
+
 body[data-role="member"] #btnNewPost,
 body[data-role="member"] #btnOpenCreateModal { display: none; }
 
