@@ -309,3 +309,33 @@
   background-color: #fef3c7;
   color: #92400e;
 }
+
+.badge-audience-member {
+  background-color: #fce7f3;
+  color: #9d174d;
+}
+
+/* 添付ファイル欄 */
+.attachment-existing-row {
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.4rem;
+}
+.attachment-existing-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.85rem;
+  color: #475569;
+  overflow-wrap: anywhere;
+}
+.btn-remove-attachment {
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: #dc2626;
+}
+.attachment-file-error {
+  display: none;
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  color: #dc2626;
+}

@@ -3,7 +3,7 @@ import { deleteAttachmentFile } from './attachment-service.js';
 import { getCurrentUser } from './auth-service.js';
 
 // ★追加:宛先の種類を一元管理
-export const AUDIENCE_SCOPES = ['section', 'instrument', 'position'];
+export const AUDIENCE_SCOPES = ['section', 'instrument', 'position', 'member'];
 
 /** 特定の宛先(セクション/パート/役職)が指定された投稿か */
 export function isTargeted(post) {
@@ -13,10 +13,12 @@ export function isTargeted(post) {
 /** 投稿が現在のユーザーに見えるべきか */
 export function isVisibleTo(post, user) {
   if (post.author_id === user.id) return true; // 投稿者本人には常に表示
+  if (post.reply_to_author_id === user.id) return true; // 返信を受け取る発信者
   switch (post.target_scope) {
     case 'section':    return post.target_value === user.section;
     case 'instrument': return post.target_value === user.instrument;
-    case 'position':   return (user.positions || []).includes(post.target_value); // ★追加
+    case 'position':   return (user.positions || []).includes(post.target_value);
+    case 'member':     return post.target_value === user.id;
     default:           return true; // 'all' / null（既存データ）
   }
 }
@@ -114,6 +116,8 @@ export async function createAnnouncement(announcementData) {
     target_value: announcementData.target_value || null,
     attachment_url: announcementData.attachment_url || null,
     attachment_name: announcementData.attachment_name || null,
+    reply_to: announcementData.reply_to || null,
+    reply_to_author_id: announcementData.reply_to_author_id || null,
     created_at: new Date().toISOString()
   };
 

@@ -8,7 +8,8 @@ import { fetchAnnouncementById, isTargeted } from '../services/announcement-serv
  */
 export function renderAudienceBadge(post) {
   if (!isTargeted(post)) return '';
-  return `<span class="badge-audience badge-audience-${post.target_scope}">${escapeHtml(post.target_value)}宛</span>`;
+  const label = post.target_scope === 'member' ? '個人宛' : `${post.target_value}宛`;
+  return `<span class="badge-audience badge-audience-${post.target_scope}">${escapeHtml(label)}</span>`;
 
 }
 

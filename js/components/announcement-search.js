@@ -19,6 +19,7 @@ function normalize(str) {
 
 /** 投稿の宛先を 'all' / 'section:弦' / 'instrument:Vn' の形にする */
 function audienceKey(post) {
+  if (post?.target_scope === 'member') return 'member';
   return isTargeted(post) ? `${post.target_scope}:${post.target_value}` : 'all';
 }
 
@@ -175,7 +176,9 @@ export function updateAudienceOptions(posts, selected = '') {
   posts.forEach(p => {
     const key = audienceKey(p);
     if (seen.has(key)) return;
-    seen.set(key, key === 'all' ? '全団員宛' : `${p.target_value}宛`);
+    seen.set(key, key === 'all' ? '全団員宛'
+      : key === 'member' ? '個人宛'
+      : `${p.target_value}宛`);
   });
 
   select.innerHTML = '<option value="">すべての宛先</option>' +

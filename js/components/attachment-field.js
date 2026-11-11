@@ -20,13 +20,14 @@ export function renderAttachmentField(existingName = '') {
         ? `<div style="font-size:0.85rem; color:#475569; margin-bottom:0.4rem;">現在の添付:${existingName}</div>`
         : ''}
       -->
-      <div id="attachment-existing-row" style="display:${existingName ? 'flex' : 'none'}; align-items:center; gap:8px; margin-bottom:0.4rem;">
-        <span style="font-size:0.85rem; color:#475569;">現在の添付:${existingName}</span>
-        <button type="button" id="btn-remove-attachment" class="btn-link" style="color:#dc2626;">削除</button>
+      <div id="attachment-existing-row" class="attachment-existing-row"
+           style="display:${existingName ? 'flex' : 'none'};">
+        <span class="attachment-existing-name">現在の添付:${escapeHtml(existingName)}</span>
+        <button type="button" id="btn-remove-attachment" class="btn-link btn-remove-attachment">削除</button>
       </div>
       <input id="attachment-file" type="file" class="form-control">
       <input type="hidden" id="attachment-removed-flag" value="false">
-      <div id="attachment-file-error" style="color:#dc2626; font-size:0.8rem; display:none; margin-top:0.3rem;"></div>
+      <div id="attachment-file-error" class="attachment-file-error"></div>
     </div>
   `;
 }
