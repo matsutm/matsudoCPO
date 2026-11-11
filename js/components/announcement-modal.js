@@ -146,6 +146,7 @@ export function openAnnouncementModal({
       ...(isEdit ? [{
         label: '削除',
         type: 'danger',
+        position: 'left',
         onClick: async () => {
           const result = await confirmAndRun('この投稿を削除しますか？', () => deleteAnnouncement(id), '削除しました');
           if (result === false) return false; // キャンセル時はモーダルを閉じない
