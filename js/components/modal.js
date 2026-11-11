@@ -45,8 +45,8 @@ export function openModal({ title, content, actions }) {
 
   // 左寄せ指定ボタンを先頭に
   const ordered = [
-    ...actions.filter(a ==> a.position === 'left'),
-    ...actions.filter(a ==> a.position !== 'left')
+    ...actions.filter(a => a.position === 'left'),
+    ...actions.filter(a => a.position !== 'left')
   ];
   
   ordered.forEach(action => {
