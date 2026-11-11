@@ -43,7 +43,13 @@ export function openModal({ title, content, actions }) {
     );
   }
 
-  actions.forEach(action => {
+  // 左寄せ指定ボタンを先頭に
+  const ordered = [
+    ...actions.filter(a ==> a.position === 'left'),
+    ...actions.filter(a ==> a.position !== 'left')
+  ];
+  
+  ordered.forEach(action => {
     const role = document.body.dataset.role;
     if (role === 'member' && ['編集', '複製', '削除'].includes(action.label)) return;
     
@@ -54,6 +60,7 @@ export function openModal({ title, content, actions }) {
       : action.type === 'danger'
       ? 'btn-danger'
       : 'btn-secondary';
+    if (action.position === 'left') btn.classList.add('modal-action-left');
 
     btn.addEventListener('click', async () => {
       if (action.onClick) {
