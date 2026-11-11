@@ -43,7 +43,13 @@ export function openModal({ title, content, actions }) {
     );
   }
 
-  actions.forEach(action => {
+  // 左寄せ指定ボタンを先頭に
+  const ordered = [
+    ...actions.filter(a => a.position === 'left'),
+    ...actions.filter(a => a.position !== 'left')
+  ];
+  
+  ordered.forEach(action => {
     const role = document.body.dataset.role;
     if (role === 'member' && ['編集', '複製', '削除'].includes(action.label)) return;
     
@@ -54,6 +60,7 @@ export function openModal({ title, content, actions }) {
       : action.type === 'danger'
       ? 'btn-danger'
       : 'btn-secondary';
+    if (action.position === 'left') btn.classList.add('modal-action-left');
 
     btn.addEventListener('click', async () => {
       if (action.onClick) {
@@ -70,6 +77,7 @@ export function openModal({ title, content, actions }) {
   box.appendChild(actionsEl);
   overlay.appendChild(box);
   document.body.appendChild(overlay);
+  fitActions(actionsEl);
   return overlay;
 }
 
@@ -98,4 +106,27 @@ export function closeModalOnBack() {
  */
 export function resetModalState() {
   programmaticBack = false;
+}
+
+// ボタンが1行に収まるまで、文字と余白を少しずつ縮める
+function fitActions(actionsEl) {
+  const buttons = [...actionsEl.children];
+  if (buttons.length < 2) return;
+
+  const MIN_SIZE = 10;  // これ以下には縮めない(px)
+  const gap = parseFloat(getComputedStyle(actionsEl).columnGap) || 0;
+  const totalWidth = () =>
+    buttons.reduce((sum, b) => sum + b.getBoundingClientRect().width, 0)
+    + gap * (buttons.length - 1);
+
+  let size = parseFloat(getComputedStyle(buttons[0]).fontSize);
+  while (totalWidth() > actionsEl.clientWidth && size > MIN_SIZE) {
+    size -= 0.5;
+    actionsEl.style.setProperty('--fit-size', `${size}px`);
+  }
+
+  // 最小サイズでも入らない場合だけ折り返しを許可（保険）
+  if (totalWidth() > actionsEl.clientWidth) {
+    actionsEl.style.flexWrap = 'wrap';
+  }
 }
