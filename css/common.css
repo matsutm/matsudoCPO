@@ -238,7 +238,7 @@ body {
 }
 
 .modal-actions button {
-  font-size: var(--fit-size, 0.85rem);
+  /*　font-size: var(--fit-size, 0.85rem);*/
 }
 
 @media (max-width: 480px) {
