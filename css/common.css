@@ -237,9 +237,19 @@ body {
   margin-right: auto;
 }
 
+.modal-actions button {
+  font-size: var(--fit-size, 0.85rem);
+}
+
 @media (max-width: 480px) {
   .modal-action-left {
-    margin-right: 0;   /* スマホはグリッド配置なので、自動余白は使わない */
+    .mordal-action-left { margin-right: 0; }   /* ←削除 */
+  }
+
+  .modal-actions button {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
   }
 }
 
@@ -312,15 +322,3 @@ body[data-role="member"] #btnOpenCreateModal { display: none; }
   margin: 0;
 }
 
-@media (max-width: 480px) {
-  .modal-actions {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
-    gap: 0.5rem;
-  }
-  .modal-actions button {
-    padding: 0.5rem 0.25rem;
-    font-size: 0.85rem;
-    white-space: nowrap;
-  }
-}
