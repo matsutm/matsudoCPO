@@ -238,16 +238,14 @@ body {
 }
 
 .modal-actions button {
-  /*　font-size: var(--fit-size, 0.85rem);*/
+　font-size: var(--fit-size, 0.85rem);
 }
 
 @media (max-width: 480px) {
   .modal-action-left { margin-right: 0; }   /* ←削除 */
-  }
 
   .modal-actions button {
-    padding: 0.5rem 0.25rem;
-    font-size: 0.85rem;
+    padding: 0.5rem 0.5rem;
     white-space: nowrap;
   }
 }
