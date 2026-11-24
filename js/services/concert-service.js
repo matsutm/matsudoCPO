@@ -5,7 +5,7 @@
  * @param {number|null} limit - 取得件数の上限（省略時は全件）
  */
 export async function fetchUpcomingConcerts(limit = null) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('sv-SE'); // yyyy-mm-dd
 
   let query = window.supabaseClient
     .from('concerts')

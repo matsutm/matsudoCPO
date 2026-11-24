@@ -1,6 +1,6 @@
 //config.js
 //メール送信機能は本番環境のみで実現する。またはテストで切り替える
-const PORTAL_PRODUCTION = false; // 本番(true)/開発(false)環境をこれ一つで変更
+const PORTAL_PRODUCTION = true; // 本番(true)/開発(false)環境をこれ一つで変更
 
 const ENV = PORTAL_PRODUCTION
   ? {
@@ -33,11 +33,11 @@ window.APP_CONSTANTS = {
     { label: '📄 Dolce 最新号 (PDF)', protectedPath: '/member/pdf/dolce/dolce.pdf' },
     { label: '📋 練習予定表 (全体版)', protectedPath: '/member/pdf/schedule/schedule.pdf' },
     { label: '🎵 練習録音',
-	  children: [
-	    { label: '市民コンサート', url: 'https://drive.google.com/drive/folders/1kr8D0ddeT-WVKzbKHPhH9f1vzGeSuNhd' },
-		{ label: '音楽のまち音楽祭', url: 'https://drive.google.com/drive/folders/19bcpnxgka-t5qLXG6B0Pld4GC0Rp9T_6?usp=drive_link' }
-	  ]
-	}
+	    children: [
+	      { label: '市民コンサート', url: 'https://drive.google.com/drive/folders/1kr8D0ddeT-WVKzbKHPhH9f1vzGeSuNhd' },
+		    { label: '音楽のまち音楽祭', url: 'https://drive.google.com/drive/folders/19bcpnxgka-t5qLXG6B0Pld4GC0Rp9T_6?usp=drive_link' }
+	    ]
+	  }
   ],
 
   //
@@ -50,8 +50,8 @@ window.APP_CONSTANTS = {
         { label: '2023年度室内楽演奏会演奏動画', url: 'https://youtu.be/DC3tJMQu7gc' },
         { label: '2024年度団内演奏会演奏動画', url: 'https://www.youtube.com/watch?v=5la3z0lEjNQ' },
         { label: '2024年度室内楽演奏会演奏動画', url: 'https://youtu.be/rqb9EQJJtzI' }
-	  ]
-	},
+	    ]
+	  },
     { label: 'アンケート',
       children: [
         { label: '第46回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20240526_survey.pdf' },
@@ -60,10 +60,10 @@ window.APP_CONSTANTS = {
         { label: '第47回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20250914_survey.pdf' },
         { label: '第48回定期演奏会 アンケート集計結果', protectedPath: '/member/pdf/survey/20260517_survey.pdf' },
         { label: 'ファミリーコンサート2026 アンケート集計結果', protectedPath: '/member/pdf/survey/20260913_survey.pdf' }
-	  ]
-	},
+	    ]
+	  },
     { label: '👥 団員名簿PDF', protectedPath: '/member/pdf/memberlist/memberlist_20260418.pdf' },
-	{ label: '😊 団員募集チラシPDF', protectedPath: '/member/pdf/other/member_recruiting_202307.pdf' },
+	  { label: '😊 団員募集チラシPDF', protectedPath: '/member/pdf/other/member_recruiting_202307.pdf' },
     { label: '📜 団則・規約 (PDF)', protectedPath: '/member/pdf/mcpo_agreement_20230429.pdf' },
     { label: '📝 休団・退団届フォーム（工事中）', url: 'https://forms.google.com/...' }
   ],

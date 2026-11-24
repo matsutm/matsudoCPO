@@ -156,7 +156,7 @@ async function loadUnreadAnnouncements(currentUser, navigateTo) {
 async function loadNextTwoSchedules() {
   const container = document.getElementById('nextEventsContainer');
   if (!container) return;
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('sv-SE'); // yyyy-mm-dd
 
   try {
     const { data: schedules, error } = await window.supabaseClient

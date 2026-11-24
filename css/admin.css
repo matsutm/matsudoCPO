@@ -1,0 +1,97 @@
+/* css/admin.css : 運営用メンテナンス画面 */
+
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+.admin-tab {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #64748b;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+.admin-tab.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.admin-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.admin-toolbar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.admin-status {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* 表は横スクロール（スマホ対応） */
+.admin-table-wrap {
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.admin-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 720px;
+}
+.admin-table th {
+  position: sticky;
+  top: 0;
+  background: #f1f5f9;
+  font-size: 0.8rem;
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #cbd5e1;
+  white-space: nowrap;
+}
+.admin-table td {
+  padding: 4px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+.admin-table .form-control {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.4rem;
+}
+.admin-table textarea.form-control {
+  min-width: 220px;
+  resize: vertical;
+}
+.admin-table input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 8px;
+}
+
+/* 変更のある行を黄色く */
+.admin-table tr.dirty td {
+  background-color: #fffbeb;
+}
+
+.admin-row-del {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 6px;
+  opacity: 0.6;
+}
+.admin-row-del:hover {
+  opacity: 1;
+}
