@@ -1,6 +1,6 @@
 //config.js
 //メール送信機能は本番環境のみで実現する。またはテストで切り替える
-const PORTAL_PRODUCTION = false; // 本番(true)/開発(false)環境をこれ一つで変更
+const PORTAL_PRODUCTION = true; // 本番(true)/開発(false)環境をこれ一つで変更
 
 const ENV = PORTAL_PRODUCTION
   ? {
@@ -14,7 +14,7 @@ const ENV = PORTAL_PRODUCTION
   : {
       // 開発環境、テスト内容によってbooleanを変更する
       EMAIL_NOTIFY_ENABLED: false, //本番では必ず true
-      DEV_AUTO_LOGIN: false, // 本番では必ず false
+      DEV_AUTO_LOGIN: true, // 本番では必ず false
       ROLE_CONTROL_ENABLED: false, // 役割で権限分けたいなら、true
       SUPABASE_URL: 'https://dylrgcsrlqvyjjggbrdb.supabase.co',
       SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHJnY3NybHF2eWpqZ2dicmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MTU3MjEsImV4cCI6MjEwNDM5MTcyMX0.a1wHWtVJYIdihnNqd16AtyB0cczwnH0vtEQctQA98rE'
