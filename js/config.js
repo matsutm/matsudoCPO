@@ -1,6 +1,6 @@
 //config.js
 //メール送信機能は本番環境のみで実現する。またはテストで切り替える
-const PORTAL_PRODUCTION = false; // 本番(true)/開発(false)環境をこれ一つで変更
+const PORTAL_PRODUCTION = true; // 本番(true)/開発(false)環境をこれ一つで変更
 
 const ENV = PORTAL_PRODUCTION
   ? {
