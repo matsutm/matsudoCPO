@@ -1,25 +1,33 @@
 //config.js
 //メール送信機能は本番環境のみで実現する。またはテストで切り替える
-//const PORTAL_PRODUCTION = true; // 本番(true)/開発(false)環境をこれ一つで変更
-const PORTAL_PRODUCTION = location.hostname === 'portal.matsudo-cpo.info'; // 本番環境自動判定
+// 本番環境自動判定
+const HOST = location.hostname;
+const ENV_NAME =
+  HOST === 'portal.matsudo-cpo.info' ? 'production'
+  : HOST === 'matsudocpo.vercel.app'  ? 'staging'
+  : 'dev'; // develop のブランチ用URL、localhost など
 
-const ENV = PORTAL_PRODUCTION
-  ? {
-      // 本番環境。基本的に動かさない
-      EMAIL_NOTIFY_ENABLED: true, //本番では必ず true
-      DEV_AUTO_LOGIN: false, // 本番では必ず false
-      ROLE_CONTROL_ENABLED: false,  // 役割で権限分けたいなら、true
-      SUPABASE_URL: 'https://vafuldidcdweedjwrvwh.supabase.co',
-      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhZnVsZGlkY2R3ZWVkandydndoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMDE4NjUsImV4cCI6MjEwNjY3Nzg2NX0.etLTdndAHaujhjFmqZ_ct1TtdQ45T3lFWdT94KBenxY'
-    }
-  : {
-      // 開発環境、テスト内容によってbooleanを変更する
-      EMAIL_NOTIFY_ENABLED: false, //本番では必ず true
-      DEV_AUTO_LOGIN: false, // 本番では必ず false
-      ROLE_CONTROL_ENABLED: false, // 役割で権限分けたいなら、true
-      SUPABASE_URL: 'https://dylrgcsrlqvyjjggbrdb.supabase.co',
-      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHJnY3NybHF2eWpqZ2dicmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MTU3MjEsImV4cCI6MjEwNDM5MTcyMX0.a1wHWtVJYIdihnNqd16AtyB0cczwnH0vtEQctQA98rE'
-    };
+const SUPABASE_PROD = {
+  SUPABASE_URL: 'https://vafuldidcdweedjwrvwh.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhZnVsZGlkY2R3ZWVkandydndoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMDE4NjUsImV4cCI6MjEwNjY3Nzg2NX0.etLTdndAHaujhjFmqZ_ct1TtdQ45T3lFWdT94KBenxY'
+};
+const SUPABASE_DEV = {
+  SUPABASE_URL: 'https://dylrgcsrlqvyjjggbrdb.supabase.co',
+  SUPABASE_ANON_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHJnY3NybHF2eWpqZ2dicmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MTU3MjEsImV4cCI6MjEwNDM5MTcyMX0.a1wHWtVJYIdihnNqd16AtyB0cczwnH0vtEQctQA98rE'
+};
+
+/*
+/      EMAIL_NOTIFY_ENABLED  メール送信機能、本番では必ず true
+/      DEV_AUTO_LOGIN        ログイン認証省略、本番では必ず false
+/      ROLE_CONTROL_ENABLED  役割で権限分けたいなら、true
+*/
+const ENV = {
+  production: { ...SUPABASE_PROD, EMAIL_NOTIFY_ENABLED: true,  DEV_AUTO_LOGIN: false, ROLE_CONTROL_ENABLED: false },
+  staging:    { ...SUPABASE_DEV,  EMAIL_NOTIFY_ENABLED: false, DEV_AUTO_LOGIN: false, ROLE_CONTROL_ENABLED: false },
+  dev:        { ...SUPABASE_DEV,  EMAIL_NOTIFY_ENABLED: false, DEV_AUTO_LOGIN: true,  ROLE_CONTROL_ENABLED: false }
+}[ENV_NAME];
+
+window.ENV_NAME = ENV_NAME;
 
 window.EMAIL_NOTIFY_ENABLED = ENV.EMAIL_NOTIFY_ENABLED;
 window.DEV_AUTO_LOGIN = ENV.DEV_AUTO_LOGIN;
