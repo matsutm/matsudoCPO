@@ -12,6 +12,18 @@ import { escapeHtml } from '../utils.js';
  * type: text | date | textarea | select | tags(カンマ区切り→配列) | bool
  * ------------------------------ */
 const TABLES = {
+  concerts: {
+    label: '演奏会',
+    orderBy: 'event_date',
+    ascending: false,
+    nameKey: 'title',
+    columns: [
+      { key: 'event_date', label: '開催日',   type: 'date', required: true },
+      { key: 'title',      label: '演奏会名', type: 'text', required: true },
+      { key: 'venue',      label: '会場・詳細', type: 'textarea' }
+    ],
+    defaults: {}
+  },
   members: {
     label: '団員名簿',
     orderBy: 'created_at',
@@ -27,22 +39,10 @@ const TABLES = {
       { key: 'active',     label: '有効',     type: 'bool' }
     ],
     defaults: { role: 'member', active: true }
-  },
-  concerts: {
-    label: '演奏会',
-    orderBy: 'event_date',
-    ascending: false,
-    nameKey: 'title',
-    columns: [
-      { key: 'event_date', label: '開催日',   type: 'date', required: true },
-      { key: 'title',      label: '演奏会名', type: 'text', required: true },
-      { key: 'venue',      label: '会場・詳細', type: 'textarea' }
-    ],
-    defaults: {}
   }
 };
 
-let currentTable = 'members';
+let currentTable = 'concerts';
 let container = null;
 let loadToken = 0;
 
