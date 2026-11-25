@@ -20,7 +20,7 @@ const TABLES = {
     columns: [
       { key: 'name',       label: '氏名',     type: 'text', required: true },
       { key: 'email',      label: 'メール',   type: 'text', required: true, lower: true },
-      { key: 'section',    label: 'セクション', type: 'select', options: ['弦', '木管', '金管', '打'] },
+      { key: 'section',    label: 'セクション', type: 'select', options: ['弦', '木管', '金管・打'] },
       { key: 'instrument', label: 'パート',   type: 'text' },
       { key: 'role',       label: '権限',     type: 'select', options: ['member', 'author'], required: true },
       { key: 'positions',  label: '役職(,区切り)', type: 'tags' },
