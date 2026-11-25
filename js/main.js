@@ -10,6 +10,16 @@ import { fetchAnnouncementById } from './services/announcement-service.js';
 import { openAnnouncementModal } from './components/announcement-modal.js';
 import { openCalendarModal } from './components/calendar-modal.js';
 
+// 本番以外では「確認用環境」の帯を表示する
+if (window.ENV_NAME && window.ENV_NAME !== 'production') {
+  const bar = document.createElement('div');
+  bar.className = `env-banner env-banner-${window.ENV_NAME}`;
+  bar.textContent = window.ENV_NAME === 'staging'
+    ? '🧪 確認用環境（運営委員用。本番環境ではない）'
+    : '🛠 開発環境';
+  document.body.prepend(bar);
+}
+
 const appContent = document.getElementById('app-content');
 
 // "#announcement/123" → { view: 'announcement', param: '123' }

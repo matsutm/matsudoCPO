@@ -312,3 +312,13 @@ body[data-role="member"] #btnOpenCreateModal { display: none; }
   margin: 0;
 }
 
+/* 本番以外の環境表示帯 */
+.env-banner {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 3px 8px;
+  color: #ffffff;
+}
+.env-banner-staging { background-color: #d97706; }
+.env-banner-dev     { background-color: #7c3aed; }
