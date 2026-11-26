@@ -9,6 +9,7 @@ import { openModal, closeModalOnBack, resetModalState } from './components/modal
 import { fetchAnnouncementById } from './services/announcement-service.js';
 import { openAnnouncementModal } from './components/announcement-modal.js';
 import { openCalendarModal } from './components/calendar-modal.js';
+import { renderAdminView, initAdminView } from './views/admin-view.js';
 
 // 本番以外では「確認用環境」の帯を表示する
 if (window.ENV_NAME && window.ENV_NAME !== 'production') {
@@ -82,6 +83,11 @@ export async function navigateTo(viewName, isBrowserBack = false, param = null) 
       await initLibraryView(navigateTo);
       break;
 
+    case 'admin':
+      appContent.innerHTML = renderAdminView();
+      await initAdminView(navigateTo);
+      break;
+  
     default:
       appContent.innerHTML = renderHomeView();
       await initHomeView(navigateTo);
