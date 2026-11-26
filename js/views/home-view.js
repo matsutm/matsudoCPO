@@ -10,6 +10,7 @@ import { renderPrimaryLibraryLinks, renderNextConcertLink } from '../components/
 import { renderSocialLinks } from '../components/social-links.js';
 import { openCalendarModal } from '../components/calendar-modal.js';
 import { fetchUpcomingConcerts } from '../services/concert-service.js';
+import { isExecutive } from '../services/admin-service.js';
 
 let concertRequestToken = 0; // 演奏会情報読み込みカウンタ
 
@@ -53,6 +54,12 @@ export function renderHomeView() {
                   <span>📁 その他資料一覧</span> ➔
                 </button>
               </li>
+              ${isExecutive(getCurrentUser()) ? `
+              <li>
+                <button id="btnGoAdmin" class="library-link-button">
+                  <span>🛠 運営用メンテナンス</span> ➔
+                </button>
+              </li>` : ''}
             </ul>
 
             <!-- SNS・チケットロゴ（配列データから均等配置） -->
@@ -84,6 +91,7 @@ export async function initHomeView(navigateTo) {
   document.getElementById('linkGoCalendar')?.addEventListener('click', () => navigateTo('calendar'));
   document.getElementById('linkGoLibrary')?.addEventListener('click', () => navigateTo('library'));
   document.getElementById('btnGoLibraryOther')?.addEventListener('click', () => navigateTo('library'));
+  document.getElementById('btnGoAdmin')?.addEventListener('click', () => navigateTo('admin'));
 
   // ★主要資料のリンク先URL（必要に応じてGoogle Drive等の固定URLを割り当て）
   // 例: document.getElementById('linkDolce').href = 'https://drive.google.com/...';

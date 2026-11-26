@@ -12,22 +12,6 @@ import { escapeHtml } from '../utils.js';
  * type: text | date | textarea | select | tags(カンマ区切り→配列) | bool
  * ------------------------------ */
 const TABLES = {
-  members: {
-    label: '団員名簿',
-    orderBy: 'created_at',
-    ascending: true,
-    nameKey: 'name',
-    columns: [
-      { key: 'name',       label: '氏名',     type: 'text', required: true },
-      { key: 'email',      label: 'メール',   type: 'text', required: true, lower: true },
-      { key: 'section',    label: 'セクション', type: 'select', options: ['弦', '木管', '金管', '打'] },
-      { key: 'instrument', label: 'パート',   type: 'text' },
-      { key: 'role',       label: '権限',     type: 'select', options: ['member', 'author'], required: true },
-      { key: 'positions',  label: '役職(,区切り)', type: 'tags' },
-      { key: 'active',     label: '有効',     type: 'bool' }
-    ],
-    defaults: { role: 'member', active: true }
-  },
   concerts: {
     label: '演奏会',
     orderBy: 'event_date',
@@ -39,10 +23,26 @@ const TABLES = {
       { key: 'venue',      label: '会場・詳細', type: 'textarea' }
     ],
     defaults: {}
+  },
+  members: {
+    label: '団員名簿',
+    orderBy: 'created_at',
+    ascending: true,
+    nameKey: 'name',
+    columns: [
+      { key: 'name',       label: '氏名',     type: 'text', required: true },
+      { key: 'email',      label: 'メール',   type: 'text', required: true, lower: true },
+      { key: 'section',    label: 'セクション', type: 'select', options: ['弦', '木管', '金管・打'] },
+      { key: 'instrument', label: 'パート',   type: 'text' },
+      { key: 'role',       label: '権限',     type: 'select', options: ['member', 'author'], required: true },
+      { key: 'positions',  label: '役職(,区切り)', type: 'tags' },
+      { key: 'active',     label: '有効',     type: 'bool' }
+    ],
+    defaults: { role: 'member', active: true }
   }
 };
 
-let currentTable = 'members';
+let currentTable = 'concerts';
 let container = null;
 let loadToken = 0;
 
